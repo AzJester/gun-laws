@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import ChangesFeed from "./ChangesFeed";
 import GeoMap from "./GeoMap";
 import StateDetail from "./StateDetail";
 
-import { selectionAnnouncement } from "@/lib/a11y";
+import { lawCountLabel, selectionAnnouncement } from "@/lib/a11y";
 import type { GeoData } from "@/lib/geo";
 import {
   GRADES,
@@ -25,6 +25,14 @@ import {
   ORIENTATIONS,
   type Orientation,
 } from "@/lib/grading";
+import {
+  entryFor,
+  entryPolicyOn,
+  isTimeSeries,
+  yearsRange,
+  type TimeSeries,
+  type TimeSeriesEntry,
+} from "@/lib/timeseries";
 import type {
   ChangeEventDTO,
   Grade,
@@ -62,6 +70,13 @@ const ORIENT_STORAGE_KEY = "gunlawmap:orient";
 // export so the asset URL respects the project-pages base path.
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+// Historical year slider bounds. These mirror data/time-series.json's
+// _meta.{firstYear,lastYear}; once the series loads we use its actual range, but
+// these provide a sensible default before the fetch resolves.
+const FIRST_YEAR = 1991;
+const LATEST_YEAR = 2025;
+const PLAY_INTERVAL_MS = 700;
+
 // Law-count color ramp for the neutral "count" view: few laws (green) → many (red),
 // so the shading reads the same direction as the gun-rights grade ramp.
 // Text colors are tuned for WCAG AA contrast against each fill (same fixes as
@@ -97,6 +112,77 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
 
   const [detail, setDetail] = useState<StateDetailType | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  // Historical time series (1991–2025), fetched once on mount as a static asset.
+  // `year` is the snapshot the map + detail reflect; it defaults to the latest
+  // year ("current"), at which point behavior equals today's dataset.
+  const [timeSeries, setTimeSeries] = useState<TimeSeries | null>(null);
+  const [year, setYear] = useState<number>(LATEST_YEAR);
+  const [playing, setPlaying] = useState(false);
+
+  const years = useMemo(
+    () => (timeSeries ? yearsRange(timeSeries) : null),
+    [timeSeries],
+  );
+  const minYear = timeSeries?._meta.firstYear ?? FIRST_YEAR;
+  const maxYear = timeSeries?._meta.lastYear ?? LATEST_YEAR;
+  const isHistorical = year !== maxYear;
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${BASE}/data/time-series.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<unknown>) : null))
+      .then((data) => {
+        if (cancelled) return;
+        if (isTimeSeries(data)) {
+          setTimeSeries(data);
+          setYear(data._meta.lastYear); // pin to "current" once we know the real bound
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setTimeSeries(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Auto-advance the slider while "playing". Honors prefers-reduced-motion by
+  // never auto-starting (the Play button is hidden in that case). Stops at the
+  // latest year. An interval ref keeps cleanup simple across re-renders.
+  const playTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  useEffect(() => {
+    if (!playing) return;
+    playTimer.current = setInterval(() => {
+      setYear((y) => {
+        if (y >= maxYear) {
+          setPlaying(false);
+          return maxYear;
+        }
+        return y + 1;
+      });
+    }, PLAY_INTERVAL_MS);
+    return () => {
+      if (playTimer.current) clearInterval(playTimer.current);
+    };
+  }, [playing, maxYear]);
+
+  // Whether the browser asks us to reduce motion. Drives whether the optional
+  // Play/Pause control is offered at all (we never auto-play regardless).
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReducedMotion(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, []);
+
+  const resetToCurrent = useCallback(() => {
+    setPlaying(false);
+    setYear(maxYear);
+  }, [maxYear]);
 
   // Hydrate the orientation from the URL (?orient=) first, then localStorage.
   // URL wins so a shared link reproduces the same lens.
@@ -152,28 +238,36 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
     (code: string): { bg: string; fg: string } => {
       const s = byCode[code];
       if (!s) return { bg: "#2a3340", fg: "#fff" };
+      // When a historical year is selected and the series has an entry for it,
+      // color by THAT year's data; otherwise fall back to the current summary.
+      // At the latest year (isHistorical === false) we keep the live path, which
+      // matches today's dataset.
+      const entry = isHistorical ? entryFor(timeSeries, code, year) : null;
       if (mode === "grade") {
-        if (orient === "count") return countColor(s.lawCount);
+        if (orient === "count") return countColor(entry ? entry.n : s.lawCount);
+        const grade = entry ? entry.g : s.grade;
         return {
-          bg: displayGradeColor(s.grade, orient),
-          fg: displayGradeTextColor(s.grade, orient),
+          bg: displayGradeColor(grade, orient),
+          fg: displayGradeTextColor(grade, orient),
         };
       }
-      const on = s.policies[mode];
+      const on = entry ? entryPolicyOn(entry, mode) : s.policies[mode];
       const yes = policyYes(mode);
       return on
         ? { bg: yes.bg, fg: yes.fg }
         : { bg: POLICY_NO.bg, fg: POLICY_NO.fg };
     },
-    [byCode, mode, orient],
+    [byCode, mode, orient, isHistorical, timeSeries, year],
   );
 
   const dimmed = useCallback(
     (code: string): boolean => {
       if (mode !== "grade" || !filterGrade) return false;
-      return byCode[code]?.grade !== filterGrade;
+      const entry = isHistorical ? entryFor(timeSeries, code, year) : null;
+      const grade = entry ? entry.g : byCode[code]?.grade;
+      return grade !== filterGrade;
     },
-    [byCode, mode, filterGrade],
+    [byCode, mode, filterGrade, isHistorical, timeSeries, year],
   );
 
   const onSelect = useCallback((code: string) => setSelected(code), []);
@@ -198,12 +292,26 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
 
   const [endLeft, endRight] = legendEnds(orient);
 
-  // Polite live-region message announced whenever the selected state changes, so
-  // screen-reader users know the detail panel on the right has updated.
+  // Polite live-region message announced whenever the selected state changes (or
+  // the year moves), so screen-reader users know the detail panel has updated.
   const selectedSummary = byCode[selected];
-  const announcement = selectedSummary
-    ? selectionAnnouncement(selectedSummary, orient)
-    : "";
+  const selectedEntry: TimeSeriesEntry | null = isHistorical
+    ? entryFor(timeSeries, selected, year)
+    : null;
+  let announcement = "";
+  if (selectedSummary) {
+    if (selectedEntry) {
+      const grade = displayGrade(selectedEntry.g, orient);
+      announcement =
+        orient === "count"
+          ? `Showing ${selectedSummary.name}, ${year} snapshot, ${lawCountLabel(
+              selectedEntry.n,
+            )}`
+          : `Showing ${selectedSummary.name}, ${year} snapshot, grade ${grade}`;
+    } else {
+      announcement = selectionAnnouncement(selectedSummary, orient);
+    }
+  }
 
   return (
     <>
@@ -381,6 +489,80 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             </div>
           ) : null}
 
+          {/* historical year slider */}
+          <div className="mb-3 rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-2.5">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <label
+                htmlFor="year-slider"
+                className="text-[11.5px] font-semibold text-[var(--muted)]"
+              >
+                Year: <span className="text-[var(--text)]">{year}</span>
+              </label>
+              <span
+                className="grid min-w-[58px] place-items-center rounded-md border border-[var(--border)] bg-[var(--panel)] px-2 py-0.5 text-[15px] font-bold tabular-nums text-[var(--text)]"
+                aria-hidden="true"
+              >
+                {year}
+              </span>
+              <input
+                id="year-slider"
+                type="range"
+                min={minYear}
+                max={maxYear}
+                step={1}
+                value={year}
+                onChange={(e) => {
+                  setPlaying(false);
+                  setYear(Number(e.target.value));
+                }}
+                aria-label="Historical year"
+                aria-valuetext={String(year)}
+                className="h-1.5 min-w-[180px] flex-1 cursor-pointer accent-[var(--accent)]"
+              />
+              {reducedMotion ? null : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!playing && year >= maxYear) setYear(minYear);
+                    setPlaying((p) => !p);
+                  }}
+                  aria-pressed={playing}
+                  aria-label={playing ? "Pause year animation" : "Play year animation"}
+                  className="rounded-lg border border-[var(--border)] bg-[var(--panel)] px-3 py-[5px] text-[12px] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  {playing ? "❚❚ Pause" : "▶ Play"}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={resetToCurrent}
+                disabled={!isHistorical}
+                className={[
+                  "rounded-lg border px-3 py-[5px] text-[12px]",
+                  isHistorical
+                    ? "border-[var(--border)] bg-[var(--panel)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                    : "cursor-default border-[var(--border)] bg-[var(--panel)] text-[var(--border)]",
+                ].join(" ")}
+              >
+                ▸ Current
+              </button>
+            </div>
+            <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-[var(--muted)]">
+              <span aria-hidden="true">{minYear}</span>
+              {isHistorical ? (
+                <span className="rounded-full border border-[#3a5e7a] bg-[#0e2233] px-2.5 py-0.5 text-[11px] font-semibold text-[#8fb8e6]">
+                  Viewing historical snapshot: {year}
+                </span>
+              ) : (
+                <span className="text-[var(--muted)]">
+                  Drag to view past years (1991–{maxYear})
+                  {years ? ` · ${years.length} years tracked` : ""}
+                </span>
+              )}
+              <span aria-hidden="true">{maxYear}</span>
+            </div>
+          </div>
+
           <GeoMap
             geo={geo}
             states={byCode}
@@ -509,7 +691,14 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             aria-label="Selected state detail"
             className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]"
           >
-            <StateDetail detail={detail} loading={detailLoading} orient={orient} />
+            <StateDetail
+              detail={detail}
+              loading={detailLoading}
+              orient={orient}
+              year={year}
+              isHistorical={isHistorical}
+              entry={selectedEntry}
+            />
           </section>
           <section className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
             <h2 className="m-0 mb-1 text-[15px] font-semibold">

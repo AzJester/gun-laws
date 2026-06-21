@@ -5,6 +5,9 @@
 //   public/data/states.json          → summary list ({ disclaimer, states })
 //   public/data/states/<code>.json   → full detail (the StateDetail object), one
 //                                       per state, lowercase code.
+//   public/data/time-series.json     → copy of the repo-root time-series data
+//                                       (per-state grade/count/flags 1991–2025),
+//                                       which powers the historical year slider.
 //
 // It uses the existing read layer (src/lib/data.ts). With DATABASE_URL unset
 // (the default for a static/Pages build) this reads ../data/sample-states.json
@@ -49,8 +52,21 @@ async function main(): Promise<void> {
     written += 1;
   }
 
+  // Time series — copy data/time-series.json (repo root) verbatim so the client
+  // year slider can fetch it as a static asset in both build modes. data/ is a
+  // sibling of web/ (process.cwd() is web/ for the prebuild step).
+  const tsSrc = path.join(process.cwd(), "..", "data", "time-series.json");
+  let tsNote = "skipped time-series.json (source not found)";
+  try {
+    const tsRaw = await fs.readFile(tsSrc, "utf8");
+    await fs.writeFile(path.join(outDir, "time-series.json"), tsRaw, "utf8");
+    tsNote = "wrote time-series.json";
+  } catch (err) {
+    console.warn(`[gen-static-data] ${tsNote}:`, err);
+  }
+
   console.log(
-    `[gen-static-data] wrote states.json (${states.length}) + ${written} detail file(s) to public/data/`,
+    `[gen-static-data] wrote states.json (${states.length}) + ${written} detail file(s) + ${tsNote} to public/data/`,
   );
 }
 
