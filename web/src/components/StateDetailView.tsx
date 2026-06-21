@@ -33,12 +33,20 @@ const STATUS_LABEL: Record<string, string> = {
 interface StateDetailViewProps {
   detail: StateDetailType;
   orient?: Orientation;
+  /**
+   * Heading level for the state name. Use "h1" on the dedicated /state/[code]
+   * page (where this is the page's primary heading) and the default "h2" inside
+   * the home-page detail panel (where <h1> is the site title).
+   */
+  titleAs?: "h1" | "h2";
 }
 
 export default function StateDetailView({
   detail,
   orient = "rights",
+  titleAs = "h2",
 }: StateDetailViewProps) {
+  const TitleTag = titleAs;
   const shown = displayGrade(detail.grade, orient);
   const bg = displayGradeColor(detail.grade, orient);
   const fg = displayGradeTextColor(detail.grade, orient);
@@ -68,7 +76,7 @@ export default function StateDetailView({
           </div>
         )}
         <div>
-          <h2 className="m-0 text-xl font-semibold">{detail.name}</h2>
+          <TitleTag className="m-0 text-xl font-semibold">{detail.name}</TitleTag>
           <div className="text-xs text-[var(--muted)]">
             {showGrade ? `Grade ${shown} · ` : ""}
             {lawLabel}
@@ -119,7 +127,9 @@ export default function StateDetailView({
       {detail.updates?.length ? (
         <div className="mb-4 rounded-[10px] border border-[#3a5e2c] bg-[#16270f] p-3.5">
           <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#bde8a4]">
-            <span className="text-[14px]">🔔</span>
+            <span className="text-[14px]" aria-hidden="true">
+              🔔
+            </span>
             Changes since the 2020 baseline
           </h3>
           <ul className="m-0 list-none p-0">
@@ -144,7 +154,9 @@ export default function StateDetailView({
       {detail.litigation?.length ? (
         <div className="mb-4 rounded-[10px] border border-[#5b4a1d] bg-[#241d0d] p-3.5">
           <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#e3b341]">
-            <span className="text-[14px]">⚖️</span>
+            <span className="text-[14px]" aria-hidden="true">
+              ⚖️
+            </span>
             Under litigation
           </h3>
           <ul className="m-0 list-none p-0">
@@ -200,6 +212,7 @@ export default function StateDetailView({
                 <span
                   className="h-2 w-2 rounded-full"
                   style={{ background: "#2a7a74" }}
+                  aria-hidden="true"
                 />
                 {cat.category}
                 <span className="font-normal text-[11px] text-[var(--muted)]">

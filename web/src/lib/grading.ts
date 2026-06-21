@@ -20,13 +20,18 @@ export const RAMP = [
 ];
 
 // Readable text color per grade fill (index-aligned to GRADES / RAMP).
+// Text colors are tuned for WCAG AA contrast against each RAMP fill while
+// leaving the grade *hues* unchanged:
+//   - A  (#1a9850 green):  dark green #06210f → 4.59:1 (was white, 3.72:1 ✗)
+//   - D- (#f46d43 orange): dark brown #3a1606 → 5.48:1 (was white, 2.95:1 ✗)
+// All other entries already cleared 4.5:1.
 export const TEXT = [
-  "#ffffff",
+  "#06210f",
   "#10331c",
   "#163a12",
   "#4a3a00",
   "#4a2c08",
-  "#ffffff",
+  "#3a1606",
   "#ffffff",
 ];
 

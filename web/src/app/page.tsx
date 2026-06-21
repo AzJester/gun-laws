@@ -16,7 +16,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main>
+    <main id="main">
       <MapExplorer geo={geo} states={states} changes={changes} />
 
       <footer className="mx-auto max-w-[1560px] px-[22px] pb-12">

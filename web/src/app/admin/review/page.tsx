@@ -84,7 +84,7 @@ export default function AdminReviewPage() {
   }
 
   return (
-    <main className="mx-auto max-w-[1100px] px-6 py-8 text-[var(--text)]">
+    <main id="main" className="mx-auto max-w-[1100px] px-6 py-8 text-[var(--text)]">
       <h1 className="m-0 text-2xl font-bold">Editorial review queue</h1>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Auto-detected drafts from the ingestion pipeline. Approving appends an

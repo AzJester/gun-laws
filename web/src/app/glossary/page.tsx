@@ -19,10 +19,13 @@ export const metadata: Metadata = {
 
 export default function GlossaryPage() {
   return (
-    <main className="mx-auto max-w-[820px] px-6 py-8 text-[var(--text)]">
+    <main id="main" className="mx-auto max-w-[820px] px-6 py-8 text-[var(--text)]">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h1 className="m-0 text-2xl font-bold">Glossary &amp; explainers</h1>
-        <nav className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]">
+        <nav
+          aria-label="Section"
+          className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
+        >
           <Link href="/" className="hover:text-[var(--accent)] hover:underline">
             ← Map
           </Link>

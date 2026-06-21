@@ -24,12 +24,15 @@ export default async function AlertsPage() {
   }));
 
   return (
-    <main className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
+    <main id="main" className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <Link href="/" className="text-sm text-[var(--accent)] hover:underline">
           ← Back to the map
         </Link>
-        <nav className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]">
+        <nav
+          aria-label="Section"
+          className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
+        >
           <Link href="/compare" className="hover:text-[var(--accent)] hover:underline">
             Compare
           </Link>

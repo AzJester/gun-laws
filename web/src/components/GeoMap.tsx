@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { mapSummary, stateAriaLabel } from "@/lib/a11y";
+import type { Orientation } from "@/lib/grading";
 import type { GeoData } from "@/lib/geo";
 import type { StateSummary } from "@/lib/types";
 
@@ -15,6 +17,10 @@ interface GeoMapProps {
   /** code -> true if it should be dimmed (grade filter) */
   dimmed: (code: string) => boolean;
   onSelect: (code: string) => void;
+  /** Active grade orientation, for accessible labels. */
+  orient?: Orientation;
+  /** id for the sr-only table, so the SVG can aria-describedby it. */
+  describedById?: string;
 }
 
 // Small Northeast cluster that gets external leader-line labels.
@@ -33,6 +39,8 @@ export default function GeoMap({
   colorFor,
   dimmed,
   onSelect,
+  orient = "rights",
+  describedById = "map-sr-table",
 }: GeoMapProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [centroids, setCentroids] = useState<Record<string, Centroid>>({});
@@ -61,16 +69,78 @@ export default function GeoMap({
     .filter((c) => centroids[c])
     .sort((a, b) => centroids[a].y - centroids[b].y);
 
+  // Screen-reader alternative: a descriptive caption + a real table of every
+  // state with its grade and law count, where each row is a focusable button.
+  // This is the keyboard / assistive-tech path. The SVG itself is exposed as a
+  // single decorative image (role="img") so AT doesn't try to traverse 51 paths.
+  const summaryStates = codes
+    .map((c) => states[c])
+    .filter((s): s is StateSummary => Boolean(s));
+  const summary = mapSummary(summaryStates, orient);
+  const showGrade = orient !== "count";
+
   return (
     <div className="w-full">
+      {/* Accessible text alternative for the choropleth. Visually hidden, fully
+          available to screen readers and keyboard users. */}
+      <div id={describedById} className="sr-only">
+        <p>{summary.caption}</p>
+        <table>
+          <caption>
+            US states with their{" "}
+            {showGrade ? "firearm-law grade and " : ""}count of tracked firearm
+            laws. Activate a row to show that state&apos;s detail.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">State</th>
+              {showGrade ? <th scope="col">Grade</th> : null}
+              <th scope="col">Tracked laws</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summary.rows.map((row) => {
+              const s = states[row.code];
+              const isSelected = row.code === selected;
+              return (
+                <tr key={row.code}>
+                  <th scope="row">{row.name}</th>
+                  {showGrade ? <td>{row.grade}</td> : null}
+                  <td>{row.lawCountLabel}</td>
+                  <td>
+                    <button
+                      type="button"
+                      aria-pressed={isSelected}
+                      aria-label={
+                        s
+                          ? stateAriaLabel(s, { selected: isSelected, orient })
+                          : row.name
+                      }
+                      onClick={() => onSelect(row.code)}
+                    >
+                      Show {row.name}
+                      {isSelected ? " (currently showing)" : ""}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
       <svg
         ref={svgRef}
         viewBox="-60 0 1180 610"
         className="block h-auto w-full"
-        role="group"
-        aria-label="US states map"
+        role="img"
+        aria-labelledby="map-title"
+        aria-describedby={describedById}
       >
-        <g>
+        <title id="map-title">Interactive choropleth map of US firearm laws</title>
+        <desc>{summary.caption}</desc>
+        <g aria-hidden="true">
           {codes.map((code) => {
             const c = colorFor(code);
             const cls = [
@@ -88,25 +158,14 @@ export default function GeoMap({
                 data-code={code}
                 className={cls}
                 style={{ fill: c.bg }}
-                tabIndex={0}
-                role="button"
-                aria-label={`${states[code]?.name ?? code} — Grade ${
-                  states[code]?.grade ?? "?"
-                }`}
                 onClick={() => onSelect(code)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onSelect(code);
-                  }
-                }}
               />
             );
           })}
         </g>
 
         {/* labels */}
-        <g>
+        <g aria-hidden="true">
           {codes
             .filter((c) => !SMALL.has(c) && centroids[c])
             .map((code) => (

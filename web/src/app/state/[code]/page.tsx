@@ -133,7 +133,7 @@ export default async function StatePage({
   };
 
   return (
-    <main className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
+    <main id="main" className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
       {/* JSON-LD structured data */}
       <script
         type="application/ld+json"
@@ -148,7 +148,10 @@ export default async function StatePage({
         >
           ← Back to the map
         </Link>
-        <nav className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]">
+        <nav
+          aria-label="Section"
+          className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
+        >
           <Link
             href={`/compare?states=${state.code}`}
             className="hover:text-[var(--accent)] hover:underline"
@@ -177,13 +180,13 @@ export default async function StatePage({
       </div>
 
       <section className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
-        <StateDetailView detail={state} orient="rights" />
+        <StateDetailView detail={state} orient="rights" titleAs="h1" />
       </section>
 
       {/* Illustrative concealed-carry reciprocity summary. */}
       <section className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
         <h2 className="m-0 mb-1 flex items-center gap-2 text-[15px] font-semibold">
-          <span>🧭</span> Concealed-carry reciprocity
+          <span aria-hidden="true">🧭</span> Concealed-carry reciprocity
           <span className="rounded-full border border-[#5b4a1d] bg-[#2a2210] px-2 py-0.5 text-[9.5px] font-bold uppercase text-[#e3b341]">
             sample data
           </span>

@@ -7,6 +7,7 @@ import ChangesFeed from "./ChangesFeed";
 import GeoMap from "./GeoMap";
 import StateDetail from "./StateDetail";
 
+import { selectionAnnouncement } from "@/lib/a11y";
 import type { GeoData } from "@/lib/geo";
 import {
   GRADES,
@@ -56,13 +57,15 @@ const ORIENT_STORAGE_KEY = "gunlawmap:orient";
 
 // Law-count color ramp for the neutral "count" view: few laws (green) → many (red),
 // so the shading reads the same direction as the gun-rights grade ramp.
+// Text colors are tuned for WCAG AA contrast against each fill (same fixes as
+// grading.TEXT): the green and orange bins use dark glyphs instead of white.
 const COUNT_BINS = [
-  { max: 10, bg: "#1a9850", fg: "#ffffff" },
+  { max: 10, bg: "#1a9850", fg: "#06210f" },
   { max: 25, bg: "#66bd63", fg: "#10331c" },
   { max: 45, bg: "#a6d96a", fg: "#163a12" },
   { max: 70, bg: "#fee08b", fg: "#4a3a00" },
   { max: 95, bg: "#fdae61", fg: "#4a2c08" },
-  { max: 120, bg: "#f46d43", fg: "#ffffff" },
+  { max: 120, bg: "#f46d43", fg: "#3a1606" },
   { max: Infinity, bg: "#d73027", fg: "#ffffff" },
 ];
 
@@ -187,6 +190,13 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
 
   const [endLeft, endRight] = legendEnds(orient);
 
+  // Polite live-region message announced whenever the selected state changes, so
+  // screen-reader users know the detail panel on the right has updated.
+  const selectedSummary = byCode[selected];
+  const announcement = selectedSummary
+    ? selectionAnnouncement(selectedSummary, orient)
+    : "";
+
   return (
     <>
       <header className="flex flex-wrap items-center gap-4 border-b border-[var(--border)] bg-gradient-to-b from-[#11161d] to-[var(--bg)] px-[22px] py-3.5">
@@ -196,6 +206,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             style={{
               background: "linear-gradient(135deg, #2a7a74, #14524e)",
             }}
+            aria-hidden="true"
           >
             🛡️
           </div>
@@ -207,7 +218,10 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
           </div>
         </div>
         <div className="flex-1" />
-        <nav className="hidden items-center gap-4 text-[12.5px] text-[var(--muted)] sm:flex">
+        <nav
+          aria-label="Primary"
+          className="hidden items-center gap-4 text-[12.5px] text-[var(--muted)] sm:flex"
+        >
           <Link href="/compare" className="hover:text-[var(--accent)] hover:underline">
             Compare
           </Link>
@@ -231,20 +245,30 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
           </Link>
         </nav>
         <div className="relative">
+          <label htmlFor="state-search" className="sr-only">
+            Search for a state by name or postal code
+          </label>
           <input
+            id="state-search"
             type="text"
             placeholder="Search a state…"
-            aria-label="Search a state"
             autoComplete="off"
+            aria-describedby="state-search-hint"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={onSearch}
             className="w-[230px] rounded-lg border border-[var(--border)] bg-[var(--panel-2)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
           />
+          <span id="state-search-hint" className="sr-only">
+            Type a state name or two-letter code and press Enter to select it.
+          </span>
         </div>
         <div className="flex items-center gap-2 rounded-[20px] border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)]">
-          <span className="h-2 w-2 rounded-full bg-[#3fb950]" /> State Firearm
-          Laws Database · 2020
+          <span
+            className="status-dot h-2 w-2 rounded-full bg-[#3fb950]"
+            aria-hidden="true"
+          />{" "}
+          State Firearm Laws Database · 2020
         </div>
       </header>
 
@@ -278,13 +302,15 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
               {/* color mode toggle */}
               <div
                 className="flex overflow-hidden rounded-lg border border-[var(--border)]"
-                role="tablist"
-                aria-label="Color mode"
+                role="group"
+                aria-label="Map color mode"
               >
                 {MODE_BUTTONS.map((b) => (
                   <button
                     key={b.mode}
                     type="button"
+                    aria-pressed={mode === b.mode}
+                    aria-label={`Color map by ${b.label}`}
                     onClick={() => {
                       setMode(b.mode);
                       setFilterGrade(null);
@@ -355,6 +381,8 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             colorFor={colorFor}
             dimmed={dimmed}
             onSelect={onSelect}
+            orient={orient}
+            describedById="map-sr-table"
           />
 
           {/* legend */}
@@ -390,10 +418,15 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                       // keyed on the underlying stored grade.
                       const stored = orient === "safety" ? GRADES[6 - i] : g;
                       const shown = displayGrade(stored, orient);
+                      const active = filterGrade === stored;
                       return (
                         <button
                           key={i}
                           type="button"
+                          aria-pressed={active}
+                          aria-label={`${
+                            active ? "Clear highlight of" : "Highlight"
+                          } grade ${shown} states`}
                           onClick={() =>
                             setFilterGrade((prev) =>
                               prev === stored ? null : stored,
@@ -422,7 +455,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                       className="text-[var(--accent)] hover:underline"
                       onClick={() => setFilterGrade(null)}
                     >
-                      clear ✕
+                      clear <span aria-hidden="true">✕</span>
                     </button>
                   ) : null}
                   <div className="mt-1.5 w-full text-[11.5px] text-[var(--muted)]">
@@ -459,7 +492,15 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
 
         {/* RIGHT: DETAIL + FEED */}
         <div className="flex flex-col gap-[18px]">
-          <section className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
+          {/* Polite live region: announces the selected state to screen readers
+              when the detail panel updates. */}
+          <p className="sr-only" role="status" aria-live="polite">
+            {announcement}
+          </p>
+          <section
+            aria-label="Selected state detail"
+            className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]"
+          >
             <StateDetail detail={detail} loading={detailLoading} orient={orient} />
           </section>
           <section className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">

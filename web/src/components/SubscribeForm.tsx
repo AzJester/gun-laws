@@ -88,9 +88,10 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
   }
 
   const submitting = status.kind === "submitting";
+  const hasError = status.kind === "error";
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <div>
         <label
           htmlFor="sub-email"
@@ -106,6 +107,8 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          aria-invalid={hasError || undefined}
+          aria-describedby={hasError ? "sub-status" : undefined}
           className="w-full max-w-[360px] rounded-lg border border-[var(--border)] bg-[var(--panel-2)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
         />
       </div>
@@ -183,14 +186,17 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
 
       {status.kind === "ok" ? (
         <p
+          id="sub-status"
           className="rounded-lg border border-[#2c5e3a] bg-[#16361f] px-3 py-2 text-[13px] text-[#7ee29a]"
           role="status"
         >
-          ✓ {status.message}
+          <span aria-hidden="true">✓ </span>
+          {status.message}
         </p>
       ) : null}
       {status.kind === "not_configured" ? (
         <p
+          id="sub-status"
           className="rounded-lg border border-[#5b4a1d] bg-[#241d0d] px-3 py-2 text-[13px] text-[#e3b341]"
           role="status"
         >
@@ -199,6 +205,7 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
       ) : null}
       {status.kind === "error" ? (
         <p
+          id="sub-status"
           className="rounded-lg border border-[#5e2c2c] bg-[#2a0f0f] px-3 py-2 text-[13px] text-[#e29a9a]"
           role="alert"
         >

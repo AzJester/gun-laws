@@ -19,7 +19,7 @@ export default async function ChangelogPage() {
   const changes = await getPublishedChanges({ limit: 100 });
 
   return (
-    <main className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
+    <main id="main" className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
       <div className="flex items-center justify-between">
         <h1 className="m-0 text-2xl font-bold">Changelog</h1>
         <Link href="/" className="text-sm text-[var(--accent)] hover:underline">
