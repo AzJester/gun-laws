@@ -6,13 +6,13 @@
 //
 // Everything here is server-only (uses node:fs / node:path).
 
-import "server-only";
+// Server-only: uses node:fs / node:path and (optionally) Prisma. Imported only
+// from server components, route handlers, and the seed.
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import { getPrisma, hasDatabase } from "./prisma";
 import { CHANGES } from "./changes";
-import { gradeFor, restrictionCount } from "./grading";
 import {
   POLICY_KEYS,
   type ChangeEventDTO,
@@ -31,11 +31,13 @@ import {
 interface RawState {
   name: string;
   grade: Grade;
-  restrictions: number;
-  grid?: [number, number];
+  lawCount: number | null;
+  restrictions: number | null;
   policies: Policies;
   provisions: ProvisionCategory[];
   detailed: boolean;
+  year?: number | null;
+  source?: string | null;
 }
 
 interface RawDataset {
@@ -62,10 +64,12 @@ function toSummaryFromRaw(code: string, s: RawState): StateSummary {
     code,
     name: s.name,
     grade: s.grade,
-    restrictions: s.restrictions,
-    grid: s.grid ?? null,
+    lawCount: s.lawCount ?? null,
+    restrictions: s.restrictions ?? s.lawCount ?? null,
     policies: s.policies,
     detailed: s.detailed,
+    year: s.year ?? null,
+    source: s.source ?? null,
   };
 }
 
@@ -105,14 +109,13 @@ async function getStatesDb(): Promise<StateSummary[]> {
     return {
       code: st.code,
       name: st.name,
-      grade: (st.overallGrade as Grade) ?? gradeFor(policies),
-      restrictions: st.restrictions || restrictionCount(policies),
-      grid:
-        st.gridRow != null && st.gridCol != null
-          ? ([st.gridRow, st.gridCol] as [number, number])
-          : null,
+      grade: st.overallGrade as Grade,
+      lawCount: st.lawCount ?? null,
+      restrictions: st.lawCount ?? null,
       policies,
       detailed: false, // refined by enrichDetailedFlags()
+      year: st.year ?? null,
+      source: st.source ?? null,
     };
   });
 }
@@ -153,14 +156,13 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
   return {
     code: st.code,
     name: st.name,
-    grade: (st.overallGrade as Grade) ?? gradeFor(policies),
-    restrictions: st.restrictions || restrictionCount(policies),
-    grid:
-      st.gridRow != null && st.gridCol != null
-        ? ([st.gridRow, st.gridCol] as [number, number])
-        : null,
+    grade: st.overallGrade as Grade,
+    lawCount: st.lawCount ?? null,
+    restrictions: st.lawCount ?? null,
     policies,
     detailed,
+    year: st.year ?? null,
+    source: st.source ?? null,
     provisions,
   };
 }

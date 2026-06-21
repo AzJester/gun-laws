@@ -74,7 +74,11 @@ model State {
   // Derived overall grade. A = FEWEST restrictions, F = most (opposite of
   // gun-safety scorecards). Persisted for fast reads; recomputable from policies.
   overallGrade   String  @map("overall_grade")
-  restrictions   Int     @default(0) // count of tracked restriction policies (0..6)
+  // Number of tracked laws in effect (0..134). Null where unknown (e.g. DC).
+  lawCount       Int?    @map("law_count")
+  restrictions   Int     @default(0) // mirror of lawCount; kept for legacy reads
+  year           Int? // data vintage for the law values (e.g. 2020)
+  source         String? // provenance string for the law values
   gridRow        Int?    @map("grid_row")
   gridCol        Int?    @map("grid_col")
   preemptionNote String? @map("preemption_note")

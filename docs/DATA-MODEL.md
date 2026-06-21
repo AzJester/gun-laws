@@ -18,8 +18,8 @@ state ──< state_policy >── policy_type          provision ──< provis
 |---|---|---|
 | code | char(2) PK | `CA`, `TX`, `DC`… |
 | name | text | "California" |
-| overall_grade | text | derived; **A = fewest restrictions, F = most** (count of tracked restriction policies). Opposite orientation from gun-safety scorecards. |
-| grid_row, grid_col | int | optional tile-grid position (alternate cartogram view) |
+| overall_grade | text | derived; **A = fewest restrictions, F = most** (from `lawtotal`: 0-9 A … 80+ F). Opposite orientation from gun-safety scorecards. |
+| law_count | int null | number of tracked laws in effect (0–134; null where not in the source dataset, e.g. DC) |
 | preemption_note | text | local-authority summary |
 
 ### `policy_type`

@@ -11,15 +11,26 @@ plan and a working visual mockup** (concept stage).
 > cite primary statutes and stamp every fact with a source and a last-verified date.
 > Always consult official state resources and an attorney.
 
+## Data: all 134 tracked laws, every state
+
+State law data comes from the **[State Firearm Laws Database](https://www.statefirearmlaws.org)**
+(Siegel et al., Boston University) — **134 firearm-law provisions across 14 categories
+for all 50 states**, latest year **2020**. Each state's page lists every tracked law
+it has in effect, grouped by category (California has 111; Arizona has 8). Category
+labels are simplified renderings of the official codebook.
+
+> ⚠️ The dataset's latest year is **2020**, so changes since then (e.g. several states
+> adopting permitless carry in 2021–2024) are not yet reflected. Keeping it current is
+> exactly what the update pipeline in [`docs/PLAN.md`](docs/PLAN.md) §6 is for. DC isn't
+> in the 50-state database, so it shows a curated summary.
+
 ## Grading orientation
 
-In this mockup, a state's **grade reflects how few restrictions it imposes**:
+A state's **grade reflects how few laws/restrictions it imposes**:
 
-- **A = fewest restrictions** (e.g. Arizona, Texas), **F = most restrictions** (e.g. California, Hawaii).
-- The grade is derived transparently from the **count of six tracked restriction
-  policies** (carry-permit requirement, universal background checks, red-flag law,
-  assault-weapon restriction, magazine limit, waiting period): 0 → A, 1 → A-, 2 → B,
-  3 → C, 4 → D, 5 → D-, 6 → F.
+- **A = fewest** (e.g. Arizona, 8 laws), **F = most** (e.g. California, 111 laws).
+- Derived from `lawtotal` (count of the 134 tracked provisions in effect):
+  0–9 → A, 10–19 → A-, 20–29 → B, 30–44 → C, 45–59 → D, 60–79 → D-, 80+ → F.
 - This is the **opposite orientation** from gun-safety scorecards (e.g. Giffords),
   which grade more restrictions as an A.
 
@@ -27,14 +38,13 @@ In this mockup, a state's **grade reflects how few restrictions it imposes**:
 
 | Path | What it is |
 |---|---|
-| [`mockup/index.html`](mockup/index.html) | **Interactive visual mockup** — self-contained, no dependencies. Open it in any browser. Geo ↔ tile toggle; all 50 states + DC. |
-| [`mockup/preview.png`](mockup/preview.png) | Static preview of the geographic view (shown above). |
-| [`mockup/preview-tile.png`](mockup/preview-tile.png) | Static preview of the tile-grid view. |
-| [`web/`](web/) | **Phase-1 Next.js + Postgres app** (the real build): both map views, Prisma data spine, seed, API. See `web/README.md`. |
+| [`mockup/index.html`](mockup/index.html) | **Interactive visual mockup** — self-contained, no dependencies. Real geographic US map; all 50 states + DC with every tracked law. |
+| [`mockup/preview.png`](mockup/preview.png) | Static preview of the map (shown above). |
+| [`web/`](web/) | **Phase-1 Next.js + Postgres app** (the real build): geographic map, Prisma data spine, seed, API. See `web/README.md`. |
+| [`data/sample-states.json`](data/sample-states.json) | Canonical dataset — 50 states + DC, each with its tracked laws. Built by `tools/build-from-sfl.js` from `data/sources/State_laws.xlsx` using `tools/sfl-codebook.js`. |
 | [`docs/PLAN.md`](docs/PLAN.md) | Detailed build plan: vision, scope, data sources, the auto-update pipeline, architecture, stack, roadmap, risks. |
 | [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) | Versioned, provenance-first database schema. |
 | [`docs/WIREFRAME.md`](docs/WIREFRAME.md) | ASCII wireframe of the UI for quick reference. |
-| [`data/sample-states.json`](data/sample-states.json) | Sample dataset (50 states + DC) mirroring the data model. |
 
 ## View the mockup
 
@@ -49,15 +59,13 @@ xdg-open mockup/index.html
 ```
 
 ### What the mockup demonstrates
-- **Two map views with a toggle:** a **real geographic US map** (Albers-USA
-  projection, Alaska & Hawaii inset) and a **tile-grid cartogram** (one equal
-  square per state). Both are clickable and color-coded by number of restrictions.
+- A **real geographic US map** (Albers-USA projection, Alaska & Hawaii inset), one
+  clickable state per shape, color-coded by grade.
 - **Color modes** to recolor the whole map by a single policy (permitless carry,
   universal background checks, red-flag laws).
-- A **state detail panel** for **all 50 states + DC** with at-a-glance restriction
-  flags and categorized provisions. Flagship states (AZ, CA, TX, NY, FL, CO) carry
-  statute citations (`cited` badge); the rest show consistent flag-derived summaries
-  (`summary` badge) pending citation.
+- A **state detail panel** for **all 50 states + DC** showing the grade, the law
+  count (out of 134), at-a-glance policy flags, and **every tracked law in effect,
+  grouped by category** (scrollable — California lists 111).
 - A **"recent & pending changes" feed** — the design hook for the auto-updating
   behavior — with status tags (Enacted / Effective / Court ruling / In committee)
   and a dashed-gold outline on states with a recent change.

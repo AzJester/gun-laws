@@ -60,11 +60,13 @@ type PolicyKey = (typeof POLICY_TYPES)[number]["key"];
 interface RawState {
   name: string;
   grade: string;
-  restrictions: number;
-  grid?: [number, number];
+  lawCount: number | null;
+  restrictions: number | null;
   policies: Record<PolicyKey, boolean>;
   provisions: { category: string; items: { text: string; citation: string | null }[] }[];
   detailed: boolean;
+  year?: number | null;
+  source?: string | null;
 }
 
 interface RawDataset {
@@ -90,8 +92,9 @@ const CHANGES: {
 
 const DATASET_SOURCE = {
   kind: "dataset" as const,
-  url: "https://www.rand.org/research/gun-policy/tools-and-data.html",
-  label: "Illustrative seed dataset (sample-states.json)",
+  url: "https://www.statefirearmlaws.org/",
+  label:
+    "State Firearm Laws Database — Siegel et al., Boston University (2020)",
 };
 
 async function main() {
@@ -110,23 +113,20 @@ async function main() {
 
   // 2) States + policies + provisions ------------------------------------------
   for (const [code, s] of Object.entries(ds.states)) {
+    const lawCount = s.lawCount ?? s.restrictions ?? null;
+    const stateData = {
+      name: s.name,
+      overallGrade: s.grade,
+      lawCount,
+      // `restrictions` is a non-null mirror column; default to 0 when unknown.
+      restrictions: lawCount ?? 0,
+      year: s.year ?? null,
+      source: s.source ?? null,
+    };
     await prisma.state.upsert({
       where: { code },
-      create: {
-        code,
-        name: s.name,
-        overallGrade: s.grade,
-        restrictions: s.restrictions,
-        gridRow: s.grid?.[0] ?? null,
-        gridCol: s.grid?.[1] ?? null,
-      },
-      update: {
-        name: s.name,
-        overallGrade: s.grade,
-        restrictions: s.restrictions,
-        gridRow: s.grid?.[0] ?? null,
-        gridCol: s.grid?.[1] ?? null,
-      },
+      create: { code, ...stateData },
+      update: stateData,
     });
 
     // at-a-glance policy values

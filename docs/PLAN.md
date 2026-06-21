@@ -101,6 +101,12 @@ trackers, with a human editor confirming every change before it goes live.
 ## 5. Data sources
 
 ### Baseline / seed data (machine-readable)
+- **State Firearm Laws Database (Siegel et al., Boston University)** — *used in the
+  current mockup & app.* 134 firearm-law provisions across 14 categories for all 50
+  states, 1991–2020, coded 0/1, with a codebook. Excellent breadth baseline.
+  <https://www.statefirearmlaws.org> (data via the `dynamicalsystemslaboratory/Firearm-database`
+  mirror; our build: `tools/build-from-sfl.js` + `tools/sfl-codebook.js`). **Vintage 2020** —
+  the update pipeline (§6) is what carries it past 2020.
 - **RAND State Firearm Law Database** — longitudinal, machine-readable database of
   state firearm law provisions across ~134 detailed categories (downloadable
   CSV/Excel). Excellent starting skeleton for "which categories of law exist in
@@ -109,9 +115,9 @@ trackers, with a human editor confirming every change before it goes live.
   breakdowns; a useful cross-check for the overall measure.
   <https://giffords.org/lawcenter/resources/scorecard/>
   *Note on grade orientation:* this product grades **fewer restrictions = higher
-  grade** (A = fewest, F = most), derived from a count of tracked restriction
-  policies — the **opposite** orientation from Giffords' gun-safety scale. Keep the
-  framing explicit in the UI so the two are never confused.
+  grade** (A = fewest, F = most), derived from `lawtotal` (count of the 134 tracked
+  provisions in effect) — the **opposite** orientation from Giffords' gun-safety
+  scale. Keep the framing explicit in the UI so the two are never confused.
 - **Everytown / state-firearm-laws.org**, Cornell LII, and **Justia** for statute
   text and citations.
 
@@ -248,9 +254,9 @@ Key design choices:
     [us-atlas](https://github.com/topojson/us-atlas) (US Census TIGER, public domain),
     inlined as SVG paths so the mockup is self-contained. Small Northeast states get
     external leader-line labels.
-  - *Tile-grid cartogram*: an optional alternate view where one equal square per
-    state keeps tiny states (RI, DC) as clickable as big ones — handy for pure
-    policy comparison. Offer as a toggle.
+  - *Tile-grid cartogram*: a possible future alternate view (one equal square per
+    state) for pure policy comparison — **not in the current build** (the product is
+    the geographic map only).
 - **Color encoding:** sequential single-hue (teal) scale, **light = fewer
   restrictions → dark = more**, to avoid politically loaded red/blue. Diverging
   palettes avoided. The grade letter (A = fewest restrictions) is shown on each
@@ -307,7 +313,7 @@ A static ASCII wireframe of the layout is in [`docs/WIREFRAME.md`](WIREFRAME.md)
 
 | Phase | Deliverables |
 |---|---|
-| **0 — Foundations** | This plan, data model, wireframe; **interactive mockup with geo ↔ tile toggle** and **provisions for all 50 states + DC** ✅ |
+| **0 — Foundations** | This plan, data model, wireframe; **interactive geographic mockup** with **all 134 tracked laws for every state** (State Firearm Laws Database, 2020) ✅ |
 | **1 — Data spine** | Postgres schema + versioning (Prisma); seed all 50+DC from the canonical dataset; import RAND baseline 🚧 *scaffold in [`web/`](../web/)* |
 | **2 — Public MVP** | Next.js site, map (geo + tile toggle), detail view with citations, search, disclaimer 🚧 *scaffold in [`web/`](../web/)* |
 | **3 — Live updates** | LegiScan + Open States ingestion → classifier → editorial review queue → publish + changelog |
