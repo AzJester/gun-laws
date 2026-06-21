@@ -3,12 +3,15 @@
 // /state/[code] page. It never fetches and never holds state — the caller passes
 // a fully-resolved StateDetail plus the active grade orientation.
 
+import FederalCallout from "./FederalCallout";
+
 import {
   displayGrade,
   displayGradeColor,
   displayGradeTextColor,
   type Orientation,
 } from "@/lib/grading";
+import { CATEGORY_EXPLAINERS } from "@/lib/glossary";
 import type { Policies, StateDetail as StateDetailType } from "@/lib/types";
 
 const FLAG_ROWS: { label: string; on: (p: Policies) => boolean }[] = [
@@ -111,6 +114,8 @@ export default function StateDetailView({
         })}
       </div>
 
+      <FederalCallout />
+
       {detail.updates?.length ? (
         <div className="mb-4 rounded-[10px] border border-[#3a5e2c] bg-[#16270f] p-3.5">
           <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#bde8a4]">
@@ -181,12 +186,17 @@ export default function StateDetailView({
 
       {detail.provisions.length > 0 ? (
         <div className="max-h-[520px] overflow-y-auto pr-1">
-          {detail.provisions.map((cat) => (
+          {detail.provisions.map((cat) => {
+            const explainer = CATEGORY_EXPLAINERS[cat.category];
+            return (
             <div
               key={cat.category}
               className="border-t border-[var(--border)] pb-1 pt-3 first:border-t-0"
             >
-              <h3 className="m-0 mb-2 flex items-center gap-2 text-[13.5px] font-semibold">
+              <h3
+                className="m-0 mb-1 flex items-center gap-2 text-[13.5px] font-semibold"
+                title={explainer}
+              >
                 <span
                   className="h-2 w-2 rounded-full"
                   style={{ background: "#2a7a74" }}
@@ -196,6 +206,11 @@ export default function StateDetailView({
                   ({cat.items.length})
                 </span>
               </h3>
+              {explainer ? (
+                <p className="m-0 mb-2 text-[11.5px] leading-snug text-[var(--muted)]">
+                  {explainer}
+                </p>
+              ) : null}
               <ul className="m-0 list-disc pl-[18px]">
                 {cat.items.map((item, i) => (
                   <li key={i} className="mb-1.5 text-[13px] text-[#cdd7e1]">
@@ -233,7 +248,8 @@ export default function StateDetailView({
                 ))}
               </ul>
             </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="rounded-[10px] border border-dashed border-[var(--border)] bg-[var(--panel-2)] p-3.5 text-[13px] text-[var(--muted)]">

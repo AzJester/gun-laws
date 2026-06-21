@@ -217,6 +217,12 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
           <Link href="/alerts" className="hover:text-[var(--accent)] hover:underline">
             Alerts
           </Link>
+          <Link href="/federal" className="hover:text-[var(--accent)] hover:underline">
+            Federal law
+          </Link>
+          <Link href="/glossary" className="hover:text-[var(--accent)] hover:underline">
+            Glossary
+          </Link>
           <Link href="/methodology" className="hover:text-[var(--accent)] hover:underline">
             Methodology
           </Link>

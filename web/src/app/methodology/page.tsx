@@ -44,6 +44,12 @@ export default function MethodologyPage() {
           <Link href="/" className="hover:text-[var(--accent)] hover:underline">
             ← Map
           </Link>
+          <Link href="/federal" className="hover:text-[var(--accent)] hover:underline">
+            Federal law
+          </Link>
+          <Link href="/glossary" className="hover:text-[var(--accent)] hover:underline">
+            Glossary
+          </Link>
           <Link href="/about" className="hover:text-[var(--accent)] hover:underline">
             About
           </Link>
@@ -192,8 +198,23 @@ export default function MethodologyPage() {
             single letter grade necessarily flattens nuance.
           </li>
           <li className="mb-1">
-            Local ordinances, enforcement practices, and federal law are out of
-            scope.
+            The map grades <i>state</i> law only; local ordinances and
+            enforcement practices are out of scope. Federal law is summarized
+            separately on the{" "}
+            <Link
+              href="/federal"
+              className="text-[var(--accent)] hover:underline"
+            >
+              federal-law page
+            </Link>{" "}
+            (it applies in every state), and key terms are defined in the{" "}
+            <Link
+              href="/glossary"
+              className="text-[var(--accent)] hover:underline"
+            >
+              glossary
+            </Link>
+            .
           </li>
           <li>
             The grade is a count of provisions, not a measure of outcomes or
