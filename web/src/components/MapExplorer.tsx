@@ -7,7 +7,13 @@ import GeoMap from "./GeoMap";
 import StateDetail from "./StateDetail";
 
 import type { GeoData } from "@/lib/geo";
-import { GRADES, gradeColor, gradeTextColor } from "@/lib/grading";
+import {
+  GRADES,
+  POLICY_NO,
+  POLICY_YES,
+  gradeColor,
+  gradeTextColor,
+} from "@/lib/grading";
 import type {
   ChangeEventDTO,
   Grade,
@@ -86,8 +92,8 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
       }
       const on = s.policies[mode];
       return on
-        ? { bg: "#2a7a74", fg: "#fff" }
-        : { bg: "#e3eceb", fg: "#3a4a48" };
+        ? { bg: POLICY_YES.bg, fg: POLICY_YES.fg }
+        : { bg: POLICY_NO.bg, fg: POLICY_NO.fg };
     },
     [byCode, mode],
   );
@@ -250,7 +256,9 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                 <div className="mt-1.5 w-full text-[11.5px] text-[var(--muted)]">
                   Grade reflects how few of the 134 tracked laws a state has in
                   effect (A = fewest, F = most). Click a grade to highlight those
-                  states.
+                  states. The letter grade is always shown on each state, so the
+                  map stays usable for color-blind viewers regardless of fill
+                  color.
                 </div>
               </>
             ) : (
@@ -258,13 +266,13 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                 <div className="flex overflow-hidden rounded-md border border-[var(--border)]">
                   <div
                     className="grid h-6 w-[46px] place-items-center text-[10.5px] font-bold"
-                    style={{ background: "#2a7a74", color: "#fff" }}
+                    style={{ background: POLICY_YES.bg, color: POLICY_YES.fg }}
                   >
                     Yes
                   </div>
                   <div
                     className="grid h-6 w-[46px] place-items-center text-[10.5px] font-bold"
-                    style={{ background: "#e3eceb", color: "#3a4a48" }}
+                    style={{ background: POLICY_NO.bg, color: POLICY_NO.fg }}
                   >
                     No
                   </div>

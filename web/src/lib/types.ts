@@ -16,6 +16,12 @@ export type PolicyKey = (typeof POLICY_KEYS)[number];
 
 export type Policies = Record<PolicyKey, boolean>;
 
+/** A curated 2021–2025 change layered on the 2020 baseline. */
+export interface StateUpdate {
+  year: number;
+  label: string;
+}
+
 export interface ProvisionItem {
   text: string;
   citation: string | null;
@@ -39,6 +45,8 @@ export interface StateSummary {
   detailed: boolean;
   year: number | null;
   source: string | null;
+  /** 2021–2025 changes layered on the 2020 baseline (may be empty). */
+  updates: StateUpdate[];
 }
 
 /** Full detail shape returned by GET /api/states/[code]. */

@@ -71,9 +71,9 @@ export default function StateDetail({ detail, loading }: StateDetailProps) {
                 style={
                   present
                     ? {
-                        background: "#103a36",
-                        color: "#5fd0c4",
-                        borderColor: "#1d5b54",
+                        background: "#16361f",
+                        color: "#7ee29a",
+                        borderColor: "#2c5e3a",
                       }
                     : {
                         background: "#222a30",
@@ -88,6 +88,31 @@ export default function StateDetail({ detail, loading }: StateDetailProps) {
           );
         })}
       </div>
+
+      {detail.updates?.length ? (
+        <div className="mb-4 rounded-[10px] border border-[#3a5e2c] bg-[#16270f] p-3.5">
+          <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#bde8a4]">
+            <span className="text-[14px]">🔔</span>
+            Changes since the 2020 baseline
+          </h3>
+          <ul className="m-0 list-none p-0">
+            {detail.updates
+              .slice()
+              .sort((a, b) => a.year - b.year)
+              .map((u, i) => (
+                <li
+                  key={i}
+                  className="mb-1.5 flex gap-2 text-[12.5px] leading-snug text-[#d7ecca] last:mb-0"
+                >
+                  <span className="shrink-0 rounded-full border border-[#3a5e2c] bg-[#21380f] px-2 py-0.5 text-[11px] font-bold text-[#bde8a4]">
+                    {u.year}
+                  </span>
+                  <span>{u.label}</span>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ) : null}
 
       {detail.provisions.length > 0 ? (
         <div className="max-h-[520px] overflow-y-auto pr-1">

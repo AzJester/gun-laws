@@ -22,6 +22,7 @@ import {
   type ProvisionCategory,
   type StateDetail,
   type StateSummary,
+  type StateUpdate,
 } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -38,6 +39,7 @@ interface RawState {
   detailed: boolean;
   year?: number | null;
   source?: string | null;
+  updates?: StateUpdate[];
 }
 
 interface RawDataset {
@@ -70,7 +72,20 @@ function toSummaryFromRaw(code: string, s: RawState): StateSummary {
     detailed: s.detailed,
     year: s.year ?? null,
     source: s.source ?? null,
+    updates: s.updates ?? [],
   };
+}
+
+// The DB schema has no `updates` column, so we source the curated 2021–2025
+// updates from the JSON keyed by state code on the DB path too (simplest
+// correct option — see web/README.md). Cached behind loadDataset().
+async function updatesByCode(): Promise<Record<string, StateUpdate[]>> {
+  const ds = await loadDataset();
+  const out: Record<string, StateUpdate[]> = {};
+  for (const [code, s] of Object.entries(ds.states)) {
+    out[code] = s.updates ?? [];
+  }
+  return out;
 }
 
 async function getStatesJson(): Promise<StateSummary[]> {
@@ -100,10 +115,13 @@ function policiesFromRows(rows: { policyKey: string; value: string }[]): Policie
 
 async function getStatesDb(): Promise<StateSummary[]> {
   const prisma = getPrisma();
-  const states = await prisma.state.findMany({
-    include: { policies: true },
-    orderBy: { name: "asc" },
-  });
+  const [states, updates] = await Promise.all([
+    prisma.state.findMany({
+      include: { policies: true },
+      orderBy: { name: "asc" },
+    }),
+    updatesByCode(),
+  ]);
   return states.map((st) => {
     const policies = policiesFromRows(st.policies);
     return {
@@ -116,6 +134,7 @@ async function getStatesDb(): Promise<StateSummary[]> {
       detailed: false, // refined by enrichDetailedFlags()
       year: st.year ?? null,
       source: st.source ?? null,
+      updates: updates[st.code] ?? [],
     };
   });
 }
@@ -135,6 +154,7 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
   if (!st) return null;
 
   const policies = policiesFromRows(st.policies);
+  const updates = (await updatesByCode())[st.code] ?? [];
 
   // Group provisions back into categories for the detail view.
   const byCategory = new Map<string, ProvisionCategory>();
@@ -163,6 +183,7 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
     detailed,
     year: st.year ?? null,
     source: st.source ?? null,
+    updates,
     provisions,
   };
 }
