@@ -81,7 +81,8 @@
   .cat h3 .cnt{color:var(--muted);font-weight:600;font-size:11px;}
   .cat ul{margin:0;padding-left:18px;}
   .cat li{font-size:12.5px;margin-bottom:5px;color:#d2dce7;}
-  .cat li .cite{color:var(--muted);font-size:11px;}
+  .cat li .cite{color:#8fb8e6;font-size:11px;}
+  .cat li .since{display:inline-block;font-size:9.5px;font-weight:700;color:#67d99a;background:#16321f;border:1px solid #275f41;border-radius:10px;padding:0 6px;margin-left:4px;vertical-align:middle;}
   .detail-foot{font-size:11px;color:var(--muted);margin-top:12px;border-top:1px solid var(--border);padding-top:10px;}
 
   .feed{display:flex;flex-direction:column;}
@@ -270,7 +271,7 @@ function buildDetail(code){
   const total = (st.provisions||[]).reduce((a,p)=>a+p.items.length,0);
   let html=`<div class="state-head">
       <div class="grade-badge" style="background:${RAMP[i]};color:${TEXT[i]}">${g}</div>
-      <div><h2>${NAMES[code]} <span class="src-pill">current</span></h2>
+      <div><h2>${NAMES[code]} <span class="src-pill">verified thru ${st.verifiedThrough||'—'}</span></h2>
         <div class="meta">Grade ${g} · ${DESC[i]} · ${lawLine}</div></div>
     </div>
     <div class="flags">
@@ -288,9 +289,10 @@ function buildDetail(code){
   html+=`<div class="provisions">`;
   (st.provisions||[]).forEach(cat=>{
     html+=`<div class="cat"><h3><span class="dot"></span>${cat.category} <span class="cnt">(${cat.items.length})</span></h3><ul>`+
-      cat.items.map(it=>`<li>${it.text}${it.citation?` <span class="cite">(${it.citation})</span>`:''}</li>`).join('')+`</ul></div>`;
+      cat.items.map(it=>`<li>${it.text}${it.citation?` <span class="cite">(${it.citation})</span>`:''}${it.since?` <span class="since" title="Added since the 2020 baseline">new ’${String(it.since).slice(2)}</span>`:''}</li>`).join('')+`</ul></div>`;
   });
-  html+=`</div><div class="detail-foot">${total} law${total===1?'':'s'} in effect · Source: ${st.source||'State Firearm Laws Database'}</div>`;
+  const srcs=(st.sources||[]).map(s=>`<a class="src" href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`).join(' · ');
+  html+=`</div><div class="detail-foot">${total} law${total===1?'':'s'} in effect · verified through ${st.verifiedThrough||'—'}${srcs?` · Sources: ${srcs}`:''}</div>`;
   document.getElementById('detail').innerHTML=html;
 }
 

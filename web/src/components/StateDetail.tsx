@@ -49,7 +49,7 @@ export default function StateDetail({ detail, loading }: StateDetailProps) {
           <h2 className="m-0 text-xl font-semibold">{detail.name}</h2>
           <div className="text-xs text-[var(--muted)]">
             Grade {detail.grade} · {lawLabel}
-            {detail.year ? ` · as of ${detail.year}` : ""}
+            {detail.verifiedThrough ? ` · verified through ${detail.verifiedThrough}` : ""}
           </div>
         </div>
       </div>
@@ -136,8 +136,30 @@ export default function StateDetail({ detail, loading }: StateDetailProps) {
                   <li key={i} className="mb-1.5 text-[13px] text-[#cdd7e1]">
                     {item.text}{" "}
                     {item.citation && item.citation !== "—" ? (
-                      <span className="text-[11px] text-[var(--muted)]">
-                        ({item.citation})
+                      item.url ? (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener"
+                          className="text-[11px] text-[#8fb8e6] hover:underline"
+                        >
+                          ({item.citation})
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-[#8fb8e6]">({item.citation})</span>
+                      )
+                    ) : null}
+                    {item.since ? (
+                      <span
+                        title="Added since the 2020 baseline"
+                        className="ml-1 inline-block rounded-full border border-[#275f41] bg-[#16321f] px-1.5 align-middle text-[9.5px] font-bold text-[#67d99a]"
+                      >
+                        new ’{String(item.since).slice(2)}
+                      </span>
+                    ) : null}
+                    {item.status && item.status !== "in_effect" ? (
+                      <span className="ml-1 inline-block rounded-full border border-[#5b4a1d] bg-[#2a2210] px-1.5 align-middle text-[9.5px] font-bold text-[#e3b341]">
+                        {STATUS_LABEL[item.status] ?? item.status}
                       </span>
                     ) : null}
                   </li>
@@ -153,6 +175,32 @@ export default function StateDetail({ detail, loading }: StateDetailProps) {
           flag links to the governing statute and a last-verified date.
         </div>
       )}
+
+      {detail.sources?.length ? (
+        <div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[11px] text-[var(--muted)]">
+          Verified through {detail.verifiedThrough ?? "—"} · Sources:{" "}
+          {detail.sources.map((s, i) => (
+            <span key={i}>
+              {i > 0 ? " · " : ""}
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener"
+                className="text-[var(--accent)] hover:underline"
+              >
+                {s.label}
+              </a>
+            </span>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
+
+const STATUS_LABEL: Record<string, string> = {
+  enjoined: "enjoined",
+  struck: "struck down",
+  repealed: "repealed",
+  enacted_not_yet_effective: "not yet in effect",
+};

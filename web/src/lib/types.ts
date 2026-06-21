@@ -22,14 +22,32 @@ export interface StateUpdate {
   label: string;
 }
 
+export type ProvisionStatus =
+  | "in_effect"
+  | "enacted_not_yet_effective"
+  | "enjoined"
+  | "struck"
+  | "repealed";
+
 export interface ProvisionItem {
   text: string;
   citation: string | null;
+  /** Link to the governing statute / source, when known. */
+  url?: string | null;
+  /** Legal status of the provision (default in_effect). */
+  status?: ProvisionStatus;
+  /** Year added since the 2020 baseline, if applicable. */
+  since?: number | null;
 }
 
 export interface ProvisionCategory {
   category: string;
   items: ProvisionItem[];
+}
+
+export interface SourceLink {
+  label: string;
+  url: string;
 }
 
 /** Summary shape returned by GET /api/states (the list / map payload). */
@@ -47,6 +65,10 @@ export interface StateSummary {
   source: string | null;
   /** 2021–2025 changes layered on the 2020 baseline (may be empty). */
   updates: StateUpdate[];
+  /** Latest year our data is believed current through for this state. */
+  verifiedThrough?: number | null;
+  /** Authoritative source links (dataset + official state code). */
+  sources?: SourceLink[];
 }
 
 /** Full detail shape returned by GET /api/states/[code]. */
@@ -75,8 +97,8 @@ export interface ChangeEventDTO {
 
 export const DISCLAIMER =
   "Informational only, not legal advice. Law data is from the State Firearm " +
-  "Laws Database (Siegel et al., Boston University), with values as of 2020 — " +
-  "so changes since then may not be reflected (a production pipeline keeps it " +
-  "current). A state's grade reflects how FEW laws/restrictions it imposes " +
-  "(A = fewest, F = most), the opposite orientation from gun-safety scorecards. " +
-  "Always verify with official state resources and an attorney.";
+  "Laws Database (Siegel et al., Boston University) — a 2020 baseline with curated " +
+  "2021–2025 updates layered on (see each state's 'verified through' year); a " +
+  "production pipeline keeps it current. A state's grade reflects how FEW " +
+  "laws/restrictions it imposes (A = fewest, F = most), the opposite orientation " +
+  "from gun-safety scorecards. Always verify with official state resources and an attorney.";

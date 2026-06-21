@@ -5,6 +5,7 @@ const fs=require('fs');
 const XLSX=require('/tmp/usmap/node_modules/xlsx');
 const cb=require('./sfl-codebook.js');
 const UPDATES=require('./updates-2021-2025.js');
+const CITE=require('./citations.js');
 
 const ABBR={Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",Ohio:"OH",Oklahoma:"OK",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",Wisconsin:"WI",Wyoming:"WY"};
 
@@ -23,20 +24,36 @@ for(const row of rows){ const code=ABBR[row.state]; if(!code) continue; const o=
 
 // apply 2021–2025 overlay (record only changes that actually flip a value)
 let applied=0;
+for(const st of Object.values(V)) st.changedOn={}; // var -> year it was turned on
 for(const u of UPDATES){
   const st=V[u.code]; if(!st) continue;
   let changed=false;
-  for(const [k,val] of Object.entries(u.set)){ if(!(k in st.v)) continue; if(st.v[k]!==val){ st.v[k]=val; changed=true; } }
+  for(const [k,val] of Object.entries(u.set)){ if(!(k in st.v)) continue; if(st.v[k]!==val){ st.v[k]=val; if(val===1) st.changedOn[k]=u.year; changed=true; } }
   if(changed){ st.updates.push({year:u.year,label:u.label}); applied++; }
 }
 
 const states={};
 for(const code of Object.keys(V)){
-  const {name,v,updates}=V[code];
+  const {name,v,updates,changedOn}=V[code];
   const lawCount=varKeys.reduce((a,k)=>a+(v[k]?1:0),0);
+  const cites=CITE.perVar[code]||{};
   const buckets={};
-  for(const k of varKeys){ if(v[k]===1){ const [cat,label]=cb.vars[k]; (buckets[cat]=buckets[cat]||[]).push({text:label,citation:null}); } }
+  for(const k of varKeys){
+    if(v[k]===1){
+      const [cat,label]=cb.vars[k];
+      const c=cites[k];
+      (buckets[cat]=buckets[cat]||[]).push({
+        text:label,
+        citation: c?c.cite:null,
+        url: c&&c.url?c.url:null,
+        status:"in_effect",
+        since: changedOn[k]||null
+      });
+    }
+  }
   const provisions=catOrder.filter(c=>buckets[c]).map(c=>({category:catTitle[c],items:buckets[c]}));
+  const verifiedThrough = updates.length ? Math.max(2020, ...updates.map(u=>u.year)) : 2020;
+  const sources=[CITE.DATASET_SOURCE]; if(CITE.stateSource[code]) sources.push(CITE.stateSource[code]);
   states[code]={
     name,
     grade:gradeFromLawtotal(lawCount),
@@ -51,6 +68,7 @@ for(const code of Object.keys(V)){
     },
     provisions,
     updates: updates.sort((a,b)=>a.year-b.year),
+    verifiedThrough, sources,
     detailed:true, year:2025,
     source:"State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
   };
@@ -59,8 +77,10 @@ for(const code of Object.keys(V)){
 states.DC={
   name:"District of Columbia", grade:"F", lawCount:null, restrictions:null,
   policies:{permitless_carry:false,universal_bg_check:true,red_flag:true,assault_weapon_ban:true,magazine_limit:true,waiting_period:true},
-  provisions:[{category:"Note",items:[{text:"The 50-state State Firearm Laws Database excludes DC. DC is among the most heavily regulated US jurisdictions (registration, training, magazine limit, etc.); detailed provisions to be added from primary sources.",citation:null}]}],
-  updates:[], detailed:false, year:2025, source:"curated note"
+  provisions:[{category:"Note",items:[{text:"The 50-state State Firearm Laws Database excludes DC. DC is among the most heavily regulated US jurisdictions (registration, training, magazine limit, etc.); detailed provisions to be added from primary sources.",citation:null,url:null,status:"in_effect",since:null}]}],
+  updates:[], verifiedThrough:2025,
+  sources:[CITE.DATASET_SOURCE,{label:"DC Official Code",url:"https://code.dccouncil.gov/us/dc/council/code/titles/7/chapters/25"}],
+  detailed:false, year:2025, source:"curated note"
 };
 
 const out={

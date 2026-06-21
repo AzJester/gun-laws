@@ -20,6 +20,7 @@ import {
   type Policies,
   type PolicyKey,
   type ProvisionCategory,
+  type SourceLink,
   type StateDetail,
   type StateSummary,
   type StateUpdate,
@@ -40,6 +41,8 @@ interface RawState {
   year?: number | null;
   source?: string | null;
   updates?: StateUpdate[];
+  verifiedThrough?: number | null;
+  sources?: SourceLink[];
 }
 
 interface RawDataset {
@@ -73,6 +76,8 @@ function toSummaryFromRaw(code: string, s: RawState): StateSummary {
     year: s.year ?? null,
     source: s.source ?? null,
     updates: s.updates ?? [],
+    verifiedThrough: s.verifiedThrough ?? null,
+    sources: s.sources ?? [],
   };
 }
 
@@ -84,6 +89,18 @@ async function updatesByCode(): Promise<Record<string, StateUpdate[]>> {
   const out: Record<string, StateUpdate[]> = {};
   for (const [code, s] of Object.entries(ds.states)) {
     out[code] = s.updates ?? [];
+  }
+  return out;
+}
+
+// verifiedThrough + sources also live in the JSON; the DB path borrows them by code.
+async function metaByCode(): Promise<
+  Record<string, { verifiedThrough: number | null; sources: SourceLink[] }>
+> {
+  const ds = await loadDataset();
+  const out: Record<string, { verifiedThrough: number | null; sources: SourceLink[] }> = {};
+  for (const [code, s] of Object.entries(ds.states)) {
+    out[code] = { verifiedThrough: s.verifiedThrough ?? null, sources: s.sources ?? [] };
   }
   return out;
 }
@@ -115,12 +132,13 @@ function policiesFromRows(rows: { policyKey: string; value: string }[]): Policie
 
 async function getStatesDb(): Promise<StateSummary[]> {
   const prisma = getPrisma();
-  const [states, updates] = await Promise.all([
+  const [states, updates, meta] = await Promise.all([
     prisma.state.findMany({
       include: { policies: true },
       orderBy: { name: "asc" },
     }),
     updatesByCode(),
+    metaByCode(),
   ]);
   return states.map((st) => {
     const policies = policiesFromRows(st.policies);
@@ -135,6 +153,8 @@ async function getStatesDb(): Promise<StateSummary[]> {
       year: st.year ?? null,
       source: st.source ?? null,
       updates: updates[st.code] ?? [],
+      verifiedThrough: meta[st.code]?.verifiedThrough ?? null,
+      sources: meta[st.code]?.sources ?? [],
     };
   });
 }
@@ -155,6 +175,7 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
 
   const policies = policiesFromRows(st.policies);
   const updates = (await updatesByCode())[st.code] ?? [];
+  const meta = (await metaByCode())[st.code] ?? { verifiedThrough: null, sources: [] };
 
   // Group provisions back into categories for the detail view.
   const byCategory = new Map<string, ProvisionCategory>();
@@ -166,6 +187,7 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
     byCategory.get(prov.category)!.items.push({
       text: v?.summary ?? prov.title,
       citation: v?.citation ?? null,
+      status: (v?.status as ProvisionCategory["items"][number]["status"]) ?? "in_effect",
     });
   }
   const provisions = [...byCategory.values()];
@@ -184,6 +206,8 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
     year: st.year ?? null,
     source: st.source ?? null,
     updates,
+    verifiedThrough: meta.verifiedThrough,
+    sources: meta.sources,
     provisions,
   };
 }
