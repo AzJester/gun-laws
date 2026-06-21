@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GunLawMap — Interactive US Firearm Law Map (Mockup)</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c2330;
+    --border: #2a3340;
+    --text: #e6edf3;
+    --muted: #9aa7b4;
+    --accent: #58a6ff;
+    /* sequential strictness scale (light = fewer restrictions, dark = more) */
+    --t1: #fde7d9; /* F  - least restrictive */
+    --t2: #f7b27e;
+    --t3: #4fb3a6;
+    --t4: #1f7a8c;
+    --t5: #123a5e; /* A  - most restrictive */
+    --t1-text: #5b3a1a;
+    --t2-text: #4a2a0a;
+    --t3-text: #042f2c;
+    --t4-text: #eafcff;
+    --t5-text: #eafcff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header.app {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #11161d, #0d1117);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .logo {
+    width: 38px; height: 38px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--t4), var(--t5));
+    display: grid; place-items: center; font-size: 20px;
+  }
+  .brand h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
+  .brand p { margin: 0; font-size: 12px; color: var(--muted); }
+  .header-spacer { flex: 1; }
+  .search {
+    position: relative;
+  }
+  .search input {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 9px 12px 9px 32px;
+    width: 230px;
+    font-size: 14px;
+    outline: none;
+  }
+  .search input:focus { border-color: var(--accent); }
+  .search::before {
+    content: "⌕"; position: absolute; left: 10px; top: 6px;
+    font-size: 18px; color: var(--muted);
+  }
+  .updated-badge {
+    font-size: 12px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 6px 12px; display: flex; align-items: center; gap: 7px;
+  }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: #3fb950; box-shadow: 0 0 0 0 rgba(63,185,80,.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(63,185,80,.5);} 70%{box-shadow:0 0 0 8px rgba(63,185,80,0);} 100%{box-shadow:0 0 0 0 rgba(63,185,80,0);} }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(520px, 1.35fr) minmax(360px, 1fr);
+    gap: 18px;
+    padding: 18px 22px 40px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 4px; }
+  .card .sub { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+
+  /* ---- Tile-grid US map ---- */
+  .map-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
+  .seg { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .seg button { background:var(--panel-2); color:var(--muted); border:0; padding:7px 12px; font-size:12.5px; cursor:pointer; }
+  .seg button.active { background:var(--accent); color:#06121f; font-weight:600; }
+  .seg button + button { border-left:1px solid var(--border); }
+
+  .map {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 6px;
+    aspect-ratio: 11 / 8;
+  }
+  .tile {
+    position: relative;
+    border: 0;
+    border-radius: 7px;
+    font: 600 13px/1 inherit;
+    color: #fff;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform .08s ease, box-shadow .12s ease, opacity .12s;
+    padding: 0;
+  }
+  .tile:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.45); z-index: 2; }
+  .tile:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; z-index: 3; }
+  .tile.selected { box-shadow: 0 0 0 3px var(--accent), 0 6px 16px rgba(0,0,0,.5); z-index: 3; }
+  .tile.dim { opacity: .22; }
+  .tile .grade { position:absolute; top:4px; right:5px; font-size:9px; font-weight:700; opacity:.85; }
+  .tile .changed { position:absolute; bottom:4px; left:5px; width:7px; height:7px; border-radius:50%; background:#ffd33d; box-shadow:0 0 0 2px rgba(0,0,0,.25); }
+
+  .legend { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:16px; font-size:12px; color:var(--muted);}
+  .legend .scale { display:flex; border-radius:6px; overflow:hidden; border:1px solid var(--border); }
+  .legend .swatch { width:46px; height:22px; cursor:pointer; display:grid; place-items:center; font-size:10px; font-weight:700; }
+  .legend .swatch.off { opacity:.35; }
+  .legend .ends { display:flex; justify-content:space-between; width:100%; margin-top:4px; }
+
+  /* ---- Detail panel ---- */
+  .stack { display:flex; flex-direction:column; gap:18px; }
+  .state-head { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+  .grade-badge {
+    width:54px; height:54px; border-radius:12px; display:grid; place-items:center;
+    font-size:24px; font-weight:800;
+  }
+  .state-head h2 { margin:0; font-size:20px; }
+  .state-head .meta { font-size:12.5px; color:var(--muted); }
+
+  .flags { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 4px 0 16px; }
+  .flag { display:flex; align-items:center; gap:9px; background:var(--panel-2); border:1px solid var(--border); border-radius:9px; padding:9px 11px; font-size:13px; }
+  .flag .ic { width:20px; height:20px; border-radius:5px; display:grid; place-items:center; font-size:12px; font-weight:700; flex:none;}
+  .flag.yes .ic { background:#16341f; color:#56d364; }
+  .flag.no  .ic { background:#3a1d1d; color:#f85149; }
+  .flag .lbl { color:var(--text); }
+  .flag .val { color:var(--muted); font-size:11px; }
+
+  .cat { border-top:1px solid var(--border); padding:13px 0 4px; }
+  .cat:first-of-type { border-top:0; }
+  .cat h3 { margin:0 0 7px; font-size:13.5px; display:flex; align-items:center; gap:8px; }
+  .cat h3 .dot { width:8px;height:8px;border-radius:50%; background:var(--accent);}
+  .cat ul { margin:0; padding-left:18px; }
+  .cat li { font-size:13px; margin-bottom:5px; color:#cdd7e1; }
+  .cat li .cite { color:var(--muted); font-size:11px; }
+
+  .empty-note { font-size:13px; color:var(--muted); background:var(--panel-2); border:1px dashed var(--border); border-radius:10px; padding:14px; }
+
+  /* updates feed */
+  .feed { display:flex; flex-direction:column; gap:0; }
+  .feed-item { display:flex; gap:12px; padding:12px 0; border-top:1px solid var(--border); cursor:pointer; }
+  .feed-item:first-child { border-top:0; }
+  .feed-item:hover { background:rgba(88,166,255,.05); border-radius:8px; }
+  .feed .when { font-size:11px; color:var(--muted); white-space:nowrap; width:64px; flex:none; padding-top:2px;}
+  .feed .body { font-size:13px; }
+  .feed .body .st { font-weight:600; }
+  .feed .tag { display:inline-block; font-size:10px; padding:2px 7px; border-radius:20px; margin-top:5px; font-weight:600; }
+  .tag.enacted { background:#16341f; color:#56d364; }
+  .tag.effective { background:#102a43; color:#58a6ff; }
+  .tag.court { background:#3a2d12; color:#e3b341; }
+  .tag.intro { background:#2a1f3a; color:#bc8cff; }
+
+  .disclaimer { font-size:11.5px; color:var(--muted); margin-top:10px; padding:12px 22px 30px; max-width:1500px; margin-left:auto; margin-right:auto; }
+  .disclaimer strong { color:#e3b341; }
+  .nat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .stat { background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:12px; }
+  .stat .n { font-size:22px; font-weight:800; }
+  .stat .l { font-size:11px; color:var(--muted); }
+  a.src { color:var(--accent); text-decoration:none; font-size:12px;}
+  a.src:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="brand">
+    <div class="logo">🛡️</div>
+    <div>
+      <h1>GunLawMap</h1>
+      <p>Interactive US firearm-law atlas · click a state</p>
+    </div>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="search">
+    <input id="search" type="text" placeholder="Search a state…" autocomplete="off" aria-label="Search a state" />
+  </div>
+  <div class="updated-badge"><span class="pulse"></span> Data synced <span id="syncDate">Jun 21, 2026</span></div>
+</header>
+
+<div class="layout">
+  <!-- LEFT: MAP -->
+  <section class="card">
+    <div class="map-toolbar">
+      <div>
+        <h2 style="margin:0">Overall regulation strength</h2>
+        <p class="sub" style="margin:0">Tile grid · one square per state &amp; DC</p>
+      </div>
+      <div style="flex:1"></div>
+      <div class="seg" id="modeSeg" role="tablist" aria-label="Color mode">
+        <button class="active" data-mode="grade">Grade</button>
+        <button data-mode="pc">Carry</button>
+        <button data-mode="ubc">Bkgd checks</button>
+        <button data-mode="rf">Red flag</button>
+      </div>
+    </div>
+
+    <div class="map" id="map" role="group" aria-label="US states tile map"></div>
+
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <!-- RIGHT: DETAIL + FEED -->
+  <div class="stack">
+    <section class="card" id="detail"></section>
+
+    <section class="card">
+      <h2>Recent &amp; pending changes</h2>
+      <p class="sub">Auto-flagged from legislative + court trackers, confirmed by editors</p>
+      <div class="feed" id="feed"></div>
+    </section>
+  </div>
+</div>
+
+<p class="disclaimer">
+  <strong>⚠ Illustrative mockup — not legal advice.</strong> State summaries, grades, and the
+  “recent changes” feed shown here are <strong>sample data</strong> for design purposes and are not
+  guaranteed current or accurate. A production version would cite primary statutes and label every
+  field with a source and last-verified date. Firearm law is complex and changes frequently — always
+  consult official state resources and an attorney. Concept references:
+  <a class="src" href="https://www.rand.org/research/gun-policy/tools-and-data.html">RAND State Firearm Law Database</a>,
+  <a class="src" href="https://giffords.org/lawcenter/resources/scorecard/">Giffords Scorecard</a>,
+  <a class="src" href="https://legiscan.com/legiscan">LegiScan API</a>,
+  <a class="src" href="https://docs.openstates.org/api-v3/">Open States API</a>.
+</p>
+
+<script>
+/* ----------------------------------------------------------------------------
+   SAMPLE DATA  (illustrative only — see disclaimer)
+---------------------------------------------------------------------------- */
+
+// Tile-grid coordinates [row, col] (row 1 = north, col 1 = west)
+const GRID = {
+  AK:[1,1], ME:[1,11],
+  WI:[2,6], VT:[2,10], NH:[2,11],
+  WA:[3,1], ID:[3,2], MT:[3,3], ND:[3,4], MN:[3,5], IL:[3,6], MI:[3,8], NY:[3,9], MA:[3,10], RI:[3,11],
+  OR:[4,1], NV:[4,2], WY:[4,3], SD:[4,4], IA:[4,5], IN:[4,6], OH:[4,7], PA:[4,8], NJ:[4,9], CT:[4,10],
+  CA:[5,1], UT:[5,2], CO:[5,3], NE:[5,4], MO:[5,5], KY:[5,6], WV:[5,7], VA:[5,8], MD:[5,9], DE:[5,10],
+  AZ:[6,2], NM:[6,3], KS:[6,4], AR:[6,5], TN:[6,6], NC:[6,7], SC:[6,8], DC:[6,9],
+  OK:[7,4], LA:[7,5], MS:[7,6], AL:[7,7], GA:[7,8],
+  HI:[8,1], TX:[8,4], FL:[8,9]
+};
+
+const NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"District of Columbia",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
+
+// grade + policy flags. pc=permitless carry, ubc=universal background checks,
+// rf=red-flag/ERPO, awb=assault-weapon restriction, mag=magazine limit, wp=waiting period
+const S = {
+  CA:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:1},
+  NY:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:0},
+  NJ:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:0},
+  CT:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:0},
+  MA:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:0},
+  HI:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:1},
+  MD:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:0},
+  DC:{g:"A", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:1},
+  IL:{g:"A-",pc:0,ubc:1,rf:1,awb:1,mag:1,wp:1},
+  WA:{g:"A-",pc:0,ubc:1,rf:1,awb:1,mag:1,wp:1},
+  RI:{g:"B+",pc:0,ubc:1,rf:1,awb:0,mag:1,wp:1},
+  CO:{g:"B+",pc:0,ubc:1,rf:1,awb:0,mag:1,wp:1},
+  DE:{g:"B", pc:0,ubc:1,rf:1,awb:1,mag:1,wp:0},
+  OR:{g:"B", pc:0,ubc:1,rf:1,awb:0,mag:1,wp:0},
+  NM:{g:"B-",pc:0,ubc:1,rf:1,awb:0,mag:0,wp:1},
+  VA:{g:"B-",pc:0,ubc:1,rf:1,awb:0,mag:0,wp:0},
+  MN:{g:"B-",pc:0,ubc:1,rf:1,awb:0,mag:0,wp:0},
+  MI:{g:"B-",pc:0,ubc:1,rf:1,awb:0,mag:0,wp:0},
+  NV:{g:"C+",pc:0,ubc:1,rf:1,awb:0,mag:0,wp:0},
+  VT:{g:"C", pc:1,ubc:1,rf:1,awb:0,mag:1,wp:1},
+  ME:{g:"C-",pc:1,ubc:0,rf:0,awb:0,mag:0,wp:1},
+  FL:{g:"C-",pc:1,ubc:0,rf:1,awb:0,mag:0,wp:1},
+  PA:{g:"C-",pc:0,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  NC:{g:"C-",pc:0,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  WI:{g:"C-",pc:0,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  OH:{g:"D", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  NE:{g:"D", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  IN:{g:"D-",pc:1,ubc:0,rf:1,awb:0,mag:0,wp:0},
+  NH:{g:"D-",pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  IA:{g:"D-",pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  AL:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  AK:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  AZ:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  AR:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  GA:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  ID:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  KS:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  KY:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  LA:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  MS:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  MO:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  MT:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  ND:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  OK:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  SC:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  SD:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  TN:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  TX:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  UT:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  WV:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0},
+  WY:{g:"F", pc:1,ubc:0,rf:0,awb:0,mag:0,wp:0}
+};
+
+// Detailed provisions for a few flagship states (the rest fall back to flags + note)
+const DETAILS = {
+  CA: [
+    {c:"Carry", items:[["May-issue history; now shall-issue CCW permit required for public carry (post-<i>Bruen</i> framework).","Penal Code §26150"],["“Sensitive places” carry restrictions in effect.","SB 2 (2023)"]]},
+    {c:"Purchase & background checks", items:[["Universal background checks on all sales/transfers via licensed dealer.","Pen. Code §28050"],["10-day waiting period.","Pen. Code §26815"],["Firearm Safety Certificate required.","Pen. Code §31610"]]},
+    {c:"Prohibited weapons", items:[["Assault-weapon ban + registration of pre-ban arms.","Pen. Code §30605"],["Large-capacity magazines (>10 rds) prohibited.","Pen. Code §32310"]]},
+    {c:"Storage & safety", items:[["Safe-storage / child-access prevention requirements.","Pen. Code §25100"],["Microstamping & roster of approved handguns.","Pen. Code §31900"]]},
+    {c:"Extreme risk (red flag)", items:[["Gun Violence Restraining Orders available to family, police, employers, teachers.","Pen. Code §18100"]]}
+  ],
+  TX: [
+    {c:"Carry", items:[["Permitless (“constitutional”) carry for those 21+ legally allowed to possess.","Govt. Code §411.0205 / HB 1927 (2021)"],["License to Carry still offered for reciprocity.","Govt. Code §411.177"]]},
+    {c:"Purchase & background checks", items:[["No state universal background check — federal NICS at licensed dealers only.","—"],["No state waiting period.","—"]]},
+    {c:"Prohibited weapons", items:[["No state assault-weapon ban or magazine limit.","—"]]},
+    {c:"Storage & safety", items:[["No general safe-storage mandate; criminal liability if a child gains access to an unsecured gun.","Penal Code §46.13"]]},
+    {c:"Extreme risk (red flag)", items:[["No statewide red-flag / ERPO law.","—"]]}
+  ],
+  NY: [
+    {c:"Carry", items:[["License required to carry; “good moral character” + sensitive-location limits (CCIA 2022).","Penal Law §400.00"]]},
+    {c:"Purchase & background checks", items:[["Universal background checks; state-run check supplements NICS.","Gen. Bus. Law §898"],["Permit/registration required for handguns; semi-auto rifle license (age 21+).","Penal Law §265.00"]]},
+    {c:"Prohibited weapons", items:[["SAFE Act assault-weapon ban; registration of pre-ban arms.","Penal Law §265.00(22)"],["Magazines limited to 10 rounds.","Penal Law §265.36"]]},
+    {c:"Storage & safety", items:[["Safe-storage requirements where minors or prohibited persons are present.","Penal Law §265.45"]]},
+    {c:"Extreme risk (red flag)", items:[["ERPO available; certain officials required to file when warranted.","CPLR Art. 63-A"]]}
+  ],
+  FL: [
+    {c:"Carry", items:[["Permitless concealed carry of handguns for those 21+ eligible (2023).","§790.01, HB 543"],["Open carry generally prohibited.","§790.053"]]},
+    {c:"Purchase & background checks", items:[["3-day (or 3-business-day) waiting period on handgun purchases.","Art. I §8, Fla. Const."],["Long-gun purchase age raised to 21 after Parkland.","§790.065(13)"]]},
+    {c:"Prohibited weapons", items:[["No assault-weapon ban or magazine limit.","—"]]},
+    {c:"Storage & safety", items:[["Safe-storage duty when minors may access firearms.","§790.174"]]},
+    {c:"Extreme risk (red flag)", items:[["Risk Protection Orders available to law enforcement (2018).","§790.401"]]}
+  ],
+  CO: [
+    {c:"Carry", items:[["Shall-issue concealed-carry permit required.","CRS §18-12-203"],["Local sensitive-place restrictions permitted.","SB 23-256"]]},
+    {c:"Purchase & background checks", items:[["Universal background checks on transfers.","CRS §18-12-112"],["3-day waiting period.","CRS §18-12-115 (2023)"],["Purchase age 21 for most firearms (2023).","SB 23-169"]]},
+    {c:"Prohibited weapons", items:[["Large-capacity magazines (>15 rds) prohibited.","CRS §18-12-302"]]},
+    {c:"Storage & safety", items:[["Safe-storage + lost/stolen reporting.","CRS §18-12-114"]]},
+    {c:"Extreme risk (red flag)", items:[["ERPO available; expanded petitioners (2023).","CRS §13-14.5-103"]]}
+  ]
+};
+
+// Recent / pending changes feed (sample)
+const FEED = [
+  {d:"Jun 15 ’26", st:"LA", t:"Permitless carry implementation guidance issued to sheriffs.", tag:"effective", tagL:"Effective"},
+  {d:"May 02 ’26", st:"CO", t:"6.5% firearms & ammunition excise tax takes effect.", tag:"effective", tagL:"Effective"},
+  {d:"Apr 18 ’26", st:"ME", t:"72-hour purchase waiting period upheld on appeal.", tag:"court", tagL:"Court ruling"},
+  {d:"Mar 10 ’26", st:"NM", t:"7-day waiting period expanded to all transfers.", tag:"enacted", tagL:"Enacted"},
+  {d:"Feb 21 ’26", st:"MI", t:"Safe-storage enforcement & penalties begin.", tag:"effective", tagL:"Effective"},
+  {d:"Jan 12 ’26", st:"WA", t:"Permit-to-purchase bill introduced (HB 1163) — tracking.", tag:"intro", tagL:"In committee"},
+  {d:"Nov 30 ’25", st:"FL", t:"Court reviews under-21 long-gun purchase restriction.", tag:"court", tagL:"Court ruling"},
+  {d:"Oct 04 ’25", st:"TX", t:"Bill to add ERPO referred to committee — failed to advance.", tag:"intro", tagL:"In committee"}
+];
+const RECENT = new Set(FEED.map(f=>f.st)); // states with a flagged change
+
+/* ----------------------------------------------------------------------------
+   RENDERING
+---------------------------------------------------------------------------- */
+const tierOf = g => ({A:5,"A-":5,"B+":4,B:4,"B-":4,"C+":3,C:3,"C-":3,D:2,"D-":2,F:1}[g] || 3);
+const tierColor = t => getComputedStyle(document.documentElement).getPropertyValue('--t'+t).trim();
+const tierText  = t => getComputedStyle(document.documentElement).getPropertyValue('--t'+t+'-text').trim();
+
+let mode = "grade";
+let selected = "CA";
+let filterTier = null;
+
+const mapEl = document.getElementById('map');
+const legendEl = document.getElementById('legend');
+
+function fillFor(code){
+  const s = S[code];
+  if(mode === "grade") { const t=tierOf(s.g); return {bg:tierColor(t), fg:tierText(t)}; }
+  const on = s[mode] === 1;
+  return on ? {bg:tierColor(5), fg:tierText(5)} : {bg:tierColor(1), fg:tierText(1)};
+}
+
+function buildMap(){
+  mapEl.innerHTML = "";
+  Object.keys(GRID).forEach(code=>{
+    const [r,c] = GRID[code];
+    const s = S[code];
+    const b = document.createElement('button');
+    b.className = "tile" + (code===selected?" selected":"");
+    b.style.gridRow = r; b.style.gridColumn = c;
+    const col = fillFor(code);
+    b.style.background = col.bg; b.style.color = col.fg;
+    b.setAttribute('aria-label', NAMES[code]+", grade "+s.g);
+    b.title = NAMES[code]+" — Grade "+s.g;
+    b.innerHTML = code + '<span class="grade">'+s.g+'</span>' + (RECENT.has(code)?'<span class="changed" title="Recent change"></span>':'');
+    if(filterTier && tierOf(s.g)!==filterTier && mode==="grade") b.classList.add('dim');
+    b.addEventListener('click', ()=>select(code));
+    mapEl.appendChild(b);
+  });
+}
+
+function buildLegend(){
+  if(mode==="grade"){
+    legendEl.innerHTML =
+      '<span>Fewer restrictions</span><div class="scale">'+
+      [["F",1],["D",2],["C",3],["B",4],["A",5]].map(([lbl,t])=>
+        `<div class="swatch${filterTier&&filterTier!==t?' off':''}" data-tier="${t}" style="background:${tierColor(t)};color:${tierText(t)}">${lbl}</div>`
+      ).join('')+
+      '</div><span>More restrictions</span>'+
+      (filterTier?'<span style="margin-left:8px"><a class="src" id="clearF" href="#">clear filter ✕</a></span>':'');
+    legendEl.querySelectorAll('.swatch').forEach(sw=>sw.addEventListener('click',()=>{
+      const t=+sw.dataset.tier; filterTier = (filterTier===t)?null:t; render();
+    }));
+    const cf=document.getElementById('clearF'); if(cf) cf.addEventListener('click',e=>{e.preventDefault();filterTier=null;render();});
+  } else {
+    const lbl={pc:"permitless carry",ubc:"universal background checks",rf:"red-flag law"}[mode];
+    legendEl.innerHTML =
+      `<div class="scale"><div class="swatch" style="background:${tierColor(5)};color:${tierText(5)}">Yes</div>`+
+      `<div class="swatch" style="background:${tierColor(1)};color:${tierText(1)}">No</div></div>`+
+      `<span>Has ${lbl}</span>`;
+  }
+}
+
+function flagRow(on,label,val){
+  return `<div class="flag ${on?'yes':'no'}"><span class="ic">${on?'✓':'✕'}</span>`+
+         `<span><span class="lbl">${label}</span><br><span class="val">${val}</span></span></div>`;
+}
+
+function buildDetail(code){
+  const s = S[code]; const t = tierOf(s.g);
+  const det = DETAILS[code];
+  let html =
+    `<div class="state-head">
+       <div class="grade-badge" style="background:${tierColor(t)};color:${tierText(t)}">${s.g}</div>
+       <div>
+         <h2>${NAMES[code]}</h2>
+         <div class="meta">Regulation grade ${s.g} · ${["minimal","limited","moderate","strong","very strong"][t-1]} restrictions</div>
+       </div>
+     </div>
+     <div class="flags">
+       ${flagRow(!s.pc,"Carry permit", s.pc?"Permitless carry allowed":"Permit required")}
+       ${flagRow(s.ubc,"Background checks", s.ubc?"Universal (all sales)":"Dealer/NICS only")}
+       ${flagRow(s.rf,"Red-flag law", s.rf?"ERPO available":"None")}
+       ${flagRow(s.awb,"Assault weapons", s.awb?"Restricted":"No state ban")}
+       ${flagRow(s.mag,"Magazine limit", s.mag?"Capacity capped":"No limit")}
+       ${flagRow(s.wp,"Waiting period", s.wp?"Required":"None")}
+     </div>`;
+
+  if(det){
+    det.forEach(cat=>{
+      html += `<div class="cat"><h3><span class="dot"></span>${cat.c}</h3><ul>`+
+        cat.items.map(([txt,cite])=>`<li>${txt} ${cite&&cite!=="—"?`<span class="cite">(${cite})</span>`:''}</li>`).join('')+
+        `</ul></div>`;
+    });
+  } else {
+    html += `<div class="empty-note">📋 Detailed, citation-backed provisions for <b>${NAMES[code]}</b> are being compiled.
+             The summary flags above are illustrative. In production each flag links to the governing statute and a last-verified date.</div>`;
+  }
+  document.getElementById('detail').innerHTML = html;
+}
+
+function buildFeed(){
+  document.getElementById('feed').innerHTML = FEED.map((f,i)=>
+    `<div class="feed-item" data-st="${f.st}">
+       <div class="when">${f.d}</div>
+       <div class="body"><span class="st">${NAMES[f.st]}</span> — ${f.t}
+         <br><span class="tag ${f.tag}">${f.tagL}</span></div>
+     </div>`).join('');
+  document.querySelectorAll('.feed-item').forEach(it=>it.addEventListener('click',()=>select(it.dataset.st)));
+}
+
+function select(code){
+  selected = code;
+  buildMap(); buildDetail(code);
+}
+
+function render(){ buildMap(); buildLegend(); buildDetail(selected); }
+
+// mode segmented control
+document.getElementById('modeSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  mode = btn.dataset.mode;
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('active', b===btn));
+  filterTier = null; render();
+});
+
+// search
+document.getElementById('search').addEventListener('keydown', e=>{
+  if(e.key!=="Enter") return;
+  const q = e.target.value.trim().toLowerCase();
+  const code = Object.keys(NAMES).find(c=> c.toLowerCase()===q || NAMES[c].toLowerCase()===q || NAMES[c].toLowerCase().startsWith(q));
+  if(code){ select(code); e.target.value=""; }
+});
+
+buildFeed();
+render();
+</script>
+</body>
+</html>
