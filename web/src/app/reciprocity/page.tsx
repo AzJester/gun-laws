@@ -56,8 +56,8 @@ export default async function ReciprocityPage() {
         plus the permitless states where no permit is required at all.
       </p>
 
-      <div className="mt-3 rounded-[12px] border border-[#5b4a1d] bg-[#241d0d] p-3.5 text-[12.5px] leading-relaxed text-[#ecdcb0]">
-        <strong className="text-[#e3b341]">⚠ Sample data — verify before traveling.</strong>{" "}
+      <div className="mt-3 rounded-[12px] border border-[var(--warn-border)] bg-[var(--warn-bg)] p-3.5 text-[12.5px] leading-relaxed text-[var(--warn-fg)]">
+        <strong className="text-[var(--warn-strong)]">⚠ Sample data — verify before traveling.</strong>{" "}
         {RECIPROCITY_DISCLAIMER}
       </div>
 
@@ -104,11 +104,11 @@ export default async function ReciprocityPage() {
                       </td>
                       <td className="px-3 py-2">
                         {info.permitless ? (
-                          <span className="rounded-full border border-[#2c5e3a] bg-[#16361f] px-2 py-0.5 text-[10.5px] font-bold text-[#7ee29a]">
+                          <span className="rounded-full border border-[var(--chip-yes-border)] bg-[var(--chip-yes-bg)] px-2 py-0.5 text-[10.5px] font-bold text-[var(--chip-yes-fg)]">
                             Yes
                           </span>
                         ) : (
-                          <span className="rounded-full border border-[#313b44] bg-[#222a30] px-2 py-0.5 text-[10.5px] font-bold text-[#8b97a2]">
+                          <span className="rounded-full border border-[var(--chip-no-border)] bg-[var(--chip-no-bg)] px-2 py-0.5 text-[10.5px] font-bold text-[var(--chip-no-fg)]">
                             No
                           </span>
                         )}
@@ -128,7 +128,7 @@ export default async function ReciprocityPage() {
       </section>
 
       <p className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">
-        <strong className="text-[#e3b341]">⚠ Not legal advice.</strong>{" "}
+        <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong>{" "}
         {RECIPROCITY_DISCLAIMER}
       </p>
     </main>

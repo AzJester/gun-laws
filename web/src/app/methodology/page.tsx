@@ -30,7 +30,7 @@ function Section({
   return (
     <section className="mt-7">
       <h2 className="m-0 mb-2 text-lg font-semibold">{title}</h2>
-      <div className="text-[14px] leading-relaxed text-[#cdd7e1]">{children}</div>
+      <div className="text-[14px] leading-relaxed text-[var(--text-2)]">{children}</div>
     </section>
   );
 }
@@ -122,7 +122,7 @@ export default function MethodologyPage() {
               {GRADE_BUCKETS.map((b) => (
                 <tr key={b.grade} className="border-t border-[var(--border)]">
                   <td className="px-3 py-2 font-bold">{b.grade}</td>
-                  <td className="px-3 py-2 text-[#cdd7e1]">{b.range}</td>
+                  <td className="px-3 py-2 text-[var(--text-2)]">{b.range}</td>
                 </tr>
               ))}
             </tbody>
@@ -130,34 +130,31 @@ export default function MethodologyPage() {
         </div>
       </Section>
 
-      <Section title="Two grade orientations (the neutrality toggle)">
+      <Section title="The grade, and a neutral count view">
         <p className="m-0 mb-2">
-          Deciding which end of the scale is &ldquo;A&rdquo; is itself a value
-          judgment, not a neutral fact. A gun-rights audience reads{" "}
-          <i>fewer restrictions</i> as better; a gun-safety audience reads{" "}
-          <i>more protections</i> as better. The same underlying count supports
-          both readings. So the map exposes a toggle with three lenses:
+          The grade always reads one way: <b>fewer laws/restrictions earns a
+          higher grade</b> (A = fewest, F = most). Arizona, with very few tracked
+          restrictions, is an A; California, with many, is an F. This is the
+          opposite direction from gun-safety scorecards, which is a deliberate,
+          stated choice — the grade measures restriction count, not policy
+          desirability. The map offers two views:
         </p>
         <ul className="m-0 list-disc pl-5">
           <li className="mb-1">
-            <b>{ORIENTATION_LABEL.rights}</b> — the default, gun-rights view. This
-            is how the grade is <i>stored</i>: A = fewest restrictions, F = most.
-          </li>
-          <li className="mb-1">
-            <b>{ORIENTATION_LABEL.safety}</b> — the gun-safety view. The scale is
-            mirrored (A&harr;F) so A = strongest protections. The data is
-            identical; only the displayed letter and color flip.
+            <b>{ORIENTATION_LABEL.rights}</b> — the default. The letter grade,
+            with A = fewest restrictions and F = the most.
           </li>
           <li>
             <b>{ORIENTATION_LABEL.count}</b> — a neutral view that drops the
             letter entirely and shades states purely by how many of the 134
-            tracked laws are in effect.
+            tracked laws are in effect, for readers who&rsquo;d rather see the raw
+            number than any grade.
           </li>
         </ul>
         <p className="m-0 mt-2 text-[var(--muted)]">
           The toggle is presentation-only — it never changes the data, and your
           choice is remembered in the URL (<code>?orient=</code>) and your
-          browser so a shared link reproduces the same lens.
+          browser so a shared link reproduces the same view.
         </p>
       </Section>
 

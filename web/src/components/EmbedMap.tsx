@@ -60,8 +60,11 @@ const COUNT_BINS = [
   { max: Infinity, bg: "#d73027", fg: "#ffffff" },
 ];
 
+// Neutral "no data" fill — theme-aware via CSS vars (mirrors MapExplorer).
+const NO_DATA_COLOR = { bg: "var(--no-data-bg)", fg: "var(--no-data-fg)" };
+
 function countColor(n: number | null): { bg: string; fg: string } {
-  if (n === null) return { bg: "#2a3340", fg: "#fff" };
+  if (n === null) return NO_DATA_COLOR;
   const bin = COUNT_BINS.find((b) => n <= b.max) ?? COUNT_BINS[COUNT_BINS.length - 1];
   return { bg: bin.bg, fg: bin.fg };
 }
@@ -117,7 +120,7 @@ export default function EmbedMap({ geo, states, siteHref }: EmbedMapProps) {
   const colorFor = useMemo(() => {
     return (code: string): { bg: string; fg: string } => {
       const s = byCode[code];
-      if (!s) return { bg: "#2a3340", fg: "#fff" };
+      if (!s) return NO_DATA_COLOR;
       const entry =
         isHistorical && year != null ? entryFor(timeSeries, code, year) : null;
       if (mode === "grade") {
@@ -193,12 +196,12 @@ export default function EmbedMap({ geo, states, siteHref }: EmbedMapProps) {
             <>
               <span>{endLeft}</span>
               <div className="flex overflow-hidden rounded-md border border-[var(--border)]">
-                {GRADES.map((g, i) => {
-                  const stored = orient === "safety" ? GRADES[6 - i] : g;
+                {GRADES.map((g) => {
+                  const stored = g;
                   const shown = displayGrade(stored, orient);
                   return (
                     <div
-                      key={i}
+                      key={g}
                       className="grid h-5 w-[34px] place-items-center text-[9.5px] font-bold"
                       style={{
                         background: gradeColor(shown),

@@ -104,14 +104,14 @@ export default function StateDetailView({
                 style={
                   present
                     ? {
-                        background: "#16361f",
-                        color: "#7ee29a",
-                        borderColor: "#2c5e3a",
+                        background: "var(--chip-yes-bg)",
+                        color: "var(--chip-yes-fg)",
+                        borderColor: "var(--chip-yes-border)",
                       }
                     : {
-                        background: "#222a30",
-                        color: "#8b97a2",
-                        borderColor: "#313b44",
+                        background: "var(--chip-no-bg)",
+                        color: "var(--chip-no-fg)",
+                        borderColor: "var(--chip-no-border)",
                       }
                 }
               >
@@ -125,8 +125,8 @@ export default function StateDetailView({
       <FederalCallout />
 
       {detail.updates?.length ? (
-        <div className="mb-4 rounded-[10px] border border-[#3a5e2c] bg-[#16270f] p-3.5">
-          <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#bde8a4]">
+        <div className="mb-4 rounded-[10px] border border-[var(--success-border)] bg-[var(--success-bg)] p-3.5">
+          <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[var(--success-strong)]">
             <span className="text-[14px]" aria-hidden="true">
               🔔
             </span>
@@ -139,9 +139,9 @@ export default function StateDetailView({
               .map((u, i) => (
                 <li
                   key={i}
-                  className="mb-1.5 flex gap-2 text-[12.5px] leading-snug text-[#d7ecca] last:mb-0"
+                  className="mb-1.5 flex gap-2 text-[12.5px] leading-snug text-[var(--success-fg)] last:mb-0"
                 >
-                  <span className="shrink-0 rounded-full border border-[#3a5e2c] bg-[#21380f] px-2 py-0.5 text-[11px] font-bold text-[#bde8a4]">
+                  <span className="shrink-0 rounded-full border border-[var(--success-border)] bg-[var(--chip-yes-bg)] px-2 py-0.5 text-[11px] font-bold text-[var(--success-strong)]">
                     {u.year}
                   </span>
                   <span>{u.label}</span>
@@ -152,8 +152,8 @@ export default function StateDetailView({
       ) : null}
 
       {detail.litigation?.length ? (
-        <div className="mb-4 rounded-[10px] border border-[#5b4a1d] bg-[#241d0d] p-3.5">
-          <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#e3b341]">
+        <div className="mb-4 rounded-[10px] border border-[var(--warn-border)] bg-[var(--warn-bg)] p-3.5">
+          <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[var(--warn-strong)]">
             <span className="text-[14px]" aria-hidden="true">
               ⚖️
             </span>
@@ -163,9 +163,9 @@ export default function StateDetailView({
             {detail.litigation.map((l, i) => (
               <li
                 key={i}
-                className="mb-1.5 text-[12.5px] leading-snug text-[#ecdcb0] last:mb-0"
+                className="mb-1.5 text-[12.5px] leading-snug text-[var(--warn-fg)] last:mb-0"
               >
-                <span className="mr-1 rounded-full border border-[#5b4a1d] bg-[#2a2210] px-1.5 text-[9.5px] font-bold uppercase text-[#e3b341]">
+                <span className="mr-1 rounded-full border border-[var(--warn-border)] bg-[var(--warn-bg)] px-1.5 text-[9.5px] font-bold uppercase text-[var(--warn-strong)]">
                   {STATUS_LABEL[l.status] ?? l.status}
                 </span>
                 {l.label}
@@ -175,12 +175,12 @@ export default function StateDetailView({
                       href={l.url}
                       target="_blank"
                       rel="noopener"
-                      className="ml-1 text-[11px] text-[#8fb8e6] hover:underline"
+                      className="ml-1 text-[11px] text-[var(--snapshot-fg)] hover:underline"
                     >
                       ({l.citation})
                     </a>
                   ) : (
-                    <span className="ml-1 text-[11px] text-[#8fb8e6]">
+                    <span className="ml-1 text-[11px] text-[var(--snapshot-fg)]">
                       ({l.citation})
                     </span>
                   )
@@ -211,7 +211,7 @@ export default function StateDetailView({
               >
                 <span
                   className="h-2 w-2 rounded-full"
-                  style={{ background: "#2a7a74" }}
+                  style={{ background: "var(--brand-1)" }}
                   aria-hidden="true"
                 />
                 {cat.category}
@@ -226,7 +226,7 @@ export default function StateDetailView({
               ) : null}
               <ul className="m-0 list-disc pl-[18px]">
                 {cat.items.map((item, i) => (
-                  <li key={i} className="mb-1.5 text-[13px] text-[#cdd7e1]">
+                  <li key={i} className="mb-1.5 text-[13px] text-[var(--text-2)]">
                     {item.text}{" "}
                     {item.citation && item.citation !== "—" ? (
                       item.url ? (
@@ -234,12 +234,12 @@ export default function StateDetailView({
                           href={item.url}
                           target="_blank"
                           rel="noopener"
-                          className="text-[11px] text-[#8fb8e6] hover:underline"
+                          className="text-[11px] text-[var(--snapshot-fg)] hover:underline"
                         >
                           ({item.citation})
                         </a>
                       ) : (
-                        <span className="text-[11px] text-[#8fb8e6]">
+                        <span className="text-[11px] text-[var(--snapshot-fg)]">
                           ({item.citation})
                         </span>
                       )
@@ -247,13 +247,13 @@ export default function StateDetailView({
                     {item.since ? (
                       <span
                         title="Added since the 2020 baseline"
-                        className="ml-1 inline-block rounded-full border border-[#275f41] bg-[#16321f] px-1.5 align-middle text-[9.5px] font-bold text-[#67d99a]"
+                        className="ml-1 inline-block rounded-full border border-[var(--chip-yes-border)] bg-[var(--chip-yes-bg)] px-1.5 align-middle text-[9.5px] font-bold text-[var(--chip-yes-fg)]"
                       >
                         new ’{String(item.since).slice(2)}
                       </span>
                     ) : null}
                     {item.status && item.status !== "in_effect" ? (
-                      <span className="ml-1 inline-block rounded-full border border-[#5b4a1d] bg-[#2a2210] px-1.5 align-middle text-[9.5px] font-bold text-[#e3b341]">
+                      <span className="ml-1 inline-block rounded-full border border-[var(--warn-border)] bg-[var(--warn-bg)] px-1.5 align-middle text-[9.5px] font-bold text-[var(--warn-strong)]">
                         {STATUS_LABEL[item.status] ?? item.status}
                       </span>
                     ) : null}

@@ -69,7 +69,7 @@ export default async function AlertsPage() {
       <section className="mt-6 rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
         {IS_STATIC ? (
           <p className="m-0 text-sm text-[var(--muted)]">
-            <strong className="text-[#e3b341]">
+            <strong className="text-[var(--warn-strong)]">
               Not available on the static demo.
             </strong>{" "}
             Email subscriptions and the RSS feed require a server backend (live
@@ -82,7 +82,7 @@ export default async function AlertsPage() {
       </section>
 
       <p className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">
-        <strong className="text-[#e3b341]">⚠ Not legal advice.</strong> Alerts
+        <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong> Alerts
         track changes to the same dataset shown on the map (State Firearm Laws
         Database baseline + curated updates). They are informational only —
         always verify with official state resources and an attorney.

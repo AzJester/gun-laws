@@ -36,7 +36,7 @@ export default function AboutPage() {
         </nav>
       </div>
 
-      <section className="text-[14px] leading-relaxed text-[#cdd7e1]">
+      <section className="text-[14px] leading-relaxed text-[var(--text-2)]">
         <p className="mt-0">
           <b>GunLawMap</b> is an interactive atlas of US state firearm laws. It
           turns a peer-reviewed dataset into a clickable map so you can see, at a
@@ -64,10 +64,9 @@ export default function AboutPage() {
           >
             neutrality toggle
           </Link>{" "}
-          that lets you read the data through a gun-rights lens (fewer
-          restrictions = A), a gun-safety lens (more protections = A), or a
-          neutral law-count view with no grade at all. The underlying numbers
-          never change. Changes are reviewed by an editor before publishing, and
+          that lets you read the data as a letter grade (fewer restrictions = A)
+          or as a neutral law-count view with no grade at all. The underlying
+          numbers never change. Changes are reviewed by an editor before publishing, and
           court-affected provisions are flagged rather than removed. Full details
           are in the{" "}
           <Link
@@ -99,13 +98,13 @@ export default function AboutPage() {
           lightweight, framable page with no header, nav, or footer. Paste the
           national-map snippet anywhere:
         </p>
-        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[#cdd7e1]">
+        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[var(--text-2)]">
           <code>{embedSnippet(EMBED_BASE)}</code>
         </pre>
         <p className="mt-3">
           Or embed a single state&rsquo;s report card (Arizona shown):
         </p>
-        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[#cdd7e1]">
+        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[var(--text-2)]">
           <code>{embedSnippet(EMBED_BASE, "az")}</code>
         </pre>
         <p className="mt-3 text-[12.5px] text-[var(--muted)]">
@@ -159,7 +158,7 @@ export default function AboutPage() {
         </ul>
 
         <p className="mt-6 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12.5px] text-[var(--muted)]">
-          <strong className="text-[#e3b341]">⚠ Not legal advice.</strong>{" "}
+          <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong>{" "}
           GunLawMap is informational only and may contain errors. Always verify
           against official state statutes and consult an attorney.
         </p>

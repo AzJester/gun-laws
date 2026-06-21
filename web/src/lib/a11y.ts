@@ -87,9 +87,7 @@ export function mapSummary(
   const caption =
     orient === "count"
       ? `Map of ${rows.length} US states and the District of Columbia, shaded by how many of 134 tracked firearm laws each has in effect. The table below lists each one with its law count.`
-      : `Map of ${rows.length} US states and the District of Columbia, each shown with a letter grade (A = ${
-          orient === "safety" ? "strongest protections" : "fewest restrictions"
-        }, F = the opposite) and its count of tracked firearm laws. The table below lists each one with its grade and law count.`;
+      : `Map of ${rows.length} US states and the District of Columbia, each shown with a letter grade (A = fewest restrictions, F = the most) and its count of tracked firearm laws. The table below lists each one with its grade and law count.`;
 
   return { caption, rows };
 }

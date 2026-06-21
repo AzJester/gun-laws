@@ -41,43 +41,22 @@ describe("grading: color index alignment", () => {
   });
 });
 
-describe("grading: displayGrade orientation", () => {
-  it("is the identity in the rights view (stored orientation)", () => {
+describe("grading: displayGrade", () => {
+  it("always shows the stored grade (fewer restrictions = A; no flipped lens)", () => {
     for (const g of GRADES) {
       expect(displayGrade(g, "rights")).toBe(g);
+      expect(displayGrade(g, "count")).toBe(g);
       expect(displayGrade(g)).toBe(g); // default = rights
     }
   });
 
-  it("mirrors the scale A<->F in the safety view", () => {
-    const mirror: Record<Grade, Grade> = {
-      A: "F",
-      "A-": "D-",
-      B: "D",
-      C: "C",
-      D: "B",
-      "D-": "A-",
-      F: "A",
-    };
-    for (const g of GRADES) {
-      expect(displayGrade(g, "safety")).toBe(mirror[g]);
-    }
-  });
-
-  it("safety mirror is an involution (mirror of mirror = identity)", () => {
-    for (const g of GRADES) {
-      expect(displayGrade(displayGrade(g, "safety"), "safety")).toBe(g);
-    }
-  });
-
-  it("count orientation does not flip the letter (handled separately by UI)", () => {
-    for (const g of GRADES) {
-      expect(displayGrade(g, "count")).toBe(g);
-    }
+  it("never mirrors the scale — A stays A, F stays F", () => {
+    expect(displayGrade("A", "rights")).toBe("A");
+    expect(displayGrade("F", "rights")).toBe("F");
   });
 
   it("returns the input unchanged for an unknown grade", () => {
-    expect(displayGrade("Z" as Grade, "safety")).toBe("Z");
+    expect(displayGrade("Z" as Grade, "rights")).toBe("Z");
   });
 });
 

@@ -2,7 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ---- theme variables ----------------------------------------------------- */
+/* The app supports a dark (default) and a light theme, switched by a
+   `data-theme` attribute on <html> (set pre-paint by the no-FOUC inline script
+   in layout.tsx, and toggled at runtime by ThemeToggle). Every color the UI
+   uses is a CSS custom property here, so a component never has to know the
+   active theme — it just reads the var.
+
+   Two var families:
+     - Core surface vars (--bg, --panel, --panel-2, --border, --text, --muted,
+       --accent) — the original dark palette is kept verbatim as the dark theme.
+     - Semantic "callout" vars (chips, info/warn/danger/success callouts, etc.)
+       — these used to be hardcoded dark hex values scattered across components;
+       centralizing them here makes both themes legible without per-component
+       conditionals.
+
+   The grade RAMP (green→red) and per-grade glyph TEXT[] colors live in
+   lib/grading.ts and are intentionally NOT theme-scoped: they are tuned to the
+   fixed fills and read on both themes. */
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
   --bg: #0d1117;
   --panel: #161b22;
   --panel-2: #1c2330;
@@ -10,6 +32,145 @@
   --text: #e6edf3;
   --muted: #9aa7b4;
   --accent: #58a6ff;
+
+  /* Text printed on top of an --accent fill (buttons, active toggles, skip-link). */
+  --on-accent: #06121f;
+  /* Slightly softer body text used for long-form copy / list items. */
+  --text-2: #cdd7e1;
+
+  /* Success / "Yes" chips (green). */
+  --chip-yes-bg: #16361f;
+  --chip-yes-fg: #7ee29a;
+  --chip-yes-border: #2c5e3a;
+
+  /* Neutral / "No" chips (gray). */
+  --chip-no-bg: #222a30;
+  --chip-no-fg: #8b97a2;
+  --chip-no-border: #313b44;
+
+  /* Purple chips (introduced / amended legislative tags). */
+  --chip-purple-bg: #2a1f3a;
+  --chip-purple-fg: #bc8cff;
+
+  /* Info / federal-law callout (blue). */
+  --info-bg: #0f1c30;
+  --info-fg: #c5d6ee;
+  --info-strong: #9ec5ff;
+  --info-border: #2c4a78;
+
+  /* Historical-snapshot callout + links (a lighter, cyan-ish blue). */
+  --snapshot-bg: #0e2233;
+  --snapshot-fg: #8fb8e6;
+  --snapshot-border: #3a5e7a;
+
+  /* Warning / "not legal advice" amber. */
+  --warn-bg: #241d0d;
+  --warn-fg: #ecdcb0;
+  --warn-strong: #e3b341;
+  --warn-border: #5b4a1d;
+
+  /* Success callout (updates-since-baseline, green). */
+  --success-bg: #16270f;
+  --success-fg: #d7ecca;
+  --success-strong: #bde8a4;
+  --success-border: #3a5e2c;
+
+  /* Danger / error callout (red). */
+  --danger-bg: #2a0f0f;
+  --danger-fg: #e29a9a;
+  --danger-border: #5e2c2c;
+
+  /* Subtle row-highlight (e.g. differing cells in the compare grid). */
+  --highlight-bg: #161d12;
+
+  /* "No data" / neutral map fill (states with no summary, count===null). */
+  --no-data-bg: #2a3340;
+  --no-data-fg: #ffffff;
+
+  /* Teal brand mark used for the logo gradient + provision category dots. */
+  --brand-1: #2a7a74;
+  --brand-2: #14524e;
+
+  /* Header gradient top stop (fades down into --bg). */
+  --header-top: #11161d;
+
+  /* Hover tint on the changes-feed rows. */
+  --row-hover: rgba(88, 166, 255, 0.05);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f7f9fc;
+  --panel: #ffffff;
+  --panel-2: #eef2f7;
+  --border: #d6dee8;
+  --text: #10202e;
+  --muted: #52647a;
+  --accent: #1f6fb2;
+
+  /* On the light accent (#1f6fb2) we keep white text — 4.7:1, AA. */
+  --on-accent: #ffffff;
+  --text-2: #243341;
+
+  /* Success / "Yes" chips (green) — light tints with dark-green text. */
+  --chip-yes-bg: #e2f5e8;
+  --chip-yes-fg: #1d6b39;
+  --chip-yes-border: #abdcbb;
+
+  /* Neutral / "No" chips. */
+  --chip-no-bg: #eceff3;
+  --chip-no-fg: #5a6776;
+  --chip-no-border: #cdd5df;
+
+  /* Purple chips. */
+  --chip-purple-bg: #f0e8fb;
+  --chip-purple-fg: #6a39a8;
+
+  /* Info / federal-law callout (blue). */
+  --info-bg: #e8f1fb;
+  --info-fg: #1c3a5e;
+  --info-strong: #14507f;
+  --info-border: #b9d3ee;
+
+  /* Historical-snapshot callout. */
+  --snapshot-bg: #e6f0fa;
+  --snapshot-fg: #1a4f7a;
+  --snapshot-border: #aecbe6;
+
+  /* Warning / amber. */
+  --warn-bg: #fbf2dd;
+  --warn-fg: #5c4a14;
+  --warn-strong: #8a6400;
+  --warn-border: #e6d199;
+
+  /* Success callout (green). */
+  --success-bg: #e6f4dd;
+  --success-fg: #2f4d1c;
+  --success-strong: #2f6b1a;
+  --success-border: #bcdca0;
+
+  /* Danger / error callout (red). */
+  --danger-bg: #fce8e8;
+  --danger-fg: #9b2c2c;
+  --danger-border: #ecb6b6;
+
+  /* Subtle row-highlight. */
+  --highlight-bg: #eef6e6;
+
+  /* "No data" / neutral map fill — light gray with dark text. */
+  --no-data-bg: #d2dae4;
+  --no-data-fg: #3a4a58;
+
+  /* Teal brand mark — keep the same teal, it reads on white. */
+  --brand-1: #2a7a74;
+  --brand-2: #14524e;
+
+  /* Header gradient top stop (a touch lighter than --bg). */
+  --header-top: #ffffff;
+
+  /* Hover tint on the changes-feed rows. */
+  --row-hover: rgba(31, 111, 178, 0.08);
 }
 
 * {
@@ -60,7 +221,7 @@ a {
   padding: 8px 14px;
   border-radius: 8px;
   background: var(--accent);
-  color: #06121f;
+  color: var(--on-accent);
   font-weight: 600;
   font-size: 14px;
   text-decoration: none;
@@ -69,7 +230,7 @@ a {
 .skip-link:focus,
 .skip-link:focus-visible {
   top: 8px;
-  outline: 2px solid #fff;
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }
 
@@ -77,6 +238,35 @@ a {
 :where(button, a, [role="button"], input, select, textarea):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* ---- theme toggle ---- */
+/* Small fixed control rendered globally in the root layout (top-right). It sits
+   above page content but below the skip-link. Colors are all theme vars so it
+   inverts cleanly. */
+.theme-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 /* Header status dot: a gentle pulse to signal "live" data. */
@@ -103,7 +293,7 @@ a {
   transition: fill 0.15s, opacity 0.15s;
 }
 .state:hover {
-  stroke: #fff;
+  stroke: var(--text);
   stroke-width: 1.4;
   filter: brightness(1.12);
 }
@@ -113,7 +303,7 @@ a {
   stroke-width: 2;
 }
 .state.selected {
-  stroke: #fff;
+  stroke: var(--text);
   stroke-width: 2.2;
 }
 .state.changed {
@@ -172,5 +362,11 @@ a {
   }
   .skip-link {
     transition: none !important;
+  }
+  .theme-toggle {
+    transition: none !important;
+  }
+  .theme-toggle:hover {
+    transform: none;
   }
 }

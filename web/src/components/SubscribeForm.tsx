@@ -132,7 +132,7 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
                 className={[
                   "rounded-md border px-2 py-1 text-[11.5px]",
                   on
-                    ? "border-[var(--accent)] bg-[var(--accent)] font-semibold text-[#06121f]"
+                    ? "border-[var(--accent)] bg-[var(--accent)] font-semibold text-[var(--on-accent)]"
                     : "border-[var(--border)] bg-[var(--panel)] text-[var(--muted)]",
                 ].join(" ")}
                 title={s.name}
@@ -178,7 +178,7 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[#06121f] disabled:opacity-60"
+          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--on-accent)] disabled:opacity-60"
         >
           {submitting ? "Subscribing…" : "Subscribe to alerts"}
         </button>
@@ -187,7 +187,7 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
       {status.kind === "ok" ? (
         <p
           id="sub-status"
-          className="rounded-lg border border-[#2c5e3a] bg-[#16361f] px-3 py-2 text-[13px] text-[#7ee29a]"
+          className="rounded-lg border border-[var(--chip-yes-border)] bg-[var(--chip-yes-bg)] px-3 py-2 text-[13px] text-[var(--chip-yes-fg)]"
           role="status"
         >
           <span aria-hidden="true">✓ </span>
@@ -197,7 +197,7 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
       {status.kind === "not_configured" ? (
         <p
           id="sub-status"
-          className="rounded-lg border border-[#5b4a1d] bg-[#241d0d] px-3 py-2 text-[13px] text-[#e3b341]"
+          className="rounded-lg border border-[var(--warn-border)] bg-[var(--warn-bg)] px-3 py-2 text-[13px] text-[var(--warn-strong)]"
           role="status"
         >
           {status.message}
@@ -206,7 +206,7 @@ export default function SubscribeForm({ states, policies }: SubscribeFormProps) 
       {status.kind === "error" ? (
         <p
           id="sub-status"
-          className="rounded-lg border border-[#5e2c2c] bg-[#2a0f0f] px-3 py-2 text-[13px] text-[#e29a9a]"
+          className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-bg)] px-3 py-2 text-[13px] text-[var(--danger-fg)]"
           role="alert"
         >
           {status.message}

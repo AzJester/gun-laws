@@ -14,18 +14,18 @@ import { FEDERAL_CALLOUT_SUMMARY } from "@/lib/federal";
 
 export default function FederalCallout() {
   return (
-    <div className="mb-4 rounded-[10px] border border-[#2c4a78] bg-[#0f1c30] p-3.5">
-      <h3 className="m-0 mb-1.5 flex items-center gap-2 text-[13px] font-semibold text-[#9ec5ff]">
+    <div className="mb-4 rounded-[10px] border border-[var(--info-border)] bg-[var(--info-bg)] p-3.5">
+      <h3 className="m-0 mb-1.5 flex items-center gap-2 text-[13px] font-semibold text-[var(--info-strong)]">
         <span aria-hidden="true" className="text-[14px]">
           🇺🇸
         </span>
         Federal law also applies
       </h3>
-      <p className="m-0 text-[12.5px] leading-snug text-[#c5d6ee]">
+      <p className="m-0 text-[12.5px] leading-snug text-[var(--info-fg)]">
         {FEDERAL_CALLOUT_SUMMARY}{" "}
         <Link
           href="/federal"
-          className="font-semibold text-[#9ec5ff] hover:underline"
+          className="font-semibold text-[var(--info-strong)] hover:underline"
         >
           See federal firearm law →
         </Link>

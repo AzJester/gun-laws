@@ -62,7 +62,7 @@ export default function ReciprocityExplorer({
               {originPermitless ? (
                 <>
                   <b>{nameOf(origin)}</b> allows{" "}
-                  <span className="font-semibold text-[#7ee29a]">
+                  <span className="font-semibold text-[var(--chip-yes-fg)]">
                     permitless (constitutional) carry
                   </span>{" "}
                   — but reciprocity below still reflects whether other states
@@ -73,11 +73,11 @@ export default function ReciprocityExplorer({
                 <>
                   A <b>{nameOf(origin)}</b> resident concealed-carry permit is
                   illustratively honored in{" "}
-                  <span className="font-semibold text-[#7ee29a]">
+                  <span className="font-semibold text-[var(--chip-yes-fg)]">
                     {result.byPermit.length}
                   </span>{" "}
                   state(s) by reciprocity, plus{" "}
-                  <span className="font-semibold text-[#7ee29a]">
+                  <span className="font-semibold text-[var(--chip-yes-fg)]">
                     {result.permitless.length}
                   </span>{" "}
                   permitless states where no permit is required at all.
@@ -88,7 +88,7 @@ export default function ReciprocityExplorer({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <h3 className="m-0 mb-2 text-[13px] font-semibold text-[#7ee29a]">
+              <h3 className="m-0 mb-2 text-[13px] font-semibold text-[var(--chip-yes-fg)]">
                 ✓ Honors your permit ({result.byPermit.length})
               </h3>
               {result.byPermit.length ? (
@@ -97,7 +97,7 @@ export default function ReciprocityExplorer({
                     <li
                       key={c}
                       title={nameOf(c)}
-                      className="rounded-md border border-[#2c5e3a] bg-[#16361f] px-2 py-1 text-[11.5px] font-semibold text-[#7ee29a]"
+                      className="rounded-md border border-[var(--chip-yes-border)] bg-[var(--chip-yes-bg)] px-2 py-1 text-[11.5px] font-semibold text-[var(--chip-yes-fg)]"
                     >
                       {c}
                     </li>
@@ -109,7 +109,7 @@ export default function ReciprocityExplorer({
             </div>
 
             <div>
-              <h3 className="m-0 mb-2 text-[13px] font-semibold text-[#8fb8e6]">
+              <h3 className="m-0 mb-2 text-[13px] font-semibold text-[var(--snapshot-fg)]">
                 ⊘ No permit needed — permitless ({result.permitless.length})
               </h3>
               <ul className="m-0 flex flex-wrap gap-1.5 p-0">
@@ -117,7 +117,7 @@ export default function ReciprocityExplorer({
                   <li
                     key={c}
                     title={nameOf(c)}
-                    className="rounded-md border border-[#26425f] bg-[#102a43] px-2 py-1 text-[11.5px] font-semibold text-[#8fb8e6]"
+                    className="rounded-md border border-[var(--snapshot-border)] bg-[var(--snapshot-bg)] px-2 py-1 text-[11.5px] font-semibold text-[var(--snapshot-fg)]"
                   >
                     {c}
                   </li>
