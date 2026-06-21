@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GunLawMap — Interactive US Firearm Law Map (Mockup)</title>
+<style>
+  :root{ --bg:#0f1620; --panel:#18212e; --panel-2:#1f2a3a; --border:#2c3a4d; --text:#eaf0f7; --muted:#9fb0c3; --accent:#5b9bd5; }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;}
+  header.app{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#131c27,#0f1620);flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#5b9bd5,#3f6fa3);display:grid;place-items:center;font-size:20px;}
+  .brand h1{font-size:18px;margin:0;letter-spacing:.2px;}
+  .brand p{margin:0;font-size:12px;color:var(--muted);}
+  .header-spacer{flex:1;}
+  .search{position:relative;}
+  .search input{background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px 9px 32px;width:220px;font-size:14px;outline:none;}
+  .search input:focus{border-color:var(--accent);}
+  .search::before{content:"⌕";position:absolute;left:10px;top:6px;font-size:18px;color:var(--muted);}
+  .updated-badge{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:7px;}
+  .pulse{width:8px;height:8px;border-radius:50%;background:#5bd6a0;animation:pulse 2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(91,214,160,.5);}70%{box-shadow:0 0 0 8px rgba(91,214,160,0);}100%{box-shadow:0 0 0 0 rgba(91,214,160,0);}}
+
+  .layout{display:grid;grid-template-columns:minmax(560px,1.45fr) minmax(370px,1fr);gap:18px;padding:18px 22px 40px;max-width:1560px;margin:0 auto;}
+  @media (max-width:1040px){.layout{grid-template-columns:1fr;}}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;}
+  .card h2{font-size:15px;margin:0 0 4px;}
+  .card .sub{font-size:12px;color:var(--muted);margin:0 0 14px;}
+
+  .map-toolbar{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .seg{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .seg button{background:var(--panel-2);color:var(--muted);border:0;padding:7px 11px;font-size:12.5px;cursor:pointer;}
+  .seg button.active{background:var(--accent);color:#05101c;font-weight:600;}
+  .seg button+button{border-left:1px solid var(--border);}
+  .seg .lab{padding:7px 9px;font-size:11px;color:var(--muted);background:#141d28;border-right:1px solid var(--border);align-self:center;}
+
+  .mapwrap{width:100%;}
+  svg.usmap{width:100%;height:auto;display:block;}
+  .state{stroke:var(--bg);stroke-width:0.8;cursor:pointer;transition:fill .15s,opacity .15s;}
+  .state:hover{stroke:#fff;stroke-width:1.4;filter:brightness(1.07);}
+  .state:focus-visible{outline:none;stroke:var(--accent);stroke-width:2;}
+  .state.selected{stroke:#fff;stroke-width:2.2;}
+  .state.changed{stroke:#7b61ff;stroke-width:1.7;stroke-dasharray:3 2;}
+  .state.dim{opacity:.2;}
+  .lbl{font:600 12px -apple-system,Segoe UI,Roboto,sans-serif;fill:#10241c;stroke:#fff;stroke-width:2.4px;paint-order:stroke;text-anchor:middle;dominant-baseline:middle;cursor:pointer;user-select:none;}
+  .lbl.ext{font-size:11.5px;text-anchor:start;}
+  .leader{stroke:#7d8c99;stroke-width:1;}
+  .leader-dot{fill:#7d8c99;}
+
+  .legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--muted);}
+  .legend .chips{display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+  .legend .chip{width:40px;height:24px;cursor:pointer;display:grid;place-items:center;font-size:10.5px;font-weight:700;}
+  .legend .chip.off{opacity:.32;}
+  .legend .note{width:100%;margin-top:6px;font-size:11.5px;color:var(--muted);}
+
+  .stack{display:flex;flex-direction:column;gap:18px;}
+  .state-head{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .grade-badge{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-size:24px;font-weight:800;flex:none;}
+  .state-head h2{margin:0;font-size:20px;}
+  .state-head .meta{font-size:12.5px;color:var(--muted);}
+  .src-pill{font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;margin-left:8px;background:#15263a;color:#8fb8e6;border:1px solid #294a6b;vertical-align:middle;}
+  .flags{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 12px;}
+  .flag{display:flex;align-items:center;justify-content:space-between;gap:9px;background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:12.5px;}
+  .flag .lbl2{color:var(--text);}
+  .flag .pill{font-size:10.5px;font-weight:700;border-radius:20px;padding:2px 9px;white-space:nowrap;}
+  .flag.on .pill{background:#16324d;color:#79b8f0;border:1px solid #2d567f;}
+  .flag.off .pill{background:#26303a;color:#94a2b0;border:1px solid #36424e;}
+
+  .updates{background:#172a1f;border:1px solid #275f41;border-radius:10px;padding:10px 12px;margin:0 0 14px;}
+  .updates .uh{font-size:11.5px;font-weight:700;color:#67d99a;margin-bottom:6px;letter-spacing:.3px;}
+  .updates .ui{font-size:12px;color:#d3ecdd;margin-bottom:3px;}
+  .updates .uy{display:inline-block;min-width:36px;font-weight:700;color:#8fe0a8;}
+
+  .provisions{max-height:520px;overflow:auto;padding-right:6px;margin-right:-6px;}
+  .provisions::-webkit-scrollbar{width:8px;} .provisions::-webkit-scrollbar-thumb{background:#2c3a4d;border-radius:8px;}
+  .cat{border-top:1px solid var(--border);padding:11px 0 4px;}
+  .cat:first-of-type{border-top:0;}
+  .cat h3{margin:0 0 7px;font-size:13px;display:flex;align-items:center;gap:8px;}
+  .cat h3 .dot{width:8px;height:8px;border-radius:50%;background:#5b9bd5;flex:none;}
+  .cat h3 .cnt{color:var(--muted);font-weight:600;font-size:11px;}
+  .cat ul{margin:0;padding-left:18px;}
+  .cat li{font-size:12.5px;margin-bottom:5px;color:#d2dce7;}
+  .cat li .cite{color:#8fb8e6;font-size:11px;}
+  .cat li .since{display:inline-block;font-size:9.5px;font-weight:700;color:#67d99a;background:#16321f;border:1px solid #275f41;border-radius:10px;padding:0 6px;margin-left:4px;vertical-align:middle;}
+  .cat li .status{display:inline-block;font-size:9.5px;font-weight:700;color:#e3b341;background:#2a2210;border:1px solid #5b4a1d;border-radius:10px;padding:0 6px;margin-left:4px;vertical-align:middle;}
+  .detail-foot{font-size:11px;color:var(--muted);margin-top:12px;border-top:1px solid var(--border);padding-top:10px;}
+
+  .feed{display:flex;flex-direction:column;}
+  .feed-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--border);cursor:pointer;}
+  .feed-item:first-child{border-top:0;}
+  .feed-item:hover{background:rgba(91,155,213,.07);border-radius:8px;}
+  .feed .when{font-size:11px;color:var(--muted);white-space:nowrap;width:64px;flex:none;padding-top:2px;}
+  .feed .body{font-size:13px;}
+  .feed .body .st{font-weight:600;}
+  .feed .tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;margin-top:5px;font-weight:600;}
+  .tag.enacted{background:#16341f;color:#67d99a;} .tag.effective{background:#10293f;color:#79b8f0;}
+  .tag.court{background:#3a2d12;color:#e3b341;} .tag.intro{background:#2a1f3a;color:#bc8cff;}
+
+  .disclaimer{font-size:11.5px;color:var(--muted);padding:4px 22px 30px;max-width:1560px;margin:0 auto;}
+  .disclaimer strong{color:#e3b341;}
+  a.src{color:var(--accent);text-decoration:none;} a.src:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="brand">
+    <div class="logo">🛡️</div>
+    <div><h1>GunLawMap</h1><p>Interactive US firearm-law atlas · click a state</p></div>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="search"><input id="search" type="text" placeholder="Search a state…" autocomplete="off" aria-label="Search a state" /></div>
+  <div class="updated-badge"><span class="pulse"></span> Current · 2020 baseline + ’21–’25 updates</div>
+</header>
+
+<div class="layout">
+  <section class="card">
+    <div class="map-toolbar">
+      <div>
+        <h2 style="margin:0">Firearm-law coverage &amp; grade</h2>
+        <p class="sub" style="margin:0"><b>Grade A = fewest restrictions</b> · 134 tracked laws · all 50 states &amp; DC</p>
+      </div>
+      <div style="flex:1"></div>
+      <div class="seg" id="modeSeg" role="tablist" aria-label="Color mode">
+        <span class="lab">Color</span>
+        <button class="active" data-mode="grade">Grade</button>
+        <button data-mode="pc">Carry</button>
+        <button data-mode="ubc">Bkgd</button>
+        <button data-mode="rf">Red flag</button>
+      </div>
+    </div>
+
+    <div class="mapwrap" id="geomap" role="group" aria-label="US states geographic map"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <div class="stack">
+    <section class="card" id="detail"></section>
+    <section class="card">
+      <h2>Recent &amp; pending changes</h2>
+      <p class="sub">Auto-flagged from legislative + court trackers (LegiScan / Open States), confirmed by editors</p>
+      <div class="feed" id="feed"></div>
+    </section>
+  </div>
+</div>
+
+<p class="disclaimer">
+  <strong>⚠ Illustrative mockup — not legal advice.</strong> Provision data is from the
+  <a class="src" href="https://www.statefirearmlaws.org">State Firearm Laws Database</a>
+  (Siegel et&nbsp;al., Boston University) — a <b>2020 baseline with curated 2021–2025 updates</b>
+  layered on so it reflects current law (a production build keeps it current automatically via the
+  LegiScan/Open States pipeline). Category labels are simplified renderings of the official codebook.
+  A state's <b>grade reflects how few of the 134 tracked laws it has</b> (A = fewest, F = most) — the
+  opposite orientation from gun-safety scorecards. The letter grade is always shown, so the map stays
+  readable for color-blind users. Always consult official state statutes and an attorney.
+  Map geometry: <a class="src" href="https://github.com/topojson/us-atlas">us-atlas</a> (US Census, public domain).
+</p>
+
+<script>
+/* GEOMETRY (us-atlas, Albers-USA; AK & HI inset) and STATE DATA — injected at build */
+const GEO = __GEO_DATA__;
+const STATES = __STATES_DATA__;
+
+const FEED = [
+  {d:"Jun 15 ’26", st:"LA", t:"Permitless carry implementation guidance issued to sheriffs.", tag:"effective", tagL:"Effective"},
+  {d:"May 02 ’26", st:"CO", t:"6.5% firearms & ammunition excise tax takes effect.", tag:"effective", tagL:"Effective"},
+  {d:"Apr 18 ’26", st:"ME", t:"72-hour purchase waiting period upheld on appeal.", tag:"court", tagL:"Court ruling"},
+  {d:"Mar 10 ’26", st:"NM", t:"7-day waiting period expanded to all transfers.", tag:"enacted", tagL:"Enacted"},
+  {d:"Feb 21 ’26", st:"MI", t:"Safe-storage enforcement & penalties begin.", tag:"effective", tagL:"Effective"},
+  {d:"Jan 12 ’26", st:"WA", t:"Permit-to-purchase bill advancing (HB 1163) — tracking.", tag:"intro", tagL:"In committee"},
+  {d:"Nov 30 ’25", st:"FL", t:"Court reviews under-21 long-gun purchase restriction.", tag:"court", tagL:"Court ruling"},
+  {d:"Oct 04 ’25", st:"DE", t:"Permit-to-purchase requirement takes effect.", tag:"effective", tagL:"Effective"}
+];
+const RECENT = new Set(FEED.map(f=>f.st));
+
+/* ---- friendly report-card palette (A green → F red); letter always shown for accessibility ---- */
+const GRADES = ["A","A-","B","C","D","D-","F"];
+const RAMP   = ["#1a9850","#66bd63","#a6d96a","#fee08b","#fdae61","#f46d43","#d73027"];
+const TEXT   = ["#ffffff","#10331c","#163a12","#4a3a00","#4a2c08","#ffffff","#ffffff"];
+const DESC   = ["the fewest restrictions","very few restrictions","few restrictions","a moderate number of laws","many laws","very many laws","the most laws"];
+const CODES  = Object.keys(STATES);
+const NAMES  = Object.fromEntries(CODES.map(c=>[c, STATES[c].name]));
+const gi      = c => Math.max(0, GRADES.indexOf(STATES[c].grade));
+const pol = c => { const p=STATES[c].policies; return {pc:p.permitless_carry?1:0,ubc:p.universal_bg_check?1:0,rf:p.red_flag?1:0,awb:p.assault_weapon_ban?1:0,mag:p.magazine_limit?1:0,wp:p.waiting_period?1:0}; };
+
+let mode = "grade";
+let selected = "AZ";
+let filterGrade = null;
+const NS = "http://www.w3.org/2000/svg";
+const GEO_PATHS = {};
+const geomapEl = document.getElementById('geomap');
+const legendEl = document.getElementById('legend');
+
+const POLICY_YES = {pc:"#3a86c8", ubc:"#3a86c8", rf:"#d73027"};  // red-flag mode → red
+function fillFor(code){
+  if(mode==="grade"){ const i=gi(code); return {bg:RAMP[i], fg:TEXT[i]}; }
+  const on = pol(code)[mode]===1;
+  return on ? {bg:(POLICY_YES[mode]||"#3a86c8"), fg:"#ffffff"} : {bg:"#e6edf3", fg:"#3a4a58"};
+}
+
+function initGeo(){
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox","-60 0 1180 610"); svg.setAttribute("class","usmap");
+  const gStates=document.createElementNS(NS,"g"), gLabels=document.createElementNS(NS,"g");
+  CODES.forEach(code=>{
+    if(!GEO.states[code]) return;
+    const p=document.createElementNS(NS,"path");
+    p.setAttribute("d",GEO.states[code].d); p.setAttribute("class","state"); p.dataset.code=code;
+    p.setAttribute("tabindex","0"); p.setAttribute("role","button");
+    p.setAttribute("aria-label", NAMES[code]+", grade "+STATES[code].grade);
+    const t=document.createElementNS(NS,"title"); t.textContent=NAMES[code]+" — Grade "+STATES[code].grade+(STATES[code].lawCount!=null?" ("+STATES[code].lawCount+" laws)":""); p.appendChild(t);
+    p.addEventListener("click",()=>select(code));
+    p.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(code);}});
+    gStates.appendChild(p); GEO_PATHS[code]=p;
+  });
+  svg.appendChild(gStates); svg.appendChild(gLabels);
+  geomapEl.innerHTML=""; geomapEl.appendChild(svg); window._gStates=gStates;
+  buildGeoLabels(gLabels);
+}
+function buildGeoLabels(g){
+  const SMALL=new Set(["RI","CT","NJ","DE","MD","MA","NH","VT","DC"]);
+  const cen={};
+  Object.keys(GEO_PATHS).forEach(code=>{const b=GEO_PATHS[code].getBBox();cen[code]={x:b.x+b.width/2,y:b.y+b.height/2};});
+  Object.keys(GEO_PATHS).forEach(code=>{ if(SMALL.has(code))return; g.appendChild(mkText(cen[code].x,cen[code].y,code,"lbl")); });
+  const smalls=[...SMALL].filter(c=>cen[c]).sort((a,b)=>cen[a].y-cen[b].y);
+  const LX=1006, baseY=150, gap=30;
+  smalls.forEach((code,i)=>{
+    const ly=baseY+i*gap;
+    const line=document.createElementNS(NS,"line");
+    line.setAttribute("x1",cen[code].x);line.setAttribute("y1",cen[code].y);line.setAttribute("x2",LX-6);line.setAttribute("y2",ly);line.setAttribute("class","leader");
+    g.appendChild(line);
+    const dot=document.createElementNS(NS,"circle");dot.setAttribute("cx",cen[code].x);dot.setAttribute("cy",cen[code].y);dot.setAttribute("r",1.6);dot.setAttribute("class","leader-dot");g.appendChild(dot);
+    g.appendChild(mkText(LX,ly,code,"lbl ext"));
+  });
+}
+function mkText(x,y,code,cls){
+  const t=document.createElementNS(NS,"text"); t.setAttribute("x",x); t.setAttribute("y",y); t.setAttribute("class",cls);
+  t.textContent=code; t.addEventListener("click",()=>select(code)); return t;
+}
+
+function paint(){
+  CODES.forEach(code=>{
+    const p=GEO_PATHS[code]; if(!p) return;
+    p.style.fill=fillFor(code).bg;
+    p.classList.toggle("selected",code===selected);
+    p.classList.toggle("changed",RECENT.has(code)&&code!==selected);
+    p.classList.toggle("dim", mode==="grade" && filterGrade && STATES[code].grade!==filterGrade);
+  });
+  if(window._gStates && GEO_PATHS[selected]) window._gStates.appendChild(GEO_PATHS[selected]);
+}
+
+function buildLegend(){
+  if(mode==="grade"){
+    legendEl.innerHTML='<span>Fewer laws</span><div class="chips">'+
+      GRADES.map((g,i)=>`<div class="chip${filterGrade&&filterGrade!==g?' off':''}" data-g="${g}" style="background:${RAMP[i]};color:${TEXT[i]}">${g}</div>`).join('')+
+      '</div><span>More laws</span>'+(filterGrade?` &nbsp;<a class="src" id="clearF" href="#">clear ✕</a>`:'')+
+      '<div class="note">Grade = how few of the 134 tracked firearm laws a state has in effect (A = fewest). Click a grade to highlight those states.</div>';
+    legendEl.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{const g=c.dataset.g;filterGrade=(filterGrade===g)?null:g;render();}));
+    const cf=document.getElementById('clearF'); if(cf)cf.addEventListener('click',e=>{e.preventDefault();filterGrade=null;render();});
+  } else {
+    const lbl={pc:"permitless carry",ubc:"universal background checks",rf:"a red-flag (ERPO) law"}[mode];
+    const yes=POLICY_YES[mode]||"#3a86c8";
+    legendEl.innerHTML='<div class="chips"><div class="chip" style="background:'+yes+';color:#fff;width:46px">Yes</div><div class="chip" style="background:#e6edf3;color:#3a4a58;width:46px">No</div></div>'+`<span>State has ${lbl}</span>`;
+  }
+}
+
+const STATUS_LABEL={enjoined:"enjoined",struck:"struck down",repealed:"repealed",enacted_not_yet_effective:"not yet in effect"};
+function flagRow(present,label){ return `<div class="flag ${present?'on':'off'}"><span class="lbl2">${label}</span><span class="pill">${present?'Yes':'No'}</span></div>`; }
+function buildDetail(code){
+  const st=STATES[code]; const s=pol(code); const i=gi(code); const g=st.grade;
+  const lawLine = st.lawCount==null ? "data pending" : `${st.lawCount} of 134 tracked laws`;
+  const total = (st.provisions||[]).reduce((a,p)=>a+p.items.length,0);
+  let html=`<div class="state-head">
+      <div class="grade-badge" style="background:${RAMP[i]};color:${TEXT[i]}">${g}</div>
+      <div><h2>${NAMES[code]} <span class="src-pill">verified thru ${st.verifiedThrough||'—'}</span></h2>
+        <div class="meta">Grade ${g} · ${DESC[i]} · ${lawLine}</div></div>
+    </div>
+    <div class="flags">
+      ${flagRow(!s.pc,"Carry permit required")}
+      ${flagRow(s.ubc,"Universal background checks")}
+      ${flagRow(s.rf,"Red-flag (ERPO) law")}
+      ${flagRow(s.awb,"Assault-weapon restriction")}
+      ${flagRow(s.mag,"Magazine limit")}
+      ${flagRow(s.wp,"Waiting period")}
+    </div>`;
+  if(st.updates && st.updates.length){
+    html+=`<div class="updates"><div class="uh">⬆ CHANGES SINCE THE 2020 BASELINE</div>`+
+      st.updates.map(u=>`<div class="ui"><span class="uy">${u.year}</span> ${u.label}</div>`).join('')+`</div>`;
+  }
+  html+=`<div class="provisions">`;
+  (st.provisions||[]).forEach(cat=>{
+    html+=`<div class="cat"><h3><span class="dot"></span>${cat.category} <span class="cnt">(${cat.items.length})</span></h3><ul>`+
+      cat.items.map(it=>`<li>${it.text}${it.citation?` <span class="cite">(${it.citation})</span>`:''}${it.since?` <span class="since" title="Added since the 2020 baseline">new ’${String(it.since).slice(2)}</span>`:''}${it.status&&it.status!=='in_effect'?` <span class="status" title="Court / legal status">${STATUS_LABEL[it.status]||it.status}</span>`:''}</li>`).join('')+`</ul></div>`;
+  });
+  const srcs=(st.sources||[]).map(s=>`<a class="src" href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`).join(' · ');
+  html+=`</div><div class="detail-foot">${total} law${total===1?'':'s'} in effect · verified through ${st.verifiedThrough||'—'}${srcs?` · Sources: ${srcs}`:''}</div>`;
+  document.getElementById('detail').innerHTML=html;
+}
+
+function buildFeed(){
+  document.getElementById('feed').innerHTML=FEED.map(f=>
+    `<div class="feed-item" data-st="${f.st}"><div class="when">${f.d}</div>
+       <div class="body"><span class="st">${NAMES[f.st]}</span> — ${f.t}<br><span class="tag ${f.tag}">${f.tagL}</span></div></div>`).join('');
+  document.querySelectorAll('.feed-item').forEach(it=>it.addEventListener('click',()=>select(it.dataset.st)));
+}
+
+function select(code){ selected=code; paint(); buildDetail(code); }
+function render(){ paint(); buildLegend(); buildDetail(selected); }
+
+document.getElementById('modeSeg').addEventListener('click',e=>{
+  const btn=e.target.closest('button'); if(!btn)return;
+  mode=btn.dataset.mode;
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('active',b===btn));
+  filterGrade=null; render();
+});
+document.getElementById('search').addEventListener('keydown',e=>{
+  if(e.key!=="Enter")return;
+  const q=e.target.value.trim().toLowerCase();
+  const code=CODES.find(c=>c.toLowerCase()===q || NAMES[c].toLowerCase()===q || NAMES[c].toLowerCase().startsWith(q));
+  if(code){select(code);e.target.value="";}
+});
+
+initGeo(); buildFeed(); render();
+</script>
+</body>
+</html>

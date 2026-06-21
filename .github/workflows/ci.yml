@@ -1,0 +1,65 @@
+name: CI
+
+# Runs on every push and pull request. The whole pipeline is designed to be
+# green with NO database, NO network egress, and NO API keys: tests target the
+# JSON fallback / pure functions / graceful-degradation paths, and the build
+# runs with DATABASE_URL unset.
+on:
+  push:
+  pull_request:
+
+# Keep DATABASE_URL explicitly empty for the whole job so every step takes the
+# no-DB path (the app reads ../data/sample-states.json instead of Prisma).
+env:
+  DATABASE_URL: ""
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      # Generate the Prisma client so `tsc` / `next build` can resolve
+      # @prisma/client types. (npm ci already runs the postinstall, but this
+      # makes the dependency explicit and re-runs are cheap.)
+      - name: Generate Prisma client
+        working-directory: web
+        run: npx prisma generate
+
+      - name: Typecheck
+        working-directory: web
+        run: npx tsc --noEmit
+
+      - name: Unit + integration tests
+        working-directory: web
+        run: npm test
+
+      - name: Build (DATABASE_URL unset -> JSON fallback)
+        working-directory: web
+        run: npm run build
+
+      # Data reproducibility: rebuild the committed artifacts from their
+      # dependency-free, deterministic sources and fail if they drift. Run from
+      # the repo root because the tools read/write paths relative to it.
+      - name: Data reproducibility check
+        run: |
+          node tools/build-from-sfl.js
+          node tools/build-mockup.js
+          git diff --exit-code -- data/sample-states.json mockup/index.html
+
+      # Ingestion must exit 0 even with no keys / no egress (graceful skip).
+      - name: Ingest dry-run (graceful no-op)
+        working-directory: web
+        run: npm run ingest -- --dry-run
