@@ -60,9 +60,9 @@ describe("a11y: stateAriaLabel", () => {
     expect(selected.endsWith("selected")).toBe(true);
   });
 
-  it("flips the displayed grade in the safety orientation", () => {
-    // Stored A (fewest restrictions) displays as F in the safety lens.
-    expect(stateAriaLabel(AZ, { orient: "safety" })).toContain("grade F");
+  it("always shows the stored grade (no flipped lens)", () => {
+    // Arizona is always grade A — fewer restrictions = A, in every grade view.
+    expect(stateAriaLabel(AZ, { orient: "rights" })).toContain("grade A");
   });
 
   it("omits the letter grade in the count orientation", () => {
@@ -80,10 +80,6 @@ describe("a11y: stateAriaLabel", () => {
 describe("a11y: selectionAnnouncement", () => {
   it("announces the state and grade", () => {
     expect(selectionAnnouncement(AZ)).toBe("Showing Arizona, grade A");
-  });
-
-  it("flips the grade in the safety lens", () => {
-    expect(selectionAnnouncement(AZ, "safety")).toBe("Showing Arizona, grade F");
   });
 
   it("announces the law count (no grade) in the count lens", () => {
@@ -118,9 +114,8 @@ describe("a11y: mapSummary", () => {
     expect(rows[0].lawCountLabel).toBe("8 of 134 tracked laws");
   });
 
-  it("builds a caption naming the orientation's A end", () => {
+  it("builds a caption naming the grade's A end", () => {
     expect(mapSummary([AZ], "rights").caption).toContain("fewest restrictions");
-    expect(mapSummary([AZ], "safety").caption).toContain("strongest protections");
     expect(mapSummary([AZ], "count").caption).toContain("how many");
   });
 });

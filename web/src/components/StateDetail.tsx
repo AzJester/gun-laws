@@ -65,8 +65,8 @@ export default function StateDetail({
   return (
     <div>
       {showSnapshot ? (
-        <div className="mb-4 rounded-[10px] border border-[#3a5e7a] bg-[#0e2233] p-3.5">
-          <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-[#8fb8e6]">
+        <div className="mb-4 rounded-[10px] border border-[var(--snapshot-border)] bg-[var(--snapshot-bg)] p-3.5">
+          <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-[var(--snapshot-fg)]">
             <span aria-hidden="true">🕑</span>
             {detail.name} — {year} snapshot
           </div>
@@ -106,14 +106,14 @@ export default function StateDetail({
                     style={
                       present
                         ? {
-                            background: "#16361f",
-                            color: "#7ee29a",
-                            borderColor: "#2c5e3a",
+                            background: "var(--chip-yes-bg)",
+                            color: "var(--chip-yes-fg)",
+                            borderColor: "var(--chip-yes-border)",
                           }
                         : {
-                            background: "#222a30",
-                            color: "#8b97a2",
-                            borderColor: "#313b44",
+                            background: "var(--chip-no-bg)",
+                            color: "var(--chip-no-fg)",
+                            borderColor: "var(--chip-no-border)",
                           }
                     }
                   >

@@ -4,9 +4,11 @@
 // Client Component below the root layout throws during render. It receives the
 // error + a reset() to retry rendering the segment.
 //
-// We render an on-brand, dark-theme fallback and report the error via the
-// dependency-free observability layer (logs always; sends to Sentry only if a
-// DSN is configured). reportError never throws, so the boundary is safe.
+// We render an on-brand fallback and report the error via the dependency-free
+// observability layer (logs always; sends to Sentry only if a DSN is
+// configured). reportError never throws, so the boundary is safe. This boundary
+// renders BELOW the root layout, so globals.css + the active data-theme are in
+// effect — we use the theme CSS vars so the fallback matches light/dark.
 
 import { useEffect } from "react";
 
@@ -31,8 +33,8 @@ export default function Error({
         display: "grid",
         placeItems: "center",
         padding: "32px",
-        color: "#e6edf3",
-        background: "#0d1117",
+        color: "var(--text)",
+        background: "var(--bg)",
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       }}
@@ -42,14 +44,14 @@ export default function Error({
           maxWidth: 480,
           width: "100%",
           textAlign: "center",
-          border: "1px solid #2a3340",
+          border: "1px solid var(--border)",
           borderRadius: 14,
-          background: "#161b22",
+          background: "var(--panel)",
           padding: 28,
         }}
       >
         <h1 style={{ margin: "0 0 10px", fontSize: 22 }}>Something went wrong</h1>
-        <p style={{ margin: "0 0 20px", color: "#9aa7b4", lineHeight: 1.5 }}>
+        <p style={{ margin: "0 0 20px", color: "var(--muted)", lineHeight: 1.5 }}>
           An unexpected error occurred while loading this page. You can try again,
           or head back to the map.
         </p>
@@ -70,8 +72,8 @@ export default function Error({
               padding: "10px 18px",
               fontWeight: 600,
               fontSize: 14,
-              background: "#58a6ff",
-              color: "#06121f",
+              background: "var(--accent)",
+              color: "var(--on-accent)",
             }}
           >
             Try again
@@ -83,8 +85,8 @@ export default function Error({
               padding: "10px 18px",
               fontWeight: 600,
               fontSize: 14,
-              border: "1px solid #2a3340",
-              color: "#e6edf3",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
               textDecoration: "none",
             }}
           >

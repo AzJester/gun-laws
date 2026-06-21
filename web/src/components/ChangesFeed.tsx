@@ -7,13 +7,21 @@ interface ChangesFeedProps {
   onSelect: (code: string) => void;
 }
 
+// Tag pill colors keyed on change kind. Mapped to theme-aware semantic vars so
+// the pills stay legible (AA) in both dark and light modes:
+//   enacted        → success (green)
+//   effective      → info (blue)
+//   court_ruling   → warn (amber)
+//   introduced     → purple
+//   amended        → purple
+//   repealed       → warn (amber)
 const TAG_STYLE: Record<string, { background: string; color: string }> = {
-  enacted: { background: "#16341f", color: "#56d364" },
-  effective: { background: "#102a43", color: "#58a6ff" },
-  court_ruling: { background: "#3a2d12", color: "#e3b341" },
-  introduced: { background: "#2a1f3a", color: "#bc8cff" },
-  amended: { background: "#2a1f3a", color: "#bc8cff" },
-  repealed: { background: "#3a2d12", color: "#e3b341" },
+  enacted: { background: "var(--chip-yes-bg)", color: "var(--chip-yes-fg)" },
+  effective: { background: "var(--snapshot-bg)", color: "var(--snapshot-fg)" },
+  court_ruling: { background: "var(--warn-bg)", color: "var(--warn-strong)" },
+  introduced: { background: "var(--chip-purple-bg)", color: "var(--chip-purple-fg)" },
+  amended: { background: "var(--chip-purple-bg)", color: "var(--chip-purple-fg)" },
+  repealed: { background: "var(--warn-bg)", color: "var(--warn-strong)" },
 };
 
 export default function ChangesFeed({ changes, onSelect }: ChangesFeedProps) {
@@ -25,7 +33,7 @@ export default function ChangesFeed({ changes, onSelect }: ChangesFeedProps) {
           <button
             key={i}
             type="button"
-            className="flex cursor-pointer gap-3 border-t border-[var(--border)] py-3 text-left first:border-t-0 hover:rounded-lg hover:bg-[rgba(88,166,255,0.05)]"
+            className="flex cursor-pointer gap-3 border-t border-[var(--border)] py-3 text-left first:border-t-0 hover:rounded-lg hover:bg-[var(--row-hover)]"
             onClick={() => onSelect(c.stateCode)}
           >
             <div className="w-16 flex-none whitespace-nowrap pt-0.5 text-[11px] text-[var(--muted)]">

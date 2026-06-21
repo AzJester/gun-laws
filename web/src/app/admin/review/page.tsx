@@ -103,14 +103,14 @@ export default function AdminReviewPage() {
         <button
           type="button"
           onClick={() => void load()}
-          className="rounded-md border border-[var(--border)] bg-[var(--panel-2)] px-3 py-2 text-sm hover:bg-[rgba(88,166,255,0.1)]"
+          className="rounded-md border border-[var(--border)] bg-[var(--panel-2)] px-3 py-2 text-sm hover:bg-[var(--row-hover)]"
         >
           Refresh
         </button>
       </div>
 
       {error ? (
-        <p className="mt-4 rounded-md border border-[#5b1d1d] bg-[#2a1010] px-3 py-2 text-sm text-[#f1a1a1]">
+        <p className="mt-4 rounded-md border border-[var(--danger-border)] bg-[var(--danger-bg)] px-3 py-2 text-sm text-[var(--danger-fg)]">
           {error}
         </p>
       ) : null}
@@ -157,7 +157,7 @@ export default function AdminReviewPage() {
 
             <h2 className="mt-2 text-base font-semibold">{d.headline}</h2>
             {d.summary ? (
-              <p className="mt-1 text-sm text-[#cdd7e1]">{d.summary}</p>
+              <p className="mt-1 text-sm text-[var(--text-2)]">{d.summary}</p>
             ) : null}
 
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-[var(--muted)]">
@@ -183,7 +183,7 @@ export default function AdminReviewPage() {
                 type="button"
                 disabled={busyId === d.id}
                 onClick={() => void act(d.id, "approve")}
-                className="rounded-md border border-[#2c5e3a] bg-[#16361f] px-3 py-1.5 text-sm font-bold text-[#7ee29a] disabled:opacity-50"
+                className="rounded-md border border-[var(--chip-yes-border)] bg-[var(--chip-yes-bg)] px-3 py-1.5 text-sm font-bold text-[var(--chip-yes-fg)] disabled:opacity-50"
               >
                 {busyId === d.id ? "…" : "Approve & publish"}
               </button>
@@ -191,7 +191,7 @@ export default function AdminReviewPage() {
                 type="button"
                 disabled={busyId === d.id}
                 onClick={() => void act(d.id, "reject")}
-                className="rounded-md border border-[#5b1d1d] bg-[#2a1010] px-3 py-1.5 text-sm font-bold text-[#f1a1a1] disabled:opacity-50"
+                className="rounded-md border border-[var(--danger-border)] bg-[var(--danger-bg)] px-3 py-1.5 text-sm font-bold text-[var(--danger-fg)] disabled:opacity-50"
               >
                 Reject
               </button>

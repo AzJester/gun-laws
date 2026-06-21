@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import StateDetailView from "@/components/StateDetailView";
 import { getState, getStates } from "@/lib/data";
-import { displayGrade, DESC, GRADES } from "@/lib/grading";
+import { DESC, GRADES } from "@/lib/grading";
 import { embedSnippet } from "@/lib/embed";
 import { honoredIn, isPermitless } from "@/lib/reciprocity";
 import { DISCLAIMER } from "@/lib/types";
@@ -92,7 +92,6 @@ export default async function StatePage({
   if (!state) notFound();
 
   const url = `${SITE_URL}/state/${state.code.toLowerCase()}`;
-  const safetyGrade = displayGrade(state.grade, "safety");
 
   // Illustrative concealed-carry reciprocity summary (sample data; see /reciprocity).
   const recip = honoredIn(state.code);
@@ -106,8 +105,8 @@ export default async function StatePage({
     name: `${state.name} firearm laws summary`,
     description:
       `Summary of ${state.name} state firearm laws: Grade ${state.grade} ` +
-      `(${state.lawCount === null ? "law count pending" : `${state.lawCount} of 134 tracked laws`}) ` +
-      `in the gun-rights orientation (A = fewest restrictions), or Grade ${safetyGrade} in the gun-safety orientation. ` +
+      `(${state.lawCount === null ? "law count pending" : `${state.lawCount} of 134 tracked laws`}), ` +
+      `where A = fewest restrictions and F = the most. ` +
       `Informational only, not legal advice.`,
     url,
     isAccessibleForFree: true,
@@ -192,7 +191,7 @@ export default async function StatePage({
       <section className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
         <h2 className="m-0 mb-1 flex items-center gap-2 text-[15px] font-semibold">
           <span aria-hidden="true">🧭</span> Concealed-carry reciprocity
-          <span className="rounded-full border border-[#5b4a1d] bg-[#2a2210] px-2 py-0.5 text-[9.5px] font-bold uppercase text-[#e3b341]">
+          <span className="rounded-full border border-[var(--warn-border)] bg-[var(--warn-bg)] px-2 py-0.5 text-[9.5px] font-bold uppercase text-[var(--warn-strong)]">
             sample data
           </span>
         </h2>
@@ -241,13 +240,13 @@ export default async function StatePage({
           </code>
           .
         </p>
-        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[#cdd7e1]">
+        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[var(--text-2)]">
           <code>{embedSnippet(EMBED_BASE, state.code)}</code>
         </pre>
       </section>
 
       <p className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">
-        <strong className="text-[#e3b341]">⚠ Not legal advice.</strong> {DISCLAIMER}{" "}
+        <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong> {DISCLAIMER}{" "}
         <Link href="/methodology" className="text-[var(--accent)] hover:underline">
           Read the methodology
         </Link>

@@ -71,26 +71,26 @@ export function gradeTextColor(grade: Grade): string {
 }
 
 // ---------------------------------------------------------------------------
-// Neutrality / orientation (presentation only)
+// Grade view (presentation only)
 // ---------------------------------------------------------------------------
 //
-// Grades are *stored* in the "fewer-restrictions = A" orientation. Picking which
-// end is "A" is itself a value choice, so the UI lets a viewer flip the lens:
+// Grades are always in the "fewer-restrictions = A" orientation (A = fewest
+// laws/restrictions, F = the most). The only alternate view is a neutral one
+// that drops the letter grade entirely and shades states by their raw law count:
 //
-//   - "rights"  → "Fewer restrictions = A" (gun-rights view, the stored default)
-//   - "safety"  → "More protections = A"   (gun-safety view, inverted display)
+//   - "rights"  → "Fewer restrictions = A" (the grade; Arizona = A, California = F)
 //   - "count"   → no letter grade; show the raw law count instead
 //
-// The underlying data never changes; only the displayed letter + color flip.
+// The underlying data never changes; "count" only swaps the legend + coloring.
 
-export type Orientation = "rights" | "safety" | "count";
+export type Orientation = "rights" | "count";
 
-export const ORIENTATIONS: Orientation[] = ["rights", "safety", "count"];
+export const ORIENTATIONS: Orientation[] = ["rights", "count"];
 
 export const DEFAULT_ORIENTATION: Orientation = "rights";
 
 export function isOrientation(v: unknown): v is Orientation {
-  return v === "rights" || v === "safety" || v === "count";
+  return v === "rights" || v === "count";
 }
 
 export function parseOrientation(v: unknown): Orientation {
@@ -98,13 +98,11 @@ export function parseOrientation(v: unknown): Orientation {
 }
 
 /**
- * The letter to *display* for a stored grade under the active orientation. In
- * the gun-safety view we mirror the scale (A↔F) so display = GRADES[6 - index].
+ * The letter to *display* for a stored grade. The grade is always shown in its
+ * stored orientation (fewer restrictions = A); kept as a function so callers
+ * have a single, stable place to read the displayed letter from.
  */
-export function displayGrade(grade: Grade, orient: Orientation = "rights"): Grade {
-  const i = GRADES.indexOf(grade);
-  if (i < 0) return grade;
-  if (orient === "safety") return GRADES[GRADES.length - 1 - i];
+export function displayGrade(grade: Grade, _orient: Orientation = "rights"): Grade {
   return grade;
 }
 
@@ -121,25 +119,21 @@ export function displayGradeTextColor(
   return gradeTextColor(displayGrade(grade, orient));
 }
 
-/** Short human label for an orientation, e.g. for toggles and copy. */
+/** Short human label for a grade view, e.g. for toggles and copy. */
 export const ORIENTATION_LABEL: Record<Orientation, string> = {
   rights: "Fewer restrictions = A",
-  safety: "More protections = A",
   count: "Show law count (no grade)",
 };
 
-/** One-line explainer shown next to the orientation toggle / legend ends. */
+/** One-line explainer shown next to the grade-view toggle / legend ends. */
 export const ORIENTATION_BLURB: Record<Orientation, string> = {
   rights:
-    "Gun-rights view: A = fewest restrictions, F = most. This is the stored orientation.",
-  safety:
-    "Gun-safety view: A = strongest protections, F = weakest. The same data, displayed with the scale flipped.",
+    "Grade view: A = fewest restrictions, F = most. Fewer laws earns a higher grade.",
   count:
     "Neutral view: no letter grade — states are shaded by how many of the 134 tracked laws are in effect.",
 };
 
-/** Legend end labels ([left, right]) for the grade ramp under an orientation. */
-export function legendEnds(orient: Orientation): [string, string] {
-  if (orient === "safety") return ["Weaker protections", "Stronger protections"];
+/** Legend end labels ([left, right]) for the grade ramp. */
+export function legendEnds(_orient: Orientation): [string, string] {
   return ["Fewer laws", "More laws"];
 }

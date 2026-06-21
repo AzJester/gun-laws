@@ -40,9 +40,9 @@ export default function FederalPage() {
         </nav>
       </div>
 
-      <div className="rounded-[12px] border border-[#2c4a78] bg-[#0f1c30] p-4">
-        <p className="m-0 text-[14px] leading-relaxed text-[#c5d6ee]">
-          <b className="text-[#9ec5ff]">Federal law applies in every state, on
+      <div className="rounded-[12px] border border-[var(--info-border)] bg-[var(--info-bg)] p-4">
+        <p className="m-0 text-[14px] leading-relaxed text-[var(--info-fg)]">
+          <b className="text-[var(--info-strong)]">Federal law applies in every state, on
           top of state law.</b>{" "}
           A permissive state is not a &ldquo;no rules&rdquo; zone. The map grades
           and lists <i>state</i> provisions, but the federal rules below apply
@@ -75,7 +75,7 @@ export default function FederalPage() {
                 </span>
               )}
             </h2>
-            <p className="m-0 text-[14px] leading-relaxed text-[#cdd7e1]">
+            <p className="m-0 text-[14px] leading-relaxed text-[var(--text-2)]">
               {law.summary}
             </p>
           </section>
@@ -83,7 +83,7 @@ export default function FederalPage() {
       </div>
 
       <p className="mt-6 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">
-        <strong className="text-[#e3b341]">⚠ Not legal advice.</strong>{" "}
+        <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong>{" "}
         {FEDERAL_DISCLAIMER}{" "}
         <Link
           href="/methodology"

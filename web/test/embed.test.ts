@@ -60,12 +60,15 @@ describe("embed: year parsing/clamping", () => {
 });
 
 describe("embed: orientation parsing", () => {
-  it("accepts known orientations and defaults to rights", () => {
+  it("accepts known views and defaults to rights", () => {
     expect(parseEmbedOrient("rights")).toBe("rights");
-    expect(parseEmbedOrient("safety")).toBe("safety");
     expect(parseEmbedOrient("count")).toBe("count");
     expect(parseEmbedOrient("bogus")).toBe("rights");
     expect(parseEmbedOrient(null)).toBe("rights");
+  });
+
+  it("treats the removed 'safety' lens as the default grade view", () => {
+    expect(parseEmbedOrient("safety")).toBe("rights");
   });
 });
 
@@ -78,7 +81,7 @@ describe("embed: query building", () => {
   it("includes only non-default params", () => {
     expect(embedQuery({ mode: "red_flag" })).toBe("?mode=red_flag");
     expect(embedQuery({ year: 2018 })).toBe("?year=2018");
-    expect(embedQuery({ orient: "safety" })).toBe("?orient=safety");
+    expect(embedQuery({ orient: "count" })).toBe("?orient=count");
   });
 
   it("combines params", () => {

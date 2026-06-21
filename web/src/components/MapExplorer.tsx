@@ -102,8 +102,12 @@ const COUNT_BINS = [
   { max: Infinity, bg: "#d73027", fg: "#ffffff" },
 ];
 
+// Neutral "no data" map fill — theme-aware via CSS vars (SVG fill + inline color
+// both resolve var()). Dark slate in dark mode, light gray in light mode.
+const NO_DATA_COLOR = { bg: "var(--no-data-bg)", fg: "var(--no-data-fg)" };
+
 function countColor(n: number | null): { bg: string; fg: string } {
-  if (n === null) return { bg: "#2a3340", fg: "#fff" };
+  if (n === null) return NO_DATA_COLOR;
   const bin = COUNT_BINS.find((b) => n <= b.max) ?? COUNT_BINS[COUNT_BINS.length - 1];
   return { bg: bin.bg, fg: bin.fg };
 }
@@ -248,7 +252,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
   const colorFor = useCallback(
     (code: string): { bg: string; fg: string } => {
       const s = byCode[code];
-      if (!s) return { bg: "#2a3340", fg: "#fff" };
+      if (!s) return NO_DATA_COLOR;
       // When a historical year is selected and the series has an entry for it,
       // color by THAT year's data; otherwise fall back to the current summary.
       // At the latest year (isHistorical === false) we keep the live path, which
@@ -325,12 +329,12 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
 
   return (
     <>
-      <header className="flex flex-wrap items-center gap-4 border-b border-[var(--border)] bg-gradient-to-b from-[#11161d] to-[var(--bg)] px-[22px] py-3.5">
+      <header className="flex flex-wrap items-center gap-4 border-b border-[var(--border)] bg-gradient-to-b from-[var(--header-top)] to-[var(--bg)] px-[22px] py-3.5">
         <div className="flex items-center gap-3">
           <div
             className="grid h-[38px] w-[38px] place-items-center rounded-[9px] text-xl"
             style={{
-              background: "linear-gradient(135deg, #2a7a74, #14524e)",
+              background: "linear-gradient(135deg, var(--brand-1), var(--brand-2))",
             }}
             aria-hidden="true"
           >
@@ -411,9 +415,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                 <b>
                   {orient === "count"
                     ? "shaded by number of tracked laws"
-                    : orient === "safety"
-                      ? "grade A = strongest protections"
-                      : "grade A = fewest restrictions"}
+                    : "grade A = fewest restrictions"}
                 </b>
               </p>
             </div>
@@ -445,7 +447,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                       "border-0 px-3 py-[7px] text-[12.5px]",
                       "border-l border-[var(--border)] first:border-l-0",
                       mode === b.mode
-                        ? "bg-[var(--accent)] font-semibold text-[#06121f]"
+                        ? "bg-[var(--accent)] font-semibold text-[var(--on-accent)]"
                         : "bg-[var(--panel-2)] text-[var(--muted)]",
                     ].join(" ")}
                   >
@@ -478,7 +480,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                       className={[
                         "border-0 border-l border-[var(--border)] px-3 py-[6px] text-[11.5px] first:border-l-0",
                         orient === o
-                          ? "bg-[var(--accent)] font-semibold text-[#06121f]"
+                          ? "bg-[var(--accent)] font-semibold text-[var(--on-accent)]"
                           : "bg-[var(--panel)] text-[var(--muted)]",
                       ].join(" ")}
                     >
@@ -493,7 +495,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                   href="/methodology"
                   className="text-[var(--accent)] hover:underline"
                 >
-                  Why two orientations? →
+                  How grading works →
                 </Link>
               </p>
             </div>
@@ -560,7 +562,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-[var(--muted)]">
               <span aria-hidden="true">{minYear}</span>
               {isHistorical ? (
-                <span className="rounded-full border border-[#3a5e7a] bg-[#0e2233] px-2.5 py-0.5 text-[11px] font-semibold text-[#8fb8e6]">
+                <span className="rounded-full border border-[var(--snapshot-border)] bg-[var(--snapshot-bg)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--snapshot-fg)]">
                   Viewing historical snapshot: {year}
                 </span>
               ) : (
@@ -613,10 +615,9 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                   <span>{endLeft}</span>
                   <div className="flex overflow-hidden rounded-md border border-[var(--border)]">
                     {GRADES.map((g, i) => {
-                      // The ramp end labelled "A" depends on the orientation; we
-                      // flip the displayed letter + color but keep grade-filtering
-                      // keyed on the underlying stored grade.
-                      const stored = orient === "safety" ? GRADES[6 - i] : g;
+                      // Grade is always shown in its stored orientation
+                      // (fewest laws = A); filtering keys on that stored grade.
+                      const stored = g;
                       const shown = displayGrade(stored, orient);
                       const active = filterGrade === stored;
                       return (
@@ -659,9 +660,8 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                     </button>
                   ) : null}
                   <div className="mt-1.5 w-full text-[11.5px] text-[var(--muted)]">
-                    {orient === "safety"
-                      ? "Grade reflects how many of the 134 tracked laws a state has in effect (A = most protections, F = fewest)."
-                      : "Grade reflects how few of the 134 tracked laws a state has in effect (A = fewest, F = most)."}{" "}
+                    Grade reflects how few of the 134 tracked laws a state has in
+                    effect (A = fewest, F = most).{" "}
                     Click a grade to highlight those states. The letter grade is
                     always shown on each state, so the map stays usable for
                     color-blind viewers regardless of fill color.

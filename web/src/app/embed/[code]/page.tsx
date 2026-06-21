@@ -94,8 +94,8 @@ export default async function EmbedStatePage({
                     className="whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[10.5px] font-bold"
                     style={
                       present
-                        ? { background: "#16361f", color: "#7ee29a", borderColor: "#2c5e3a" }
-                        : { background: "#222a30", color: "#8b97a2", borderColor: "#313b44" }
+                        ? { background: "var(--chip-yes-bg)", color: "var(--chip-yes-fg)", borderColor: "var(--chip-yes-border)" }
+                        : { background: "var(--chip-no-bg)", color: "var(--chip-no-fg)", borderColor: "var(--chip-no-border)" }
                     }
                   >
                     {present ? "Yes" : "No"}

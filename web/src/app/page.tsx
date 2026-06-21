@@ -45,7 +45,7 @@ export default async function HomePage() {
           </Link>
         </p>
         <p className="rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12.5px] leading-relaxed text-[var(--muted)]">
-          <strong className="text-[#e3b341]">⚠ Not legal advice.</strong> Law
+          <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong> Law
           data is from the{" "}
           <a
             className="text-[var(--accent)] hover:underline"

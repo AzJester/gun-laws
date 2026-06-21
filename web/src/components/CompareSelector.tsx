@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface StateOption {
   code: string;
@@ -11,18 +10,30 @@ interface StateOption {
 interface CompareSelectorProps {
   states: StateOption[];
   selected: string[];
+  /** Called with the staged 2–4 codes when the user hits "Compare". */
+  onApply: (codes: string[]) => void;
 }
 
 const MAX = 4;
 const MIN = 2;
 
 /**
- * Edits the ?states= query for the compare page. Keeps 2–4 codes and pushes a
- * new URL so the server component re-renders with the chosen states.
+ * Stages a 2–4 state selection and hands it to the parent on "Compare". The
+ * parent (CompareView) owns the comparison and re-renders client-side, so this
+ * no longer navigates — which is what makes the picker work in the static export.
  */
-export default function CompareSelector({ states, selected }: CompareSelectorProps) {
-  const router = useRouter();
+export default function CompareSelector({
+  states,
+  selected,
+  onApply,
+}: CompareSelectorProps) {
   const [picked, setPicked] = useState<string[]>(selected);
+
+  // Re-sync the staged selection when the applied selection changes (e.g. when
+  // the parent adopts ?states= from the URL on mount).
+  useEffect(() => {
+    setPicked(selected);
+  }, [selected]);
 
   function toggle(code: string) {
     setPicked((prev) => {
@@ -34,7 +45,7 @@ export default function CompareSelector({ states, selected }: CompareSelectorPro
 
   function apply() {
     if (picked.length < MIN) return;
-    router.push(`/compare?states=${picked.join(",")}`);
+    onApply(picked);
   }
 
   return (
@@ -51,7 +62,7 @@ export default function CompareSelector({ states, selected }: CompareSelectorPro
           type="button"
           onClick={apply}
           disabled={picked.length < MIN}
-          className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[13px] font-semibold text-[#06121f] disabled:opacity-50"
+          className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[13px] font-semibold text-[var(--on-accent)] disabled:opacity-50"
         >
           Compare
         </button>
@@ -73,7 +84,7 @@ export default function CompareSelector({ states, selected }: CompareSelectorPro
                 className={[
                   "rounded-md border px-2 py-1 text-[11.5px]",
                   on
-                    ? "border-[var(--accent)] bg-[var(--accent)] font-semibold text-[#06121f]"
+                    ? "border-[var(--accent)] bg-[var(--accent)] font-semibold text-[var(--on-accent)]"
                     : atCap
                       ? "cursor-not-allowed border-[var(--border)] bg-[var(--panel-2)] text-[var(--muted)] opacity-40"
                       : "border-[var(--border)] bg-[var(--panel-2)] text-[var(--muted)]",

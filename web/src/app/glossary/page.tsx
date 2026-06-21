@@ -63,7 +63,7 @@ export default function GlossaryPage() {
               <dt className="m-0 text-[14px] font-semibold text-[var(--text)]">
                 {t.term}
               </dt>
-              <dd className="m-0 mt-1 text-[13px] leading-relaxed text-[#cdd7e1]">
+              <dd className="m-0 mt-1 text-[13px] leading-relaxed text-[var(--text-2)]">
                 {t.definition}
               </dd>
             </div>
@@ -88,7 +88,7 @@ export default function GlossaryPage() {
               <dt className="m-0 text-[14px] font-semibold text-[var(--text)]">
                 {title}
               </dt>
-              <dd className="m-0 mt-0.5 text-[13px] leading-relaxed text-[#cdd7e1]">
+              <dd className="m-0 mt-0.5 text-[13px] leading-relaxed text-[var(--text-2)]">
                 {CATEGORY_EXPLAINERS[title]}
               </dd>
             </div>
@@ -97,7 +97,7 @@ export default function GlossaryPage() {
       </section>
 
       <p className="mt-6 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">
-        <strong className="text-[#e3b341]">⚠ Not legal advice.</strong>{" "}
+        <strong className="text-[var(--warn-strong)]">⚠ Not legal advice.</strong>{" "}
         These definitions are simplified for a general reader and may omit
         exceptions. Always verify against official state statutes and federal law.
       </p>
