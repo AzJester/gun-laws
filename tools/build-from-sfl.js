@@ -2,7 +2,6 @@
    + tools/updates-2021-2025.js (current changes) + tools/sfl-codebook.js.
    Grade = fewer laws → higher grade (from recomputed lawtotal). */
 const fs=require('fs');
-const XLSX=require('/tmp/usmap/node_modules/xlsx');
 const cb=require('./sfl-codebook.js');
 const UPDATES=require('./updates-2021-2025.js');
 const CITE=require('./citations.js');
@@ -15,8 +14,8 @@ const varKeys=Object.keys(cb.vars);
 const catTitle=Object.fromEntries(cb.categories.map(c=>[c[0],c[1]]));
 const catOrder=cb.categories.map(c=>c[0]);
 
-const wb=XLSX.readFile('data/sources/State_laws.xlsx');
-const rows=XLSX.utils.sheet_to_json(wb.Sheets["DATABASE"]).filter(r=>r.year===2020);
+// 2020 baseline rows, pre-extracted from State_laws.xlsx (no SheetJS dependency).
+const rows=JSON.parse(fs.readFileSync('data/sources/state-laws-2020.json','utf8')).filter(r=>r.year===2020);
 
 // vars per state (copy of 2020 row, restricted to the 134 coded provisions)
 const V={};
