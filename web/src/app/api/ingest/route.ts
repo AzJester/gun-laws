@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { runIngestion } from "@/lib/ingest";
 import type { SourceKind } from "@/lib/ingest";
+import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 
 // Always run at request time; never execute ingestion during `next build`.
 export const dynamic = "force-dynamic";
@@ -25,6 +26,14 @@ interface IngestBody {
  *    for arbitrary callers beyond a read-only preview.
  */
 export async function POST(req: Request) {
+  // Rate limit: ingestion can burn provider API quota + write rows. Keep it
+  // generous (default 20 / hour per client) but cap runaway calls; env-tunable.
+  const limited = rateLimitOrResponse(req, "ingest", {
+    limit: intFromEnv(process.env.RATE_LIMIT_INGEST, 20),
+    windowMs: intFromEnv(process.env.RATE_LIMIT_INGEST_WINDOW_MS, 3_600_000),
+  });
+  if (limited) return limited;
+
   let body: IngestBody = {};
   try {
     const text = await req.text();

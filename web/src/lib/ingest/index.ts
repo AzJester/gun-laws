@@ -198,13 +198,44 @@ export async function runIngestion(
   return summary;
 }
 
+/** The compound natural key (stateCode, externalRef) used for native upsert. */
+export interface UpsertKey {
+  stateCode: string;
+  externalRef: string;
+}
+
+/**
+ * Derive the natural upsert key for a classified change. Returns null when the
+ * record lacks the pieces needed to key an upsert (no state or no externalRef);
+ * such records are skipped (matching dedupe()'s drop rule). Pure + DB-free so it
+ * can be unit-tested without a database.
+ */
+export function upsertKeyFor(r: {
+  state: string;
+  externalRef: string;
+}): UpsertKey | null {
+  if (!r.state || !r.externalRef) return null;
+  return { stateCode: r.state, externalRef: r.externalRef };
+}
+
 /**
  * Upsert classified drafts into ChangeEvent (reviewStatus 'auto_detected').
- * Dedupe key is externalRef. Only writes for states that exist in the DB
- * (FK on ChangeEvent.stateCode) — others are skipped with a warning upstream.
+ * Dedupe key is the compound (stateCode, externalRef) unique index — see
+ * prisma/schema.prisma. Only writes for states that exist in the DB
+ * (FK on ChangeEvent.stateCode) — others are skipped.
  *
  * Stores the draft (summary / proposed status / citation / confidence / method)
  * so the editorial review queue has everything it needs to triage and publish.
+ *
+ * Native `upsert` replaces the old findFirst + update/create emulation: the
+ * create-vs-update decision and the write are a single atomic statement keyed on
+ * the compound unique index, so concurrent re-runs can't double-insert.
+ *
+ * We still read the row's current reviewStatus first (a cheap indexed lookup) so
+ * the `update` payload can avoid clobbering an editor's decision: a row that is
+ * still pending gets its draft refreshed; a row already triaged/published has
+ * only its provenance touched (the editor's draft is left intact). New rows go
+ * through the `create` branch as `auto_detected`.
  */
 async function upsertChangeEvents(
   records: ClassifiedChange[],
@@ -219,6 +250,8 @@ async function upsertChangeEvents(
   let count = 0;
   for (const r of records) {
     if (!known.has(r.state)) continue;
+    const key = upsertKeyFor(r);
+    if (!key) continue;
     const eventDate = parseDate(r.eventDate);
     if (!eventDate) continue;
 
@@ -231,38 +264,42 @@ async function upsertChangeEvents(
       policyKey: r.policyKey ?? null,
       url: r.url ?? null,
     };
+    const provenance = {
+      stateCode: r.state,
+      kind: r.kind,
+      headline: r.headline,
+      eventDate,
+    };
 
-    // Upsert keyed on externalRef. The schema doesn't mark externalRef unique,
-    // so we emulate upsert with findFirst + update/create (idempotent re-runs).
-    const existing = await prisma.changeEvent.findFirst({
-      where: { externalRef: r.externalRef },
-      select: { id: true, reviewStatus: true },
+    const whereKey = {
+      stateCode_externalRef: {
+        stateCode: key.stateCode,
+        externalRef: key.externalRef,
+      },
+    };
+
+    // Inspect the current row (if any) so the update payload respects an
+    // editor's decision: only refresh the draft while still pending.
+    const existing = await prisma.changeEvent.findUnique({
+      where: whereKey,
+      select: { reviewStatus: true },
     });
+    const stillPending =
+      !existing ||
+      existing.reviewStatus === "auto_detected" ||
+      existing.reviewStatus === "in_review";
 
-    if (existing) {
-      // Never clobber an editor's decision: only refresh drafts still pending.
-      const stillPending =
-        existing.reviewStatus === "auto_detected" ||
-        existing.reviewStatus === "in_review";
-      await prisma.changeEvent.update({
-        where: { id: existing.id },
-        data: stillPending
-          ? { stateCode: r.state, kind: r.kind, headline: r.headline, eventDate, ...draft }
-          : { stateCode: r.state, kind: r.kind, headline: r.headline, eventDate },
-      });
-    } else {
-      await prisma.changeEvent.create({
-        data: {
-          stateCode: r.state,
-          kind: r.kind,
-          headline: r.headline,
-          eventDate,
-          externalRef: r.externalRef,
-          reviewStatus: "auto_detected",
-          ...draft,
-        },
-      });
-    }
+    // Native upsert on the compound unique key.
+    await prisma.changeEvent.upsert({
+      where: whereKey,
+      create: {
+        ...provenance,
+        externalRef: key.externalRef,
+        reviewStatus: "auto_detected",
+        ...draft,
+      },
+      update: stillPending ? { ...provenance, ...draft } : provenance,
+    });
     count += 1;
   }
   return count;

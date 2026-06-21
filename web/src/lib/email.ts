@@ -18,6 +18,8 @@
 //
 // Server-only (uses fetch + env). Import from route handlers / scripts only.
 
+import { getEnv } from "./env";
+
 export interface EmailMessage {
   to: string;
   subject: string;
@@ -49,7 +51,7 @@ type Provider = "resend" | "none";
 
 /** Which provider is configured. Add SMTP/Sendgrid/etc. branches here. */
 export function resolveProvider(): Provider {
-  if (process.env.RESEND_API_KEY) return "resend";
+  if (getEnv(process.env).RESEND_API_KEY) return "resend";
   return "none";
 }
 
@@ -58,7 +60,7 @@ function isTestMode(): boolean {
 }
 
 function fromAddress(override?: string): string {
-  return override ?? process.env.EMAIL_FROM ?? DEFAULT_FROM;
+  return override ?? getEnv(process.env).EMAIL_FROM ?? DEFAULT_FROM;
 }
 
 /**
@@ -100,7 +102,7 @@ export async function sendEmail(msg: EmailMessage): Promise<EmailResult> {
 
 /** Resend HTTP API: POST https://api.resend.com/emails (no SDK). */
 async function sendViaResend(msg: EmailMessage): Promise<EmailResult> {
-  const apiKey = process.env.RESEND_API_KEY!;
+  const apiKey = getEnv(process.env).RESEND_API_KEY!;
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",

@@ -15,6 +15,7 @@
 // Read lazily — never at import time. Degrades gracefully on the egress block
 // (host_not_allowed → skipped, not a crash).
 
+import { getEnv } from "../env";
 import { fetchJson, FetchError, sleep } from "./http";
 import type { NormalizedChange, ProviderResult, StateCode } from "./types";
 
@@ -33,11 +34,11 @@ export function hasCourtListenerSource(): boolean {
 }
 
 export function hasCourtListenerToken(): boolean {
-  return Boolean(process.env.COURTLISTENER_API_TOKEN);
+  return Boolean(getEnv(process.env).COURTLISTENER_API_TOKEN);
 }
 
 function authHeaders(): Record<string, string> {
-  const token = process.env.COURTLISTENER_API_TOKEN;
+  const token = getEnv(process.env).COURTLISTENER_API_TOKEN;
   return token ? { Authorization: `Token ${token}` } : {};
 }
 

@@ -7,13 +7,15 @@
 
 import type { PrismaClient } from "@prisma/client";
 
+import { getEnv } from "./env";
+
 declare global {
   // eslint-disable-next-line no-var
   var __gunlawPrisma: PrismaClient | undefined;
 }
 
 export function getPrisma(): PrismaClient {
-  if (!process.env.DATABASE_URL) {
+  if (!getEnv(process.env).DATABASE_URL) {
     throw new Error(
       "getPrisma() called without DATABASE_URL set. Use the JSON fallback instead.",
     );
@@ -29,5 +31,5 @@ export function getPrisma(): PrismaClient {
 }
 
 export function hasDatabase(): boolean {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(getEnv(process.env).DATABASE_URL);
 }

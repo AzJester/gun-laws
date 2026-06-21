@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { authorizeWrite } from "@/lib/admin";
 import { getPrisma, hasDatabase } from "@/lib/prisma";
+import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 
 // Editorial review actions. Dynamic + nodejs; never touches the DB at build.
 export const dynamic = "force-dynamic";
@@ -48,6 +49,14 @@ export async function POST(
   req: Request,
   { params }: { params: { id: string } },
 ) {
+  // Rate limit before auth so a token-guessing flood is throttled too.
+  // Generous default of 60 / min per client (editors click through a queue).
+  const limited = rateLimitOrResponse(req, "review", {
+    limit: intFromEnv(process.env.RATE_LIMIT_REVIEW, 60),
+    windowMs: intFromEnv(process.env.RATE_LIMIT_REVIEW_WINDOW_MS, 60_000),
+  });
+  if (limited) return limited;
+
   const auth = authorizeWrite(req);
   if (!auth.ok) {
     return NextResponse.json({ error: auth.reason }, { status: auth.status });

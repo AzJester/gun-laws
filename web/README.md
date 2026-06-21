@@ -478,6 +478,14 @@ Coverage at a glance (`web/test/*.test.ts`):
   `method:"rules"` and maps obvious keywords (red flag/ERPO → `red_flag`;
   enjoined/struck → status) without throwing.
 - **ingest dedupe** — duplicate `externalRef`s collapse to one record.
+- **ingest upsert key** — `upsertKeyFor()` derives the compound
+  `(stateCode, externalRef)` upsert key and skips records missing either.
+- **env validation** — `getEnv()` parses an empty object (all optional), a full
+  valid config, ignores unknown keys, and rejects present-but-malformed values
+  (non-URL `DATABASE_URL`, whitespace-only token); `safeGetEnv()` never throws.
+- **rate limiter** — allows under the limit, blocks over it (429 + `Retry-After`),
+  resets after the window (injected clock + fake timers), and namespaces buckets
+  per route.
 - **email** — `sendEmail` with no provider key returns `{ skipped:true }` and
   never throws (and never sends under `NODE_ENV=test`).
 - **subscriptions** — `isValidEmail` / `normalizeScope` / `scopeMatches`, plus
@@ -522,6 +530,109 @@ Two GitHub Actions workflows live at the repo root in `.github/workflows/`:
   [Network / egress allowlist](#network--egress-allowlist-important)).
 
 ---
+
+## Production hardening
+
+A few cross-cutting hardening measures layer on top of the feature code. All of
+them preserve the no-database / no-key / no-egress graceful paths — the build,
+the tests, and `npm run ingest -- --dry-run` still pass with nothing configured.
+
+### Native upsert for ChangeEvents (schema + migration)
+
+Ingestion now writes `ChangeEvent` rows with a **native `prisma.changeEvent.upsert`**
+keyed on a compound unique index instead of the old `findFirst` + `update`/`create`
+emulation. The schema adds:
+
+```prisma
+// in model ChangeEvent
+@@unique([stateCode, externalRef])
+```
+
+**Why compound, not `@unique` on `externalRef` alone:** `externalRef` is nullable
+(`String?`) — rows created by the review/approve flow have no provider id. In
+Postgres, NULLs are *distinct* in a unique index, so any number of
+null-`externalRef` rows coexist without collisions, while a provider's
+`(stateCode, externalRef)` pair stays unique — exactly what idempotent re-ingestion
+needs. The upsert keys on Prisma's generated compound selector
+`stateCode_externalRef`. Records lacking a state or `externalRef` are skipped
+(matching `dedupe()`), and the upsert's `update` payload still respects an
+editor's decision: a row that is no longer pending only has its provenance
+refreshed, never its draft.
+
+**Apply the migration** (no database is available in this repo to run it, so this
+is the command to run against a real DB):
+
+```bash
+cd web
+npx prisma migrate dev --name change_event_unique_external_ref
+# or, for a quick spin without a migration history:
+npx prisma db push
+```
+
+`npx prisma validate` and `npx prisma generate` pass against the new schema with
+no DB connection.
+
+### Environment validation — `src/lib/env.ts`
+
+A single zod-validated accessor, `getEnv()`, replaces scattered `process.env.X`
+reads in `prisma.ts`, `email.ts`, `admin.ts`, the ingest providers, and the
+classifier. It is **lazy**: nothing is parsed at import/build time, so the
+no-DB/no-key paths still build. Every var is **optional** (the app branches on
+presence), but a *present-but-malformed* value (e.g. a non-URL `DATABASE_URL`) is
+rejected. Covers `DATABASE_URL`, `LEGISCAN_API_KEY`, `OPENSTATES_API_KEY`,
+`COURTLISTENER_API_TOKEN`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`,
+`RESEND_API_KEY`, `ADMIN_TOKEN`, `INGEST_TOKEN`, `NEXT_PUBLIC_SITE_URL`,
+`EMAIL_FROM`. `getEnv(source)` accepts an explicit object for testing
+(bypasses the memo cache); `safeGetEnv()` is the non-throwing variant.
+
+### Security headers — `next.config.mjs`
+
+`headers()` applies to **all routes** (`/:path*`):
+
+| Header | Value |
+|---|---|
+| `X-Content-Type-Options` | `nosniff` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `X-Frame-Options` | `DENY` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` |
+| `Content-Security-Policy` | see below |
+
+The CSP is deliberately **pragmatic** so Next.js + Tailwind still render:
+`default-src 'self'`; `script-src 'self' 'unsafe-inline'` (Next injects small
+inline bootstrap scripts — `'unsafe-eval'` is added **in dev only** for HMR);
+`style-src 'self' 'unsafe-inline'` (required for Next/Tailwind inline styles);
+`img-src 'self' data: blob:`; `font-src 'self' data:`; `connect-src 'self'`
+(plus `ws:` in dev); `frame-ancestors 'none'`; `base-uri 'self'`;
+`form-action 'self'`; `object-src 'none'`. **Documented relaxation:** scripts use
+`'unsafe-inline'` rather than per-request nonces — tightening to a nonce-based
+policy is a follow-up (wire a nonce through every `<Script>`). If a public embed
+route is ever added, relax `frame-ancestors`/`X-Frame-Options` for that path only.
+
+### Rate limiting — `src/lib/rate-limit.ts`
+
+A lightweight **in-memory fixed-window** limiter (no Redis) on the abuse-prone
+routes. Returns **`429` with `Retry-After`** (plus `X-RateLimit-*`) when exceeded.
+Limits are generous and **env-tunable** with safe defaults:
+
+| Route | Default | Env vars |
+|---|---|---|
+| `POST /api/subscribe` | 10 / 10 min | `RATE_LIMIT_SUBSCRIBE`, `RATE_LIMIT_SUBSCRIBE_WINDOW_MS` |
+| `POST /api/ingest` | 20 / hour | `RATE_LIMIT_INGEST`, `RATE_LIMIT_INGEST_WINDOW_MS` |
+| `POST /api/review/[id]` | 60 / min | `RATE_LIMIT_REVIEW`, `RATE_LIMIT_REVIEW_WINDOW_MS` |
+| `GET /api/states` | 120 / min | `RATE_LIMIT_STATES`, `RATE_LIMIT_STATES_WINDOW_MS` |
+
+> **Caveat:** the store is a process-local `Map`, so the limiter is
+> **per-instance**. In multi-instance prod (multiple containers / serverless
+> lambdas) each instance keeps its own counters — swap in a shared store
+> (Redis / Upstash) for a global limit, keeping the `checkRateLimit()` signature.
+
+### Dependency audit
+
+`npm audit` reports advisories only in **transitive dev/build dependencies**
+(`esbuild`/`vite`/`vitest`/`tsx`) and in `next`/`postcss`. Every available fix is
+a **major breaking bump** (`vitest@4`, `next@16`) gated behind `npm audit fix
+--force`, so none were applied here (no non-breaking fix exists). Revisit when
+upgrading Next.js / Vitest deliberately.
 
 ## Project layout
 

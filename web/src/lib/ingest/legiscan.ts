@@ -11,6 +11,7 @@
 //
 // Key from process.env.LEGISCAN_API_KEY. Read lazily — never at import time.
 
+import { getEnv } from "../env";
 import { fetchJson, FetchError, sleep } from "./http";
 import type { ChangeKind } from "../types";
 import type { NormalizedChange, ProviderResult, StateCode } from "./types";
@@ -19,11 +20,11 @@ const BASE = "https://api.legiscan.com/";
 const DEFAULT_QUERY = "firearm";
 
 export function hasLegiscanKey(): boolean {
-  return Boolean(process.env.LEGISCAN_API_KEY);
+  return Boolean(getEnv(process.env).LEGISCAN_API_KEY);
 }
 
 function keyOrThrow(): string {
-  const key = process.env.LEGISCAN_API_KEY;
+  const key = getEnv(process.env).LEGISCAN_API_KEY;
   if (!key) throw new Error("LEGISCAN_API_KEY is not set");
   return key;
 }

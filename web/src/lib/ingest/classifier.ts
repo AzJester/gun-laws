@@ -16,6 +16,7 @@
 // publishes, and nothing connects to a DB. The Anthropic SDK is required lazily
 // so the module graph never pulls it in at build time on the no-key path.
 
+import { getEnv } from "../env";
 import type { ChangeKind, ProvisionStatus } from "../types";
 import type { NormalizedChange } from "./types";
 
@@ -184,7 +185,7 @@ const POLICY_RULES_LABEL: Record<string, string> = {
 const DEFAULT_MODEL = "claude-sonnet-4-6";
 
 export function hasAnthropicKey(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+  return Boolean(getEnv(process.env).ANTHROPIC_API_KEY);
 }
 
 const VALID_STATUSES: ProvisionStatus[] = [
@@ -291,8 +292,9 @@ async function classifyWithLlm(
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mod = require("@anthropic-ai/sdk") as typeof import("@anthropic-ai/sdk");
   const Anthropic = mod.default;
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const model = process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
+  const env = getEnv(process.env);
+  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+  const model = env.ANTHROPIC_MODEL || DEFAULT_MODEL;
 
   const userContent =
     `Event:\n` +

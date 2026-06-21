@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 
 import { sendEmail } from "@/lib/email";
 import {
+  intFromEnv,
+  rateLimitOrResponse,
+} from "@/lib/rate-limit";
+import {
   createPendingSubscription,
   isValidEmail,
   type SubscribeChannel,
@@ -65,6 +69,14 @@ function confirmEmail(base: string, confirmToken: string, unsubToken: string) {
  * confirmation could not be delivered).
  */
 export async function POST(req: Request) {
+  // Rate limit: this route creates DB rows + sends mail, so it is abuse-prone.
+  // Generous default of 10 requests / 10 min per client; env-tunable.
+  const limited = rateLimitOrResponse(req, "subscribe", {
+    limit: intFromEnv(process.env.RATE_LIMIT_SUBSCRIBE, 10),
+    windowMs: intFromEnv(process.env.RATE_LIMIT_SUBSCRIBE_WINDOW_MS, 600_000),
+  });
+  if (limited) return limited;
+
   let body: SubscribeBody = {};
   try {
     const text = await req.text();

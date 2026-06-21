@@ -217,9 +217,16 @@ model ChangeEvent {
   state     State      @relation(fields: [stateCode], references: [code], onDelete: Cascade)
   provision Provision? @relation(fields: [provisionId], references: [id], onDelete: SetNull)
 
+  // Native-upsert key for ingestion. externalRef is nullable (manually-created
+  // / published-from-review rows may have none), so we key the upsert on the
+  // COMPOUND (stateCode, externalRef) rather than externalRef alone. In Postgres
+  // NULLs are distinct in a unique index, so any number of null-externalRef rows
+  // coexist without collisions, while a provider's (state, externalRef) pair is
+  // unique — exactly what idempotent re-ingestion needs. See src/lib/ingest.
   @@index([stateCode])
   @@index([eventDate])
   @@index([reviewStatus])
+  @@unique([stateCode, externalRef])
   @@map("change_event")
 }
 

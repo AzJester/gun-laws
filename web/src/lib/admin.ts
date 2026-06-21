@@ -9,6 +9,8 @@
 //
 // Nothing here touches the DB.
 
+import { getEnv } from "./env";
+
 export function tokenFromRequest(req: Request): string | null {
   return (
     req.headers.get("x-admin-token") ??
@@ -26,7 +28,7 @@ export interface AuthResult {
 
 /** Authorize a WRITE action against ADMIN_TOKEN. */
 export function authorizeWrite(req: Request): AuthResult {
-  const configured = process.env.ADMIN_TOKEN;
+  const configured = getEnv(process.env).ADMIN_TOKEN;
   if (!configured) {
     return {
       ok: false,

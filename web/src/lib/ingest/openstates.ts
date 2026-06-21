@@ -13,6 +13,7 @@
 //
 // Read lazily — never at import time.
 
+import { getEnv } from "../env";
 import { fetchJson, FetchError, sleep } from "./http";
 import type { ChangeKind } from "../types";
 import type { NormalizedChange, ProviderResult, StateCode } from "./types";
@@ -37,11 +38,11 @@ const STATE_NAMES: Record<string, string> = {
 };
 
 export function hasOpenstatesKey(): boolean {
-  return Boolean(process.env.OPENSTATES_API_KEY);
+  return Boolean(getEnv(process.env).OPENSTATES_API_KEY);
 }
 
 function keyOrThrow(): string {
-  const key = process.env.OPENSTATES_API_KEY;
+  const key = getEnv(process.env).OPENSTATES_API_KEY;
   if (!key) throw new Error("OPENSTATES_API_KEY is not set");
   return key;
 }

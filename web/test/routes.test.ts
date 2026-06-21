@@ -14,7 +14,7 @@ afterAll(() => {
 describe("GET /api/states", () => {
   it("returns 200 with 51 states + a disclaimer", async () => {
     const { GET } = await import("@/app/api/states/route");
-    const res = await GET();
+    const res = await GET(new Request("http://test/api/states"));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(Array.isArray(body.states)).toBe(true);
