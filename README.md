@@ -73,7 +73,7 @@ xdg-open mockup/index.html
 - A **real geographic US map** (Albers-USA projection, Alaska & Hawaii inset), one
   clickable state per shape, color-coded by grade.
 - **Color modes** to recolor the whole map by a single policy (permitless carry,
-  universal background checks, red-flag laws).
+  universal background checks, red-flag laws) — **red-flag mode shows those states in red**.
 - A **state detail panel** for **all 50 states + DC** showing the grade, the law
   count (out of 134), at-a-glance policy flags, and **every tracked law in effect,
   grouped by category** (scrollable — California lists 111).

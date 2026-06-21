@@ -30,9 +30,18 @@ export const TEXT = [
   "#ffffff",
 ];
 
-// Neutral pair for the single-policy ("yes/no") color modes.
-export const POLICY_YES = { bg: "#3a86c8", fg: "#ffffff" };
+// Single-policy ("yes/no") color modes. "Yes" is themed per policy — red-flag
+// laws read in red — while "No" is a shared neutral.
 export const POLICY_NO = { bg: "#e6edf3", fg: "#3a4a58" };
+export const POLICY_YES = { bg: "#3a86c8", fg: "#ffffff" }; // default "yes"
+export const POLICY_YES_BY_MODE: Record<string, { bg: string; fg: string }> = {
+  permitless_carry: { bg: "#3a86c8", fg: "#ffffff" },
+  universal_bg_check: { bg: "#3a86c8", fg: "#ffffff" },
+  red_flag: { bg: "#d73027", fg: "#ffffff" },
+};
+export function policyYes(mode: string): { bg: string; fg: string } {
+  return POLICY_YES_BY_MODE[mode] ?? POLICY_YES;
+}
 
 export const DESC = [
   "fewest tracked laws",

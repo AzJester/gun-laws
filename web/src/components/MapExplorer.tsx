@@ -10,7 +10,7 @@ import type { GeoData } from "@/lib/geo";
 import {
   GRADES,
   POLICY_NO,
-  POLICY_YES,
+  policyYes,
   gradeColor,
   gradeTextColor,
 } from "@/lib/grading";
@@ -91,8 +91,9 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
         return { bg: gradeColor(s.grade), fg: gradeTextColor(s.grade) };
       }
       const on = s.policies[mode];
+      const yes = policyYes(mode);
       return on
-        ? { bg: POLICY_YES.bg, fg: POLICY_YES.fg }
+        ? { bg: yes.bg, fg: yes.fg }
         : { bg: POLICY_NO.bg, fg: POLICY_NO.fg };
     },
     [byCode, mode],
@@ -266,7 +267,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
                 <div className="flex overflow-hidden rounded-md border border-[var(--border)]">
                   <div
                     className="grid h-6 w-[46px] place-items-center text-[10.5px] font-bold"
-                    style={{ background: POLICY_YES.bg, color: POLICY_YES.fg }}
+                    style={{ background: policyYes(mode).bg, color: policyYes(mode).fg }}
                   >
                     Yes
                   </div>

@@ -190,10 +190,11 @@ const GEO_PATHS = {};
 const geomapEl = document.getElementById('geomap');
 const legendEl = document.getElementById('legend');
 
+const POLICY_YES = {pc:"#3a86c8", ubc:"#3a86c8", rf:"#d73027"};  // red-flag mode → red
 function fillFor(code){
   if(mode==="grade"){ const i=gi(code); return {bg:RAMP[i], fg:TEXT[i]}; }
   const on = pol(code)[mode]===1;
-  return on ? {bg:"#3a86c8", fg:"#ffffff"} : {bg:"#e6edf3", fg:"#3a4a58"};
+  return on ? {bg:(POLICY_YES[mode]||"#3a86c8"), fg:"#ffffff"} : {bg:"#e6edf3", fg:"#3a4a58"};
 }
 
 function initGeo(){
@@ -257,7 +258,8 @@ function buildLegend(){
     const cf=document.getElementById('clearF'); if(cf)cf.addEventListener('click',e=>{e.preventDefault();filterGrade=null;render();});
   } else {
     const lbl={pc:"permitless carry",ubc:"universal background checks",rf:"a red-flag (ERPO) law"}[mode];
-    legendEl.innerHTML='<div class="chips"><div class="chip" style="background:#3a86c8;color:#fff;width:46px">Yes</div><div class="chip" style="background:#e6edf3;color:#3a4a58;width:46px">No</div></div>'+`<span>State has ${lbl}</span>`;
+    const yes=POLICY_YES[mode]||"#3a86c8";
+    legendEl.innerHTML='<div class="chips"><div class="chip" style="background:'+yes+';color:#fff;width:46px">Yes</div><div class="chip" style="background:#e6edf3;color:#3a4a58;width:46px">No</div></div>'+`<span>State has ${lbl}</span>`;
   }
 }
 
