@@ -16,8 +16,8 @@
 //      * font-src 'self' data:            — self-hosted/data fonts.
 //      * connect-src 'self'               — same-origin fetches (the app's API).
 //      * frame-ancestors 'none'           — defense-in-depth clickjacking guard
-//        (mirrors X-Frame-Options: DENY). If a public embed route is ever added,
-//        relax this for that path only.
+//        (mirrors X-Frame-Options: DENY). The public /embed widget routes are
+//        the one exception: they are framable (relaxed headers, see below).
 //      * base-uri 'self'; form-action 'self'; object-src 'none'.
 //  - X-Content-Type-Options: nosniff
 //  - Referrer-Policy: strict-origin-when-cross-origin
@@ -25,7 +25,8 @@
 //  - Permissions-Policy: camera/microphone/geolocation disabled (unused).
 const isDev = process.env.NODE_ENV === "development";
 
-const csp = [
+// Shared CSP directives, minus frame-ancestors (which differs per route group).
+const baseCspDirectives = [
   "default-src 'self'",
   // 'unsafe-inline' for Next.js' inline bootstrap scripts; 'unsafe-eval' only in
   // dev for React Refresh / HMR.
@@ -35,17 +36,38 @@ const csp = [
   "font-src 'self' data:",
   // 'self' covers the app's own API; ws: in dev for the HMR socket.
   `connect-src 'self'${isDev ? " ws:" : ""}`,
-  "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
-].join("; ");
+];
 
+// Strict CSP for all non-embed routes: framing disallowed.
+const csp = [...baseCspDirectives, "frame-ancestors 'none'"].join("; ");
+
+// Relaxed CSP for the public /embed widget: framable from anywhere. All other
+// directives stay strict; only frame-ancestors opens up (mirrors dropping
+// X-Frame-Options for those routes).
+const embedCsp = [...baseCspDirectives, "frame-ancestors *"].join("; ");
+
+// Strict headers for every non-embed route (includes X-Frame-Options: DENY).
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "DENY" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
+  },
+];
+
+// Embed headers: same hardening MINUS X-Frame-Options: DENY, with a framable
+// CSP. Deliberately omits X-Frame-Options so the widget can be iframed by
+// newsrooms/blogs on other origins.
+const embedSecurityHeaders = [
+  { key: "Content-Security-Policy", value: embedCsp },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
@@ -91,8 +113,21 @@ const nextConfig = isExport
       async headers() {
         return [
           {
-            // Apply to all routes.
-            source: "/:path*",
+            // Public embed widget: framable. Relaxed headers (no X-Frame-Options
+            // DENY, CSP frame-ancestors *). Most-specific rules first.
+            source: "/embed",
+            headers: embedSecurityHeaders,
+          },
+          {
+            source: "/embed/:path*",
+            headers: embedSecurityHeaders,
+          },
+          {
+            // All other routes: strict headers (X-Frame-Options DENY +
+            // frame-ancestors 'none'). The negative lookahead excludes /embed so
+            // the framable routes above are the sole source of their headers
+            // (avoids emitting X-Frame-Options for them).
+            source: "/((?!embed$|embed/).*)",
             headers: securityHeaders,
           },
           {
