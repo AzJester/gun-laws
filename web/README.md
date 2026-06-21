@@ -455,6 +455,74 @@ The court lane has two halves:
 
 ---
 
+## Testing & CI
+
+Tests use **Vitest** (`node` environment) and are written to pass with **no
+database, no network egress, and no API keys** — they target the JSON fallback,
+pure functions, and graceful-degradation paths. No running server is needed:
+route handlers are imported and invoked with a plain `Request`.
+
+```bash
+cd web
+npm test          # vitest run (unit + route-handler integration)
+npm run test:watch
+```
+
+Coverage at a glance (`web/test/*.test.ts`):
+
+- **grading** — `gradeColor`/`gradeTextColor` index alignment; `displayGrade`
+  identity (rights) and A↔F mirror (safety); `policyYes("red_flag")` is red.
+- **reciprocity** — `honors` / `honoredIn` / `isPermitless` / `honorsPermitFrom`
+  invariants over the bundled matrix.
+- **ingest classifier** — with no `ANTHROPIC_API_KEY`, `classifyChange` returns
+  `method:"rules"` and maps obvious keywords (red flag/ERPO → `red_flag`;
+  enjoined/struck → status) without throwing.
+- **ingest dedupe** — duplicate `externalRef`s collapse to one record.
+- **email** — `sendEmail` with no provider key returns `{ skipped:true }` and
+  never throws (and never sends under `NODE_ENV=test`).
+- **subscriptions** — `isValidEmail` / `normalizeScope` / `scopeMatches`, plus
+  the no-DB `createPendingSubscription` graceful path.
+- **data loaders** — `getStates()` returns 51 sorted; `getState("AZ")` = A,
+  `getState("CA")` = F with cited provisions, `getState("DC")` lawCount null,
+  unknown → null.
+- **route handlers** — `GET /api/states` (51 + disclaimer), `/api/states/[code]`
+  (CA 200 / unknown 404), `GET /api/changelog` (200 array), `POST /api/subscribe`
+  (no-DB 503, bad email 400), `GET /feed.xml` (200 Atom XML with entries).
+
+The `@/*` alias is resolved in `vitest.config.ts` (mirrors `tsconfig.json`).
+
+### Optional end-to-end (Playwright)
+
+A minimal smoke spec lives in `web/e2e/` but is **excluded from `npm test` and
+from CI** (browser binaries may be blocked). To run it locally:
+
+```bash
+cd web
+npm i -D @playwright/test
+npx playwright install chromium
+npm run test:e2e
+```
+
+### Continuous integration
+
+Two GitHub Actions workflows live at the repo root in `.github/workflows/`:
+
+- **`ci.yml`** (push + pull_request, Node 20) — runs with `DATABASE_URL` unset:
+  `npm ci` → `npx prisma generate` → `tsc --noEmit` → `npm test` →
+  `npm run build` → **data reproducibility check** (rebuild `data/sample-states.json`
+  and `mockup/index.html` from their deterministic sources and `git diff
+  --exit-code`) → `npm run ingest -- --dry-run` (must exit 0). It is green on the
+  committed tree with no secrets.
+- **`ingest.yml`** (cron every 6h + `workflow_dispatch`) — the **live** ingestion
+  run, separate from CI. Uses repo secrets (`LEGISCAN_API_KEY`,
+  `OPENSTATES_API_KEY`, `COURTLISTENER_API_TOKEN`, `ANTHROPIC_API_KEY`,
+  `DATABASE_URL`) and no-ops gracefully (exit 0) when they're absent. The runner
+  needs outbound egress to `api.legiscan.com`, `v3.openstates.org`,
+  `www.courtlistener.com`, and `api.anthropic.com` (see
+  [Network / egress allowlist](#network--egress-allowlist-important)).
+
+---
+
 ## Project layout
 
 ```
@@ -465,6 +533,8 @@ web/
 ├─ scripts/
 │  ├─ ingest.ts            # CLI: npm run ingest -- --dry-run ...
 │  └─ send-alerts.ts       # CLI: npm run alerts -- --dry-run ...
+├─ test/                   # Vitest unit + route-handler integration tests
+├─ e2e/                    # OPTIONAL Playwright smoke test (not in CI / npm test)
 ├─ src/
 │  ├─ app/
 │  │  ├─ api/states/route.ts            # GET /api/states
@@ -510,5 +580,6 @@ web/
 │     └─ ingest/           # LegiScan + Open States + CourtListener + classifier
 ├─ docker-compose.yml      # Postgres 16
 ├─ .env.example
+├─ vitest.config.ts        # Vitest config (node env, @/* alias)
 └─ ...config (tsconfig, tailwind, postcss, next)
 ```

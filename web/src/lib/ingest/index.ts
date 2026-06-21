@@ -67,7 +67,7 @@ function normalizeStates(states?: string[]): string[] {
 }
 
 /** Dedupe by externalRef; keep the record with the most recent eventDate. */
-function dedupe(records: NormalizedChange[]): NormalizedChange[] {
+export function dedupe(records: NormalizedChange[]): NormalizedChange[] {
   const byRef = new Map<string, NormalizedChange>();
   for (const r of records) {
     if (!r.externalRef || !r.state) continue;
