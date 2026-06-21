@@ -1,0 +1,211 @@
+// GunLawMap — Phase-1 data spine.
+//
+// Versioned & provenance-first, per docs/DATA-MODEL.md:
+//  - every published fact ties to a Source + verified date
+//  - changes APPEND a new ProvisionVersion rather than overwriting
+//  - a Provision points to its current ProvisionVersion (live pointer)
+//  - enjoined/struck laws keep their row with a status change (soft transition)
+//
+// NOTE: nothing in this file opens a connection at import time. The app only
+// connects lazily, and only when DATABASE_URL is set (see src/lib/data.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum ProvisionStatus {
+  in_effect
+  enacted_not_yet_effective
+  enjoined
+  struck
+  repealed
+}
+
+enum Confidence {
+  confirmed
+  auto_suggested
+}
+
+enum SourceKind {
+  statute
+  enrolled_bill
+  court_order
+  agency_rule
+  dataset
+}
+
+enum ChangeKind {
+  enacted
+  effective
+  court_ruling
+  introduced
+  amended
+  repealed
+}
+
+enum ReviewStatus {
+  auto_detected
+  in_review
+  published
+  rejected
+}
+
+enum SubscriptionChannel {
+  email
+  rss
+}
+
+// ---------------------------------------------------------------------------
+// Core read entities
+// ---------------------------------------------------------------------------
+
+model State {
+  code           String  @id @db.Char(2) // "CA", "TX", "DC"
+  name           String
+  // Derived overall grade. A = FEWEST restrictions, F = most (opposite of
+  // gun-safety scorecards). Persisted for fast reads; recomputable from policies.
+  overallGrade   String  @map("overall_grade")
+  restrictions   Int     @default(0) // count of tracked restriction policies (0..6)
+  gridRow        Int?    @map("grid_row")
+  gridCol        Int?    @map("grid_col")
+  preemptionNote String? @map("preemption_note")
+
+  policies     StatePolicy[]
+  provisions   Provision[]
+  changeEvents ChangeEvent[]
+
+  @@map("state")
+}
+
+// Canonical list of trackable policies (drives map color modes + at-a-glance flags).
+model PolicyType {
+  key       String  @id // "permitless_carry", "universal_bg_check", ...
+  label     String
+  category  String
+  // Does a `true` value mean MORE or FEWER restrictions?
+  direction String  @default("restriction") // "restriction" | "freedom"
+  sortOrder Int     @default(0) @map("sort_order")
+
+  statePolicies StatePolicy[]
+
+  @@map("policy_type")
+}
+
+// Current at-a-glance value per state x policy.
+model StatePolicy {
+  id         Int     @id @default(autoincrement())
+  stateCode  String  @map("state_code") @db.Char(2)
+  policyKey  String  @map("policy_key")
+  // Illustrative values are boolean; modelled as text to allow "partial" / "10 rds".
+  value      String
+  provisionId Int?   @map("provision_id")
+
+  state     State      @relation(fields: [stateCode], references: [code], onDelete: Cascade)
+  policy    PolicyType @relation(fields: [policyKey], references: [key], onDelete: Cascade)
+  provision Provision? @relation(fields: [provisionId], references: [id], onDelete: SetNull)
+
+  @@unique([stateCode, policyKey])
+  @@index([policyKey])
+  @@map("state_policy")
+}
+
+// A specific law in a state.
+model Provision {
+  id               Int     @id @default(autoincrement())
+  stateCode        String  @map("state_code") @db.Char(2)
+  category         String
+  title            String
+  currentVersionId Int?    @unique @map("current_version_id")
+
+  state          State              @relation(fields: [stateCode], references: [code], onDelete: Cascade)
+  // The live version pointer. Versions also back-reference via ProvisionVersion.provisionId.
+  currentVersion ProvisionVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions       ProvisionVersion[] @relation("AllVersions")
+  statePolicies  StatePolicy[]
+  changeEvents   ChangeEvent[]
+
+  @@index([stateCode])
+  @@index([category])
+  @@map("provision")
+}
+
+// Append-only history. A new version is added per change; old rows are kept.
+model ProvisionVersion {
+  id            Int             @id @default(autoincrement())
+  provisionId   Int             @map("provision_id")
+  summary       String
+  citation      String?
+  status        ProvisionStatus @default(in_effect)
+  enactedDate   DateTime?       @map("enacted_date") @db.Date
+  effectiveDate DateTime?       @map("effective_date") @db.Date
+  verifiedAt    DateTime?       @map("verified_at")
+  verifiedBy    String?         @map("verified_by")
+  confidence    Confidence      @default(confirmed)
+  supersededById Int?           @map("superseded_by")
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  provision    Provision          @relation("AllVersions", fields: [provisionId], references: [id], onDelete: Cascade)
+  // The Provision row that points back here as its current/live version.
+  currentFor   Provision?         @relation("CurrentVersion")
+  supersededBy ProvisionVersion?  @relation("Supersession", fields: [supersededById], references: [id], onDelete: SetNull)
+  supersedes   ProvisionVersion[] @relation("Supersession")
+  sources      Source[]
+
+  @@index([provisionId])
+  @@map("provision_version")
+}
+
+model Source {
+  id                 Int        @id @default(autoincrement())
+  provisionVersionId Int        @map("provision_version_id")
+  kind               SourceKind
+  url                String
+  label              String
+  retrievedAt        DateTime?  @map("retrieved_at")
+
+  provisionVersion ProvisionVersion @relation(fields: [provisionVersionId], references: [id], onDelete: Cascade)
+
+  @@index([provisionVersionId])
+  @@map("source")
+}
+
+// Powers the "recent changes" feed + (v2) notifications.
+model ChangeEvent {
+  id          Int          @id @default(autoincrement())
+  stateCode   String       @map("state_code") @db.Char(2)
+  policyKey   String?      @map("policy_key")
+  provisionId Int?         @map("provision_id")
+  kind        ChangeKind
+  headline    String
+  eventDate   DateTime     @map("event_date") @db.Date
+  externalRef String?      @map("external_ref")
+  reviewStatus ReviewStatus @default(published) @map("review_status")
+
+  state     State      @relation(fields: [stateCode], references: [code], onDelete: Cascade)
+  provision Provision? @relation(fields: [provisionId], references: [id], onDelete: SetNull)
+
+  @@index([stateCode])
+  @@index([eventDate])
+  @@map("change_event")
+}
+
+// v2 — optional. Minimal PII; scope is JSON (states[], policies[]).
+model Subscription {
+  id        Int                 @id @default(autoincrement())
+  email     String
+  scope     Json
+  channel   SubscriptionChannel @default(email)
+  createdAt DateTime            @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("subscription")
+}
