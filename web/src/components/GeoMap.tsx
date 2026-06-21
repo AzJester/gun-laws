@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { mapSummary, stateAriaLabel } from "@/lib/a11y";
 import type { Orientation } from "@/lib/grading";
@@ -59,7 +59,7 @@ export default function GeoMap({
     setCentroids(cen);
   }, [geo]);
 
-  const codes = Object.keys(geo.states);
+  const codes = useMemo(() => Object.keys(geo.states), [geo]);
 
   // External leader-line label column for the small NE cluster.
   const LX = 1006;
@@ -73,10 +73,12 @@ export default function GeoMap({
   // state with its grade and law count, where each row is a focusable button.
   // This is the keyboard / assistive-tech path. The SVG itself is exposed as a
   // single decorative image (role="img") so AT doesn't try to traverse 51 paths.
-  const summaryStates = codes
-    .map((c) => states[c])
-    .filter((s): s is StateSummary => Boolean(s));
-  const summary = mapSummary(summaryStates, orient);
+  const summary = useMemo(() => {
+    const summaryStates = codes
+      .map((c) => states[c])
+      .filter((s): s is StateSummary => Boolean(s));
+    return mapSummary(summaryStates, orient);
+  }, [codes, states, orient]);
   const showGrade = orient !== "count";
 
   return (

@@ -1,11 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import ChangesFeed from "./ChangesFeed";
 import GeoMap from "./GeoMap";
 import StateDetail from "./StateDetail";
+
+// ChangesFeed lives below the fold (right column, after the detail panel) and is
+// not needed for first paint, so it's code-split out of the initial bundle. It's
+// client-only (interactive list, no SEO value) → ssr: false with a light
+// placeholder that holds the layout while the chunk loads.
+const ChangesFeed = dynamic(() => import("./ChangesFeed"), {
+  ssr: false,
+  loading: () => (
+    <p className="py-3 text-[13px] text-[var(--muted)]">Loading changes…</p>
+  ),
+});
 
 import { lawCountLabel, selectionAnnouncement } from "@/lib/a11y";
 import type { GeoData } from "@/lib/geo";
@@ -290,28 +301,27 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
     [search, states],
   );
 
-  const [endLeft, endRight] = legendEnds(orient);
+  const [endLeft, endRight] = useMemo(() => legendEnds(orient), [orient]);
 
   // Polite live-region message announced whenever the selected state changes (or
   // the year moves), so screen-reader users know the detail panel has updated.
   const selectedSummary = byCode[selected];
-  const selectedEntry: TimeSeriesEntry | null = isHistorical
-    ? entryFor(timeSeries, selected, year)
-    : null;
-  let announcement = "";
-  if (selectedSummary) {
+  const selectedEntry: TimeSeriesEntry | null = useMemo(
+    () => (isHistorical ? entryFor(timeSeries, selected, year) : null),
+    [isHistorical, timeSeries, selected, year],
+  );
+  const announcement = useMemo(() => {
+    if (!selectedSummary) return "";
     if (selectedEntry) {
       const grade = displayGrade(selectedEntry.g, orient);
-      announcement =
-        orient === "count"
-          ? `Showing ${selectedSummary.name}, ${year} snapshot, ${lawCountLabel(
-              selectedEntry.n,
-            )}`
-          : `Showing ${selectedSummary.name}, ${year} snapshot, grade ${grade}`;
-    } else {
-      announcement = selectionAnnouncement(selectedSummary, orient);
+      return orient === "count"
+        ? `Showing ${selectedSummary.name}, ${year} snapshot, ${lawCountLabel(
+            selectedEntry.n,
+          )}`
+        : `Showing ${selectedSummary.name}, ${year} snapshot, grade ${grade}`;
     }
-  }
+    return selectionAnnouncement(selectedSummary, orient);
+  }, [selectedSummary, selectedEntry, orient, year]);
 
   return (
     <>

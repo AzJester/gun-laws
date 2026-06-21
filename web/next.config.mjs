@@ -52,6 +52,19 @@ const securityHeaders = [
   },
 ];
 
+// Long-cache the generated static data (states list + per-state detail +
+// time-series JSON under public/data/). These are produced at build time by
+// scripts/gen-static-data.ts and only change on a redeploy, so they can be
+// cached for an hour and served stale-while-revalidate for a day. Server mode
+// only — `output: "export"` has no server to set headers (CDN config handles it
+// there), so this is omitted in EXPORT mode.
+const dataCacheHeaders = [
+  {
+    key: "Cache-Control",
+    value: "public, max-age=3600, stale-while-revalidate=86400",
+  },
+];
+
 // Dual-mode config:
 //
 //  - NORMAL mode (no PAGES_EXPORT): the current server app. Keeps headers() (the
@@ -81,6 +94,11 @@ const nextConfig = isExport
             // Apply to all routes.
             source: "/:path*",
             headers: securityHeaders,
+          },
+          {
+            // Long-cache the generated static data assets.
+            source: "/data/:path*",
+            headers: dataCacheHeaders,
           },
         ];
       },
