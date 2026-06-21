@@ -5,6 +5,7 @@
   "description": "GunLawMap — Phase-1 interactive US firearm-law map (Next.js + Postgres).",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "tsx scripts/gen-static-data.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -8,6 +8,9 @@
 # production
 /build
 
+# generated static detail data (written by scripts/gen-static-data.ts at prebuild)
+/public/data/
+
 # misc
 .DS_Store
 *.pem

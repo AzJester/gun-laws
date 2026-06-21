@@ -2,9 +2,10 @@ import Link from "next/link";
 
 import { getPublishedChanges } from "@/lib/data";
 
-// Public changelog. Reads at request time (DB published events or JSON
-// fallback); keep dynamic so `next build` never renders it without a DB.
-export const dynamic = "force-dynamic";
+// Public changelog. Renders statically: on the server build it reads the DB
+// published events (or the JSON snapshot fallback) at build time; in the static
+// Pages export it renders the no-DB snapshot. Either way `next build` produces a
+// static page.
 
 const TAG_STYLE: Record<string, { background: string; color: string }> = {
   enacted: { background: "#16341f", color: "#56d364" },

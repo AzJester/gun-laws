@@ -9,9 +9,8 @@ import {
   RECIPROCITY_DISCLAIMER,
 } from "@/lib/reciprocity";
 
-// Reads the state list (names) at request time; the matrix itself is bundled
-// JSON. Dynamic so `next build` never renders it without a DB.
-export const dynamic = "force-dynamic";
+// Reads the state list (names) at build time; the matrix itself is bundled JSON.
+// Renders statically (no DB needed) so it works in the static Pages export.
 
 export const metadata: Metadata = {
   title: "Concealed-carry reciprocity",

@@ -18,15 +18,22 @@ import {
   type StateDetail,
 } from "@/lib/types";
 
-// Reads each state's full detail at request time (DB or JSON fallback). Dynamic
-// so `next build` never renders it without a DB and the ?states= query is honored.
-export const dynamic = "force-dynamic";
+// Reads each state's full detail at build time (DB or JSON fallback) and renders
+// statically. On the server build Next still serves the ?states= query (the page
+// re-renders per request when searchParams are present); in the static export it
+// renders the default selection and the client CompareSelector drives ?states=.
 
 export const metadata: Metadata = {
   title: "Compare states",
   description:
     "Compare 2–4 US states side by side: overall grade, law count, the six headline policy flags, and a category-by-category view of tracked firearm laws.",
 };
+
+// In the static Pages export there is no server to read the request, so reading
+// `searchParams` would force dynamic rendering (unsupported with output:export).
+// In that mode we render the default selection and let the client
+// CompareSelector drive ?states= in the URL.
+const IS_STATIC = process.env.NEXT_PUBLIC_STATIC === "1";
 
 const MIN = 2;
 const MAX = 4;
@@ -48,8 +55,12 @@ export default async function ComparePage({
 }: {
   searchParams: { states?: string; orient?: string };
 }) {
-  const codes = parseStates(searchParams.states);
-  const orient: Orientation = parseOrientation(searchParams.orient);
+  // Avoid touching `searchParams` at all in static-export mode (reading it would
+  // opt the route into dynamic rendering and break `output: export`).
+  const codes = IS_STATIC ? DEFAULT_STATES : parseStates(searchParams.states);
+  const orient: Orientation = IS_STATIC
+    ? parseOrientation(undefined)
+    : parseOrientation(searchParams.orient);
 
   const [allStates, details] = await Promise.all([
     getStates(),

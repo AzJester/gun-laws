@@ -30,6 +30,44 @@ Because `DATABASE_URL` is not set, all reads go through the JSON fallback in
 
 ---
 
+## Deploy / view on the web (GitHub Pages — static public site)
+
+A fully static, read-only copy of the public app is published to **GitHub Pages**:
+
+> **https://azjester.github.io/gun-laws**  (project-pages base path `/gun-laws`)
+
+This is the **public read-only experience**: the interactive map, **every state
+page**, **compare**, **reciprocity**, **glossary**, **federal**, **methodology**,
+**about**, and the **changelog snapshot**. State detail is served from static
+JSON generated at build time, so the map needs no API at runtime.
+
+**Enabling is automatic** via the GitHub Action
+(`.github/workflows/pages.yml`): it builds and deploys on push to `main` (and can
+be run manually via *Actions → Deploy static site to GitHub Pages → Run
+workflow*). If Pages isn't on yet, the Action enables it; otherwise set
+**Settings → Pages → Source: GitHub Actions**.
+
+Server-only features are **not** part of the static site and need a server host
+(Vercel / Node) to run: the **alerts** (subscribe/confirm/unsubscribe) flow,
+**ingestion**, the editorial **review** queue, the live **API** (`/api/*`), and
+the **RSS/Atom feed** (`/feed.xml`). On the static demo these surfaces show a
+short "server-only on the live demo" note instead.
+
+How the build works (handled by the Action — you don't run these by hand):
+
+```bash
+cd web
+# move server-only routes aside so `output: export` won't choke on them, then:
+PAGES_EXPORT=1 NEXT_PUBLIC_BASE_PATH=/gun-laws NEXT_PUBLIC_STATIC=1 npm run build
+# → static site in web/out/ (basePath /gun-laws), plus a touch out/.nojekyll
+```
+
+`PAGES_EXPORT=1` switches `next.config.mjs` to `output: "export"` (no security
+`headers()` — unsupported in export); the normal `npm run build` is unchanged and
+still produces the server app with the API routes and headers intact.
+
+---
+
 ## Full run (with Postgres)
 
 ```bash

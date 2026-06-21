@@ -5,9 +5,11 @@ import SubscribeForm from "@/components/SubscribeForm";
 import { getStates } from "@/lib/data";
 import { POLICY_KEYS, POLICY_LABELS } from "@/lib/types";
 
-// Reads the state list at request time (DB or JSON fallback); keep dynamic so
-// `next build` never renders it without a DB.
-export const dynamic = "force-dynamic";
+// Reads the state list at build time (DB or JSON fallback) and renders
+// statically. Email subscriptions + the RSS feed are server-only, so in the
+// static Pages export (NEXT_PUBLIC_STATIC=1) we show a note instead of a form
+// that would POST to a non-existent API.
+const IS_STATIC = process.env.NEXT_PUBLIC_STATIC === "1";
 
 export const metadata: Metadata = {
   title: "Alerts & subscriptions",
@@ -46,18 +48,37 @@ export default async function AlertsPage() {
       </div>
 
       <h1 className="m-0 text-2xl font-bold">Alerts &amp; subscriptions</h1>
-      <p className="mt-1 max-w-[640px] text-sm text-[var(--muted)]">
-        Get a short email digest when published firearm-law changes match the
-        states and topics you choose. Prefer no email? Follow the{" "}
-        <a href="/feed.xml" className="text-[var(--accent)] hover:underline">
-          RSS / Atom feed
-        </a>{" "}
-        instead (filter to one state with{" "}
-        <code className="rounded bg-[var(--panel-2)] px-1">?state=CA</code>).
-      </p>
+      {IS_STATIC ? (
+        <p className="mt-1 max-w-[640px] text-sm text-[var(--muted)]">
+          Get a short email digest when published firearm-law changes match the
+          states and topics you choose, or follow the RSS / Atom feed. These are
+          server-only features, not available on the static demo.
+        </p>
+      ) : (
+        <p className="mt-1 max-w-[640px] text-sm text-[var(--muted)]">
+          Get a short email digest when published firearm-law changes match the
+          states and topics you choose. Prefer no email? Follow the{" "}
+          <a href="/feed.xml" className="text-[var(--accent)] hover:underline">
+            RSS / Atom feed
+          </a>{" "}
+          instead (filter to one state with{" "}
+          <code className="rounded bg-[var(--panel-2)] px-1">?state=CA</code>).
+        </p>
+      )}
 
       <section className="mt-6 rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
-        <SubscribeForm states={stateOptions} policies={policyOptions} />
+        {IS_STATIC ? (
+          <p className="m-0 text-sm text-[var(--muted)]">
+            <strong className="text-[#e3b341]">
+              Not available on the static demo.
+            </strong>{" "}
+            Email subscriptions and the RSS feed require a server backend (live
+            API). They work on the full hosted deployment — see the project
+            README for how to run the server build.
+          </p>
+        ) : (
+          <SubscribeForm states={stateOptions} policies={policyOptions} />
+        )}
       </section>
 
       <p className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">

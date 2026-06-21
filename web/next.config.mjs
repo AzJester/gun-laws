@@ -52,17 +52,38 @@ const securityHeaders = [
   },
 ];
 
-const nextConfig = {
-  reactStrictMode: true,
-  async headers() {
-    return [
-      {
-        // Apply to all routes.
-        source: "/:path*",
-        headers: securityHeaders,
+// Dual-mode config:
+//
+//  - NORMAL mode (no PAGES_EXPORT): the current server app. Keeps headers() (the
+//    security headers above) and all the dynamic API/feed routes.
+//
+//  - EXPORT mode (PAGES_EXPORT=1): a fully static site for GitHub Pages
+//    (`next build` → out/). Served under the project-pages base path /gun-laws.
+//    `output: "export"` does NOT support a headers() function (there is no server
+//    to set them), so we deliberately omit it in this mode.
+const isExport = process.env.PAGES_EXPORT === "1";
+
+/** @type {import('next').NextConfig} */
+const nextConfig = isExport
+  ? {
+      reactStrictMode: true,
+      output: "export",
+      basePath: "/gun-laws",
+      images: { unoptimized: true },
+      trailingSlash: true,
+      // No headers() in export mode — unsupported with `output: "export"`.
+    }
+  : {
+      reactStrictMode: true,
+      async headers() {
+        return [
+          {
+            // Apply to all routes.
+            source: "/:path*",
+            headers: securityHeaders,
+          },
+        ];
       },
-    ];
-  },
-};
+    };
 
 export default nextConfig;

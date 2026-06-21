@@ -55,6 +55,13 @@ const SINGLE_POLICY_LABEL: Record<string, string> = {
 
 const ORIENT_STORAGE_KEY = "gunlawmap:orient";
 
+// State detail is served as a static asset generated at build time
+// (scripts/gen-static-data.ts → public/data/states/<code>.json), so the map
+// needs no API at runtime and works in both the server build and the static
+// Pages export. NEXT_PUBLIC_BASE_PATH is set (to "/gun-laws") only in the Pages
+// export so the asset URL respects the project-pages base path.
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 // Law-count color ramp for the neutral "count" view: few laws (green) → many (red),
 // so the shading reads the same direction as the gun-rights grade ramp.
 // Text colors are tuned for WCAG AA contrast against each fill (same fixes as
@@ -119,15 +126,16 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
     [changes],
   );
 
-  // Fetch full detail for the selected state.
+  // Fetch full detail for the selected state from the static JSON asset (the
+  // file is the StateDetail object itself, no `.state` wrapper).
   useEffect(() => {
     if (!selected) return;
     let cancelled = false;
     setDetailLoading(true);
-    fetch(`/api/states/${selected}`)
-      .then((r) => (r.ok ? r.json() : null))
+    fetch(`${BASE}/data/states/${selected.toLowerCase()}.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<StateDetailType>) : null))
       .then((data) => {
-        if (!cancelled) setDetail(data ? data.state : null);
+        if (!cancelled) setDetail(data);
       })
       .catch(() => {
         if (!cancelled) setDetail(null);

@@ -4,9 +4,10 @@ import MapExplorer from "@/components/MapExplorer";
 import { getRecentChanges, getStates } from "@/lib/data";
 import { getGeo } from "@/lib/geo";
 
-// Reads fs / DB at request time — keep it dynamic so `next build` never tries to
-// statically render (and so the JSON fallback is exercised at runtime).
-export const dynamic = "force-dynamic";
+// Reads JSON (or DB) at build time and renders statically — faster, and required
+// for the static Pages export. The selected state's full detail is fetched
+// client-side from a static JSON asset (see MapExplorer).
+const IS_STATIC = process.env.NEXT_PUBLIC_STATIC === "1";
 
 export default async function HomePage() {
   const [geo, states, changes] = await Promise.all([
@@ -30,9 +31,15 @@ export default async function HomePage() {
           <Link href="/alerts" className="text-[var(--accent)] hover:underline">
             Get change alerts →
           </Link>
-          <a href="/feed.xml" className="text-[var(--accent)] hover:underline">
-            RSS feed →
-          </a>
+          {IS_STATIC ? (
+            <span className="text-[var(--muted)]">
+              RSS feed (server-only on the live demo)
+            </span>
+          ) : (
+            <a href="/feed.xml" className="text-[var(--accent)] hover:underline">
+              RSS feed →
+            </a>
+          )}
           <Link href="/changelog" className="text-[var(--accent)] hover:underline">
             View the published changelog →
           </Link>
