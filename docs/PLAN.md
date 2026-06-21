@@ -307,9 +307,9 @@ A static ASCII wireframe of the layout is in [`docs/WIREFRAME.md`](WIREFRAME.md)
 
 | Phase | Deliverables |
 |---|---|
-| **0 — Foundations (now)** | This plan, data model, wireframe, **interactive geographic mockup** ✅ |
-| **1 — Data spine** | Postgres schema + versioning; import RAND baseline; categories; seed 50+DC overall grades |
-| **2 — Public MVP** | Next.js site, map (tile grid + geo toggle), detail view with citations, search, disclaimer |
+| **0 — Foundations** | This plan, data model, wireframe; **interactive mockup with geo ↔ tile toggle** and **provisions for all 50 states + DC** ✅ |
+| **1 — Data spine** | Postgres schema + versioning (Prisma); seed all 50+DC from the canonical dataset; import RAND baseline 🚧 *scaffold in [`web/`](../web/)* |
+| **2 — Public MVP** | Next.js site, map (geo + tile toggle), detail view with citations, search, disclaimer 🚧 *scaffold in [`web/`](../web/)* |
 | **3 — Live updates** | LegiScan + Open States ingestion → classifier → editorial review queue → publish + changelog |
 | **4 — Engagement** | Email/RSS subscriptions, compare view, recent-changes feed in prod |
 | **5 — Depth** | Court-feed integration, historical "as-of" view, public API + downloads |

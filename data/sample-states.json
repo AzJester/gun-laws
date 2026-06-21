@@ -20,7 +20,8 @@
       "https://legiscan.com/legiscan",
       "https://docs.openstates.org/api-v3/"
     ],
-    "grading": "Grade reflects how FEW restrictions a state imposes (fewer = higher). restrictions = count of the six tracked restriction policies (permit-to-carry counts as a restriction; permitless_carry is its absence). Grade scale by count: 0=A, 1=A-, 2=B, 3=C, 4=D, 5=D-, 6=F. This is the opposite orientation from gun-safety scorecards such as Giffords."
+    "grading": "Grade reflects how FEW restrictions a state imposes (fewer = higher). restrictions = count of the six tracked restriction policies (permit-to-carry counts as a restriction; permitless_carry is its absence). Grade scale by count: 0=A, 1=A-, 2=B, 3=C, 4=D, 5=D-, 6=F. This is the opposite orientation from gun-safety scorecards such as Giffords.",
+    "provisions": "Every state has categorized provisions. Flagship states (AZ, CA, TX, NY, FL, CO) are hand-written with statute citations; all others are derived consistently from policy flags (no per-statute citation yet). Illustrative sample data — not legal advice."
   },
   "states": {
     "CA": {
@@ -38,7 +39,84 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 6
+      "restrictions": 6,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Shall-issue CCW permit required for public carry (post-Bruen framework).",
+              "citation": "Penal Code §26150"
+            },
+            {
+              "text": "“Sensitive places” carry restrictions in effect.",
+              "citation": "SB 2 (2023)"
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Universal background checks on all sales/transfers via licensed dealer.",
+              "citation": "Pen. Code §28050"
+            },
+            {
+              "text": "10-day waiting period.",
+              "citation": "Pen. Code §26815"
+            },
+            {
+              "text": "Firearm Safety Certificate required.",
+              "citation": "Pen. Code §31610"
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "Assault-weapon ban + registration of pre-ban arms.",
+              "citation": "Pen. Code §30605"
+            },
+            {
+              "text": "Large-capacity magazines (>10 rds) prohibited.",
+              "citation": "Pen. Code §32310"
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access prevention requirements.",
+              "citation": "Pen. Code §25100"
+            },
+            {
+              "text": "Roster of approved handguns.",
+              "citation": "Pen. Code §31900"
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "Gun Violence Restraining Orders available to family, police, employers, teachers.",
+              "citation": "Pen. Code §18100"
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "Localities may enact firearm rules stricter than state law in many areas.",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": true
     },
     "NY": {
       "name": "New York",
@@ -55,7 +133,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "License required to carry; “good moral character” + sensitive-location limits (CCIA 2022).",
+              "citation": "Penal Law §400.00"
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Universal background checks; state-run check supplements NICS.",
+              "citation": "Gen. Bus. Law §898"
+            },
+            {
+              "text": "Permit/registration for handguns; semi-auto rifle license (age 21+).",
+              "citation": "Penal Law §265.00"
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "SAFE Act assault-weapon ban; registration of pre-ban arms.",
+              "citation": "Penal Law §265.00(22)"
+            },
+            {
+              "text": "Magazines limited to 10 rounds.",
+              "citation": "Penal Law §265.36"
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage requirements where minors or prohibited persons are present.",
+              "citation": "Penal Law §265.45"
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "ERPO available; certain officials required to file when warranted.",
+              "citation": "CPLR Art. 63-A"
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "NYC and other localities impose additional firearm rules.",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": true
     },
     "NJ": {
       "name": "New Jersey",
@@ -72,7 +215,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "CT": {
       "name": "Connecticut",
@@ -89,7 +297,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MA": {
       "name": "Massachusetts",
@@ -106,7 +379,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "HI": {
       "name": "Hawaii",
@@ -123,7 +461,72 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 6
+      "restrictions": 6,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MD": {
       "name": "Maryland",
@@ -140,7 +543,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "DC": {
       "name": "District of Columbia",
@@ -157,7 +625,72 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 6
+      "restrictions": 6,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "IL": {
       "name": "Illinois",
@@ -174,7 +707,72 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 6
+      "restrictions": 6,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "WA": {
       "name": "Washington",
@@ -191,7 +789,72 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 6
+      "restrictions": 6,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "RI": {
       "name": "Rhode Island",
@@ -208,7 +871,72 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "CO": {
       "name": "Colorado",
@@ -225,7 +953,76 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Shall-issue concealed-carry permit required.",
+              "citation": "CRS §18-12-203"
+            },
+            {
+              "text": "Local sensitive-place restrictions permitted.",
+              "citation": "SB 23-256"
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Universal background checks on transfers.",
+              "citation": "CRS §18-12-112"
+            },
+            {
+              "text": "3-day waiting period.",
+              "citation": "CRS §18-12-115 (2023)"
+            },
+            {
+              "text": "Purchase age 21 for most firearms (2023).",
+              "citation": "SB 23-169"
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "Large-capacity magazines (>15 rds) prohibited.",
+              "citation": "CRS §18-12-302"
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage + lost/stolen reporting.",
+              "citation": "CRS §18-12-114"
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "ERPO available; expanded petitioners (2023).",
+              "citation": "CRS §13-14.5-103"
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "Localities may enact rules stricter than state law (2021).",
+              "citation": "SB 21-256"
+            }
+          ]
+        }
+      ],
+      "detailed": true
     },
     "DE": {
       "name": "Delaware",
@@ -242,7 +1039,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 5
+      "restrictions": 5,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "The state restricts the sale/possession of certain “assault weapons.”",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "OR": {
       "name": "Oregon",
@@ -259,7 +1121,72 @@
         "magazine_limit": true,
         "waiting_period": false
       },
-      "restrictions": 4
+      "restrictions": 4,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "NM": {
       "name": "New Mexico",
@@ -276,7 +1203,72 @@
         "magazine_limit": false,
         "waiting_period": true
       },
-      "restrictions": 4
+      "restrictions": 4,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "VA": {
       "name": "Virginia",
@@ -293,7 +1285,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 3
+      "restrictions": 3,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MN": {
       "name": "Minnesota",
@@ -310,7 +1367,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 3
+      "restrictions": 3,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MI": {
       "name": "Michigan",
@@ -327,7 +1449,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 3
+      "restrictions": 3,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "NV": {
       "name": "Nevada",
@@ -344,7 +1531,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 3
+      "restrictions": 3,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "VT": {
       "name": "Vermont",
@@ -361,7 +1613,72 @@
         "magazine_limit": true,
         "waiting_period": true
       },
-      "restrictions": 4
+      "restrictions": 4,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Background checks required on all firearm sales and transfers, including private sales.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazines are restricted.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "ME": {
       "name": "Maine",
@@ -378,7 +1695,72 @@
         "magazine_limit": false,
         "waiting_period": true
       },
-      "restrictions": 1
+      "restrictions": 1,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "A state waiting period applies before a buyer can take possession.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "FL": {
       "name": "Florida",
@@ -395,7 +1777,72 @@
         "magazine_limit": false,
         "waiting_period": true
       },
-      "restrictions": 2
+      "restrictions": 2,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless concealed carry of handguns for those 21+ eligible (2023).",
+              "citation": "§790.01, HB 543"
+            },
+            {
+              "text": "Open carry generally prohibited.",
+              "citation": "§790.053"
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "3-business-day waiting period on handgun purchases.",
+              "citation": "Art. I §8, Fla. Const."
+            },
+            {
+              "text": "Long-gun purchase age raised to 21 after Parkland.",
+              "citation": "§790.065(13)"
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No assault-weapon ban or magazine limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage duty when minors may access firearms.",
+              "citation": "§790.174"
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "Risk Protection Orders available to law enforcement (2018).",
+              "citation": "§790.401"
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "Strong state preemption; penalties for local officials who over-regulate.",
+              "citation": "§790.33"
+            }
+          ]
+        }
+      ],
+      "detailed": true
     },
     "PA": {
       "name": "Pennsylvania",
@@ -412,7 +1859,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 1
+      "restrictions": 1,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "NC": {
       "name": "North Carolina",
@@ -429,7 +1941,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 1
+      "restrictions": 1,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "WI": {
       "name": "Wisconsin",
@@ -446,7 +2023,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 1
+      "restrictions": 1,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "A permit/license is required to carry a concealed firearm in public (shall-issue framework).",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "OH": {
       "name": "Ohio",
@@ -463,7 +2105,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "NE": {
       "name": "Nebraska",
@@ -480,7 +2187,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "IN": {
       "name": "Indiana",
@@ -497,7 +2269,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 1
+      "restrictions": 1,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "An Extreme Risk Protection Order (“red flag”) process can temporarily remove firearms from someone found to be a danger.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "NH": {
       "name": "New Hampshire",
@@ -514,7 +2351,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "IA": {
       "name": "Iowa",
@@ -531,7 +2433,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "AL": {
       "name": "Alabama",
@@ -548,7 +2515,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "AK": {
       "name": "Alaska",
@@ -565,7 +2597,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "AZ": {
       "name": "Arizona",
@@ -582,7 +2679,68 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry; optional permit offered for reciprocity.",
+              "citation": "ARS §13-3112"
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "No state universal background check — federal NICS at licensed dealers only.",
+              "citation": null
+            },
+            {
+              "text": "No state waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state assault-weapon ban or magazine limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "No statewide safe-storage mandate.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "Strong state preemption of local firearm regulation.",
+              "citation": "ARS §13-3108"
+            }
+          ]
+        }
+      ],
+      "detailed": true
     },
     "AR": {
       "name": "Arkansas",
@@ -599,7 +2757,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "GA": {
       "name": "Georgia",
@@ -616,7 +2839,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "ID": {
       "name": "Idaho",
@@ -633,7 +2921,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "KS": {
       "name": "Kansas",
@@ -650,7 +3003,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "KY": {
       "name": "Kentucky",
@@ -667,7 +3085,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "LA": {
       "name": "Louisiana",
@@ -684,7 +3167,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MS": {
       "name": "Mississippi",
@@ -701,7 +3249,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MO": {
       "name": "Missouri",
@@ -718,7 +3331,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "MT": {
       "name": "Montana",
@@ -735,7 +3413,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "ND": {
       "name": "North Dakota",
@@ -752,7 +3495,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "OK": {
       "name": "Oklahoma",
@@ -769,7 +3577,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "SC": {
       "name": "South Carolina",
@@ -786,7 +3659,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "SD": {
       "name": "South Dakota",
@@ -803,7 +3741,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "TN": {
       "name": "Tennessee",
@@ -820,7 +3823,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "TX": {
       "name": "Texas",
@@ -837,7 +3905,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry for those 21+ legally allowed to possess.",
+              "citation": "Govt. Code §411.0205 / HB 1927 (2021)"
+            },
+            {
+              "text": "License to Carry still offered for reciprocity.",
+              "citation": "Govt. Code §411.177"
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "No state universal background check — federal NICS at licensed dealers only.",
+              "citation": null
+            },
+            {
+              "text": "No state waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state assault-weapon ban or magazine limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "No general safe-storage mandate; criminal liability if a child gains access to an unsecured gun.",
+              "citation": "Penal Code §46.13"
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "Broad state preemption of local firearm regulation.",
+              "citation": "Local Govt. Code §229.001"
+            }
+          ]
+        }
+      ],
+      "detailed": true
     },
     "UT": {
       "name": "Utah",
@@ -854,7 +3987,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "WV": {
       "name": "West Virginia",
@@ -871,7 +4069,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     },
     "WY": {
       "name": "Wyoming",
@@ -888,7 +4151,72 @@
         "magazine_limit": false,
         "waiting_period": false
       },
-      "restrictions": 0
+      "restrictions": 0,
+      "provisions": [
+        {
+          "category": "Carry",
+          "items": [
+            {
+              "text": "Permitless (“constitutional”) carry allowed for eligible adults; a permit remains available for reciprocity.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Purchase & background checks",
+          "items": [
+            {
+              "text": "Licensed-dealer sales run through the federal NICS check; private person-to-person sales are not covered by a state universal-check law.",
+              "citation": null
+            },
+            {
+              "text": "No state-mandated waiting period.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Prohibited weapons",
+          "items": [
+            {
+              "text": "No state “assault weapon” ban.",
+              "citation": null
+            },
+            {
+              "text": "No state magazine-capacity limit.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Storage & safety",
+          "items": [
+            {
+              "text": "Safe-storage / child-access-prevention rules apply in some circumstances; consult the state statute for specifics.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "No statewide red-flag / ERPO law.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Local authority",
+          "items": [
+            {
+              "text": "State firearm-preemption rules limit how localities may regulate firearms (scope varies).",
+              "citation": null
+            }
+          ]
+        }
+      ],
+      "detailed": false
     }
   }
 }

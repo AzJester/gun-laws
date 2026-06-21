@@ -27,8 +27,10 @@ In this mockup, a state's **grade reflects how few restrictions it imposes**:
 
 | Path | What it is |
 |---|---|
-| [`mockup/index.html`](mockup/index.html) | **Interactive visual mockup** — self-contained, no dependencies. Open it in any browser. |
-| [`mockup/preview.png`](mockup/preview.png) | Static preview of the map (shown above). |
+| [`mockup/index.html`](mockup/index.html) | **Interactive visual mockup** — self-contained, no dependencies. Open it in any browser. Geo ↔ tile toggle; all 50 states + DC. |
+| [`mockup/preview.png`](mockup/preview.png) | Static preview of the geographic view (shown above). |
+| [`mockup/preview-tile.png`](mockup/preview-tile.png) | Static preview of the tile-grid view. |
+| [`web/`](web/) | **Phase-1 Next.js + Postgres app** (the real build): both map views, Prisma data spine, seed, API. See `web/README.md`. |
 | [`docs/PLAN.md`](docs/PLAN.md) | Detailed build plan: vision, scope, data sources, the auto-update pipeline, architecture, stack, roadmap, risks. |
 | [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) | Versioned, provenance-first database schema. |
 | [`docs/WIREFRAME.md`](docs/WIREFRAME.md) | ASCII wireframe of the UI for quick reference. |
@@ -47,13 +49,15 @@ xdg-open mockup/index.html
 ```
 
 ### What the mockup demonstrates
-- A **real geographic US map** (Albers-USA projection, with Alaska & Hawaii inset),
-  one clickable state per shape, color-coded by number of restrictions.
+- **Two map views with a toggle:** a **real geographic US map** (Albers-USA
+  projection, Alaska & Hawaii inset) and a **tile-grid cartogram** (one equal
+  square per state). Both are clickable and color-coded by number of restrictions.
 - **Color modes** to recolor the whole map by a single policy (permitless carry,
   universal background checks, red-flag laws).
-- A **state detail panel** with at-a-glance restriction flags and categorized,
-  citation-style provisions (full detail for AZ, CA, TX, NY, FL; summary flags for
-  the rest).
+- A **state detail panel** for **all 50 states + DC** with at-a-glance restriction
+  flags and categorized provisions. Flagship states (AZ, CA, TX, NY, FL, CO) carry
+  statute citations (`cited` badge); the rest show consistent flag-derived summaries
+  (`summary` badge) pending citation.
 - A **"recent & pending changes" feed** — the design hook for the auto-updating
   behavior — with status tags (Enacted / Effective / Court ruling / In committee)
   and a dashed-gold outline on states with a recent change.

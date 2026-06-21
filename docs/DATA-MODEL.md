@@ -100,5 +100,9 @@ and the at-a-glance flags).
   at least one `source` and a `verified_at`/`verified_by`.
 - **Soft transitions:** an enjoined/struck law keeps its row with a status change —
   never hard-deleted — so history stays intact.
-- A small JSON snapshot used by the mockup lives in
-  [`data/sample-states.json`](../data/sample-states.json).
+- The canonical sample dataset (all 50 states + DC, with policy flags, derived
+  grade, and categorized `provisions`) lives in
+  [`data/sample-states.json`](../data/sample-states.json); pre-projected map
+  geometry is in [`data/us-geo.json`](../data/us-geo.json). Both the mockup and the
+  `web/` app are built from these. Regenerate provisions with
+  [`tools/gen-provisions.js`](../tools/gen-provisions.js).
