@@ -19,22 +19,24 @@
 
 import { z } from "zod";
 
-// Treat empty strings as "unset" — an exported-but-empty var (common in CI /
-// shells) should behave the same as a missing one for these optional knobs.
-const optionalNonEmpty = z
-  .string()
-  .trim()
-  .min(1)
-  .optional()
-  .transform((v) => (v === "" ? undefined : v));
+// Treat empty / whitespace-only strings as "unset". An exported-but-empty var
+// (very common in CI and shells, e.g. `DATABASE_URL: ""`) must behave exactly
+// like a missing one for these optional knobs — otherwise zod's .url()/.min(1)
+// would reject the empty value before .optional() ever sees it. preprocess runs
+// BEFORE validation, so empties become `undefined` and pass as optional.
+const emptyToUndefined = (v: unknown) =>
+  typeof v === "string" && v.trim() === "" ? undefined : v;
+
+const optionalNonEmpty = z.preprocess(
+  emptyToUndefined,
+  z.string().trim().min(1).optional(),
+);
 
 // A URL-ish string. Postgres URLs (postgresql://) are accepted by z.string().url().
-const optionalUrl = z
-  .string()
-  .trim()
-  .url()
-  .optional()
-  .transform((v) => (v === "" ? undefined : v));
+const optionalUrl = z.preprocess(
+  emptyToUndefined,
+  z.string().trim().url().optional(),
+);
 
 export const envSchema = z.object({
   // --- Data -----------------------------------------------------------------

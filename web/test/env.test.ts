@@ -47,9 +47,12 @@ describe("env: getEnv() with explicit source", () => {
     expect(() => getEnv({ NEXT_PUBLIC_SITE_URL: "://bad" })).toThrow();
   });
 
-  it("treats a whitespace-only token as invalid (min length after trim)", () => {
-    // optionalNonEmpty trims then requires min(1): a space-only string fails.
-    expect(() => getEnv({ ADMIN_TOKEN: "   " })).toThrow();
+  it("treats empty / whitespace-only values as absent (not an error)", () => {
+    // An exported-but-empty var (e.g. CI's `DATABASE_URL: ""`) must behave like
+    // a missing one, not throw. Regression test for the CI failure.
+    expect(getEnv({ DATABASE_URL: "" }).DATABASE_URL).toBeUndefined();
+    expect(getEnv({ ADMIN_TOKEN: "   " }).ADMIN_TOKEN).toBeUndefined();
+    expect(getEnv({ NEXT_PUBLIC_SITE_URL: "" }).NEXT_PUBLIC_SITE_URL).toBeUndefined();
   });
 });
 
