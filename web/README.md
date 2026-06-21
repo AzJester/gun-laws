@@ -93,8 +93,15 @@ option; switch to a JSON column or derive from `ChangeEvent`s later if desired).
   (`{ disclaimer, state }`); `404` for unknown codes.
 - `POST /api/ingest` — runs legislation ingestion (see below). Dynamic; never
   runs at build time.
+- `POST /api/subscribe`, `GET /api/subscribe/confirm`, `GET /api/unsubscribe` —
+  alert subscriptions (double opt-in; see [Alerts & subscriptions](#alerts--subscriptions-roadmap-6)).
+- `GET /feed.xml` — Atom feed of published changes (`?state=XX`).
 
-Both `GET` responses carry a `disclaimer` field.
+The `/api/states*` `GET` responses carry a `disclaimer` field.
+
+New page routes: **`/alerts`** (subscribe form), **`/compare`** (side-by-side),
+**`/reciprocity`** (carry reciprocity). All are linked from the header nav and
+the home footer.
 
 ---
 
@@ -249,6 +256,7 @@ Live runs need outbound HTTPS to:
 - `v3.openstates.org` (Open States)
 - `www.courtlistener.com` (CourtListener court feeds)
 - `api.anthropic.com` (the LLM classifier draft step)
+- `api.resend.com` (the email provider for alerts — see below)
 
 In a restricted/sandboxed environment (e.g. Claude Code on the web — see the
 network-policy docs at **code.claude.com/docs**) these hosts must be on the
@@ -257,6 +265,137 @@ ingestion layer detects that specific failure and reports it actionably
 ("Egress blocked for <host> … add it to the allowlist"), marking the provider
 skipped instead of crashing; the classifier catches it and falls back to the
 rules path — so a dry run in a blocked environment still exits 0.
+
+---
+
+## Alerts & subscriptions (roadmap #6)
+
+Visitors can subscribe to email digests when tracked firearm laws change in the
+states/policies they pick, or follow an RSS/Atom feed. Everything degrades
+gracefully: no database ⇒ a clear 503; no email provider ⇒ the send is logged
+and skipped (never throws), so the build, the app, and `npm run alerts` always
+exit 0.
+
+### Subscribe / confirm / unsubscribe flow (double opt-in)
+
+```
+POST /api/subscribe { email, states?, policies?, channel? }
+  → validate email + create a PENDING Subscription with a random confirmToken
+  → send a double-opt-in confirmation email (via src/lib/email.ts)
+GET  /api/subscribe/confirm?token=…   → status = confirmed (eligible for digests)
+GET  /api/unsubscribe?token=…         → status = unsubscribed (in every email)
+```
+
+- **Minimal PII:** only the email + a JSON `scope` (`{ states[], policies[] }`)
+  are stored. The confirm/unsubscribe URLs carry opaque random tokens, never the
+  email. Re-subscribing with the same email refreshes the token (re-send a lost
+  confirmation) instead of creating a duplicate.
+- **No database** ⇒ `POST /api/subscribe` returns **503** `{ ok:false,
+  configured:false, error }` (it never crashes); confirm/unsubscribe likewise
+  report "not configured".
+- **No email provider** ⇒ the subscription is still created, but the response
+  flags `delivered:false` / `emailConfigured:false` and the form shows a clear
+  "ask the operator to set `RESEND_API_KEY`" message.
+
+### Email abstraction — `src/lib/email.ts`
+
+`sendEmail({ to, subject, html, text })` picks a provider from the environment
+and **never throws**:
+
+- **Default provider: Resend** (`RESEND_API_KEY`), called over its plain HTTP
+  API with `fetch` (no SDK). The interface is provider-agnostic — add an SMTP /
+  SendGrid transport by extending `resolveProvider()` + adding a `sendVia…()`.
+- **No provider key** ⇒ logs to console and returns `{ delivered:false,
+  skipped:true, reason }`.
+- **Test/dry-run mode** (`NODE_ENV=test` or `EMAIL_DRY_RUN=1`) ⇒ always skips
+  (no real mail in tests).
+- **Provider error** (egress 403, bad key, 4xx/5xx, network) ⇒ returns
+  `{ delivered:false, error }` so an alert run records it and moves on.
+
+### Alert dispatch — `npm run alerts`
+
+`src/lib/alerts.ts` + `scripts/send-alerts.ts` (npm script `alerts`):
+
+```bash
+npm run alerts -- --dry-run     # preview matches; no send, no DB writes
+npm run alerts                   # send digests (needs DATABASE_URL + RESEND_API_KEY)
+npm run alerts -- --base-url=https://gunlawmap.example   # override link base
+```
+
+For each **confirmed** email subscription it finds published `ChangeEvent`s
+newer than that subscription's `lastNotifiedAt`, matches them against its
+scope (states/policies), sends **one digest email**, and advances
+`lastNotifiedAt` **only on a successful send** (idempotent + at-least-once: a
+transient failure re-tries the same changes next run). Graceful skips:
+
+- no `DATABASE_URL` ⇒ `SKIPPED` (subscriptions live in the DB), exit 0.
+- no email provider on a non-dry run ⇒ `SKIPPED` (use `--dry-run` to preview),
+  exit 0.
+
+Schedule it like ingestion (e.g. a GitHub Action every few hours, after the
+ingest step).
+
+### RSS / Atom feed — `/feed.xml`
+
+`GET /feed.xml` returns a valid **Atom** feed of recently published changes.
+`?state=XX` filters to one state. It works on the **JSON fallback**
+(`getPublishedChangesDetailed`), so the feed is never empty in the demo.
+
+### UI — `/alerts`
+
+A subscribe form (`/alerts`) with an email input, a state multiselect, policy
+checkboxes, a privacy note, and a link to the RSS feed. On submit it calls
+`/api/subscribe` and shows "check your email to confirm" — or the graceful
+"not configured" state when there's no DB / no provider. Reachable from the
+header nav and the home footer (which also links the RSS feed).
+
+---
+
+## Compare + reciprocity (roadmap #7)
+
+### Compare — `/compare`
+
+`/compare?states=CA,TX,FL` (2–4 states, editable via the selector) renders a
+side-by-side table: overall **grade**, **law count** (/134), the **six headline
+policy flags**, and a **category-by-category** count of tracked provisions per
+state. Rows where the states differ are highlighted. The displayed grade
+respects the orientation system — append `&orient=safety` (flip the lens) or
+`&orient=count` (drop letter grades); grades are *stored* in the gun-rights
+orientation (A = fewest restrictions). Linked from the explorer ("Compare {code}"
+button + nav) and from each `/state/[code]` page.
+
+### Reciprocity — `/reciprocity`
+
+Concealed-carry permit reciprocity: pick the state that issued your permit and
+see where it's honored (plus the permitless states where no permit is required),
+a full per-state matrix, and the inverse "permits this state honors" list. A
+short reciprocity summary also appears on each `/state/[code]` page.
+
+- `src/data/reciprocity.json` — **illustrative SAMPLE DATA** (clearly labelled in
+  `_meta.warning` and throughout the UI). Reciprocity is fluid (statutes, AG
+  opinions, executive agreements) and depends on permit type/residency, so the
+  **feature/mechanism is the deliverable**, not the legal accuracy of the matrix.
+- `src/lib/reciprocity.ts` — typed loader + helpers: `honoredIn(state)`,
+  `honors(state)`, `isPermitless(state)`, `honorsPermitFrom(dest, origin)`. The
+  JSON is bundled (no DB/fs), so it works on the SSG `/state/[code]` pages too.
+- Every reciprocity surface carries a **strong disclaimer** (verify with both
+  states before traveling armed).
+
+### Email / alert env vars
+
+| Var | Purpose |
+|---|---|
+| `RESEND_API_KEY` | Resend API key. Unset ⇒ emails are logged + skipped (no delivery). https://resend.com |
+| `EMAIL_FROM` | From address for outgoing mail (default placeholder). |
+| `EMAIL_DRY_RUN` | `1` forces all sends to skip (also implied by `NODE_ENV=test`). |
+| `NEXT_PUBLIC_SITE_URL` | Base URL for confirm/unsubscribe links + RSS self link (falls back to the request origin). |
+| `DATABASE_URL` | Required to store subscriptions + dispatch alerts. |
+
+> **Schema change (minimal):** the existing `Subscription` model gained
+> `status` (`pending`/`confirmed`/`unsubscribed`), `confirmToken` + `unsubToken`
+> (unique), `confirmedAt`, and `lastNotifiedAt` (plus a `SubscriptionStatus`
+> enum). Apply with `npx prisma migrate dev` (or `db push`). No other model
+> changed; the no-DB path is unaffected.
 
 ---
 
@@ -324,7 +463,8 @@ web/
 │  ├─ schema.prisma        # versioned, provenance-first model
 │  └─ seed.ts              # idempotent seed from ../data/sample-states.json
 ├─ scripts/
-│  └─ ingest.ts            # CLI: npm run ingest -- --dry-run ...
+│  ├─ ingest.ts            # CLI: npm run ingest -- --dry-run ...
+│  └─ send-alerts.ts       # CLI: npm run alerts -- --dry-run ...
 ├─ src/
 │  ├─ app/
 │  │  ├─ api/states/route.ts            # GET /api/states
@@ -333,8 +473,15 @@ web/
 │  │  ├─ api/review/route.ts            # GET pending review queue
 │  │  ├─ api/review/[id]/route.ts       # POST approve|reject|edit (ADMIN_TOKEN)
 │  │  ├─ api/changelog/route.ts         # GET published changelog (?state=)
+│  │  ├─ api/subscribe/route.ts         # POST subscribe (double opt-in)
+│  │  ├─ api/subscribe/confirm/route.ts # GET confirm?token=
+│  │  ├─ api/unsubscribe/route.ts       # GET unsubscribe?token=
+│  │  ├─ feed.xml/route.ts              # GET Atom feed (?state=)
 │  │  ├─ admin/review/page.tsx          # minimal editorial review UI (client)
 │  │  ├─ changelog/page.tsx             # public changelog page
+│  │  ├─ alerts/page.tsx                # subscribe form (roadmap #6)
+│  │  ├─ compare/page.tsx               # side-by-side compare (roadmap #7)
+│  │  ├─ reciprocity/page.tsx           # carry reciprocity (roadmap #7)
 │  │  ├─ globals.css
 │  │  ├─ layout.tsx
 │  │  └─ page.tsx                        # home (server) → MapExplorer
@@ -342,15 +489,24 @@ web/
 │  │  ├─ MapExplorer.tsx   # client: color-mode toggle, legend, selection, search
 │  │  ├─ GeoMap.tsx        # inline SVG geographic map
 │  │  ├─ StateDetail.tsx   # detail panel (+ updates + litigation callouts, status badges)
-│  │  └─ ChangesFeed.tsx   # recent-changes feed
+│  │  ├─ ChangesFeed.tsx   # recent-changes feed
+│  │  ├─ SubscribeForm.tsx # client: alert subscribe form
+│  │  ├─ CompareSelector.tsx     # client: edit ?states= for /compare
+│  │  └─ ReciprocityExplorer.tsx # client: "does my permit work in X?"
+│  ├─ data/
+│  │  └─ reciprocity.json  # ILLUSTRATIVE carry-reciprocity matrix (sample data)
 │  └─ lib/
-│     ├─ data.ts           # read layer (DB or JSON fallback) + getPublishedChanges
+│     ├─ data.ts           # read layer (DB or JSON fallback) + getPublishedChanges(Detailed)
 │     ├─ prisma.ts         # lazy Prisma client
 │     ├─ admin.ts          # ADMIN_TOKEN guard for review writes
+│     ├─ email.ts          # provider-agnostic sendEmail() (Resend default, graceful skip)
+│     ├─ subscriptions.ts  # Subscription helpers (create/confirm/unsubscribe, scope)
+│     ├─ alerts.ts         # alert dispatch (digest matching + send)
+│     ├─ reciprocity.ts    # typed reciprocity loader + helpers
 │     ├─ geo.ts            # loads us-geo.json
 │     ├─ grading.ts        # grade/color logic (friendly green→red ramp)
 │     ├─ changes.ts        # recent-changes seed data
-│     ├─ types.ts          # shared types + DISCLAIMER
+│     ├─ types.ts          # shared types + DISCLAIMER + POLICY_LABELS
 │     └─ ingest/           # LegiScan + Open States + CourtListener + classifier
 ├─ docker-compose.yml      # Postgres 16
 ├─ .env.example

@@ -64,6 +64,12 @@ enum SubscriptionChannel {
   rss
 }
 
+enum SubscriptionStatus {
+  pending // created, awaiting double-opt-in confirmation
+  confirmed // confirmed via email link; eligible for alert digests
+  unsubscribed // opted out; kept (soft) so a stale link can't re-activate
+}
+
 // ---------------------------------------------------------------------------
 // Core read entities
 // ---------------------------------------------------------------------------
@@ -217,14 +223,24 @@ model ChangeEvent {
   @@map("change_event")
 }
 
-// v2 — optional. Minimal PII; scope is JSON (states[], policies[]).
+// Alert subscriptions (roadmap #6). Minimal PII: email + a JSON scope
+// ({ states: string[], policies: string[] }). Double-opt-in via confirmToken;
+// unsubscribe via unsubToken. lastNotifiedAt drives the idempotent digest.
 model Subscription {
-  id        Int                 @id @default(autoincrement())
-  email     String
-  scope     Json
-  channel   SubscriptionChannel @default(email)
-  createdAt DateTime            @default(now()) @map("created_at")
+  id            Int                 @id @default(autoincrement())
+  email         String
+  scope         Json // { states: string[], policies: string[] }
+  channel       SubscriptionChannel @default(email)
+  status        SubscriptionStatus  @default(pending)
+  // Opaque random tokens for the confirm + unsubscribe links (no PII in URLs).
+  confirmToken  String              @unique @map("confirm_token")
+  unsubToken    String              @unique @map("unsub_token")
+  confirmedAt   DateTime?           @map("confirmed_at")
+  // High-water mark: only ChangeEvents published after this are sent next run.
+  lastNotifiedAt DateTime?          @map("last_notified_at")
+  createdAt     DateTime            @default(now()) @map("created_at")
 
   @@index([email])
+  @@index([status])
   @@map("subscription")
 }

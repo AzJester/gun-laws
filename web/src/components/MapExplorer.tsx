@@ -208,11 +208,17 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
         </div>
         <div className="flex-1" />
         <nav className="hidden items-center gap-4 text-[12.5px] text-[var(--muted)] sm:flex">
+          <Link href="/compare" className="hover:text-[var(--accent)] hover:underline">
+            Compare
+          </Link>
+          <Link href="/reciprocity" className="hover:text-[var(--accent)] hover:underline">
+            Reciprocity
+          </Link>
+          <Link href="/alerts" className="hover:text-[var(--accent)] hover:underline">
+            Alerts
+          </Link>
           <Link href="/methodology" className="hover:text-[var(--accent)] hover:underline">
             Methodology
-          </Link>
-          <Link href="/about" className="hover:text-[var(--accent)] hover:underline">
-            About
           </Link>
           <Link href="/changelog" className="hover:text-[var(--accent)] hover:underline">
             Changelog
@@ -257,6 +263,12 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             </div>
             <div className="flex-1" />
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+              <Link
+                href={`/compare?states=${selected}`}
+                className="rounded-lg border border-[var(--border)] bg-[var(--panel-2)] px-3 py-[7px] text-[12.5px] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              >
+                Compare {selected} →
+              </Link>
               {/* color mode toggle */}
               <div
                 className="flex overflow-hidden rounded-lg border border-[var(--border)]"

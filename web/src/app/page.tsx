@@ -20,11 +20,20 @@ export default async function HomePage() {
       <MapExplorer geo={geo} states={states} changes={changes} />
 
       <footer className="mx-auto max-w-[1560px] px-[22px] pb-12">
-        <p className="mb-3 text-[12.5px]">
-          <Link
-            href="/changelog"
-            className="text-[var(--accent)] hover:underline"
-          >
+        <p className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px]">
+          <Link href="/compare" className="text-[var(--accent)] hover:underline">
+            Compare states →
+          </Link>
+          <Link href="/reciprocity" className="text-[var(--accent)] hover:underline">
+            Carry reciprocity →
+          </Link>
+          <Link href="/alerts" className="text-[var(--accent)] hover:underline">
+            Get change alerts →
+          </Link>
+          <a href="/feed.xml" className="text-[var(--accent)] hover:underline">
+            RSS feed →
+          </a>
+          <Link href="/changelog" className="text-[var(--accent)] hover:underline">
             View the published changelog →
           </Link>
         </p>

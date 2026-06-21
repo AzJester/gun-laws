@@ -342,6 +342,70 @@ export async function getPublishedChanges(
     }));
 }
 
+/** A published change enriched with machine-readable fields (ISO date,
+ *  policyKey, url) for the alert dispatcher + RSS feed. Newest first. */
+export interface PublishedChangeDetail {
+  stateCode: string;
+  stateName: string;
+  kind: string;
+  tagLabel: string;
+  headline: string;
+  /** ISO 8601 date (yyyy-mm-dd or full timestamp) for ordering / feed <updated>. */
+  iso: string;
+  /** Pre-formatted display date. */
+  display: string;
+  /** Policy key when known (DB only); null for the curated sample changes. */
+  policyKey: string | null;
+  /** Source url when known. */
+  url: string | null;
+}
+
+export async function getPublishedChangesDetailed(
+  opts: { state?: string; limit?: number } = {},
+): Promise<PublishedChangeDetail[]> {
+  const limit = opts.limit ?? 100;
+  const stateCode = opts.state?.toUpperCase();
+
+  if (hasDatabase()) {
+    const prisma = getPrisma();
+    const events = await prisma.changeEvent.findMany({
+      where: {
+        reviewStatus: "published",
+        ...(stateCode ? { stateCode } : {}),
+      },
+      orderBy: { eventDate: "desc" },
+      include: { state: true },
+      take: limit,
+    });
+    return events.map((e) => ({
+      stateCode: e.stateCode,
+      stateName: e.state.name,
+      kind: e.kind,
+      tagLabel: tagLabelFor(e.kind),
+      headline: e.headline,
+      iso: e.eventDate.toISOString().slice(0, 10),
+      display: formatDate(e.eventDate),
+      policyKey: e.policyKey ?? null,
+      url: e.url ?? null,
+    }));
+  }
+
+  const ds = await loadDataset();
+  return CHANGES.filter((c) => !stateCode || c.stateCode === stateCode)
+    .slice(0, limit)
+    .map((c) => ({
+      stateCode: c.stateCode,
+      stateName: ds.states[c.stateCode]?.name ?? c.stateCode,
+      kind: c.kind,
+      tagLabel: c.tagLabel,
+      headline: c.headline,
+      iso: c.iso,
+      display: c.display,
+      policyKey: null,
+      url: null,
+    }));
+}
+
 function tagLabelFor(kind: string): string {
   switch (kind) {
     case "effective":

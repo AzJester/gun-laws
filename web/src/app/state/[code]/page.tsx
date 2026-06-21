@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import StateDetailView from "@/components/StateDetailView";
 import { getState, getStates } from "@/lib/data";
 import { displayGrade, DESC, GRADES } from "@/lib/grading";
+import { honoredIn, isPermitless } from "@/lib/reciprocity";
 import { DISCLAIMER } from "@/lib/types";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gunlawmap.example";
@@ -88,6 +89,10 @@ export default async function StatePage({
   const url = `${SITE_URL}/state/${state.code.toLowerCase()}`;
   const safetyGrade = displayGrade(state.grade, "safety");
 
+  // Illustrative concealed-carry reciprocity summary (sample data; see /reciprocity).
+  const recip = honoredIn(state.code);
+  const recipPermitless = isPermitless(state.code);
+
   // schema.org structured data describing this state's firearm-law summary as a
   // Dataset, with the primary source attribution.
   const jsonLd = {
@@ -144,11 +149,20 @@ export default async function StatePage({
           ← Back to the map
         </Link>
         <nav className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]">
+          <Link
+            href={`/compare?states=${state.code}`}
+            className="hover:text-[var(--accent)] hover:underline"
+          >
+            Compare
+          </Link>
+          <Link href="/reciprocity" className="hover:text-[var(--accent)] hover:underline">
+            Reciprocity
+          </Link>
+          <Link href="/alerts" className="hover:text-[var(--accent)] hover:underline">
+            Alerts
+          </Link>
           <Link href="/methodology" className="hover:text-[var(--accent)] hover:underline">
             Methodology
-          </Link>
-          <Link href="/about" className="hover:text-[var(--accent)] hover:underline">
-            About
           </Link>
           <Link href="/changelog" className="hover:text-[var(--accent)] hover:underline">
             Changelog
@@ -158,6 +172,42 @@ export default async function StatePage({
 
       <section className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
         <StateDetailView detail={state} orient="rights" />
+      </section>
+
+      {/* Illustrative concealed-carry reciprocity summary. */}
+      <section className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
+        <h2 className="m-0 mb-1 flex items-center gap-2 text-[15px] font-semibold">
+          <span>🧭</span> Concealed-carry reciprocity
+          <span className="rounded-full border border-[#5b4a1d] bg-[#2a2210] px-2 py-0.5 text-[9.5px] font-bold uppercase text-[#e3b341]">
+            sample data
+          </span>
+        </h2>
+        <p className="m-0 mb-2 text-[12.5px] text-[var(--muted)]">
+          {recipPermitless ? (
+            <>
+              {state.name} allows <b>permitless (constitutional) carry</b>. A{" "}
+              {state.name} permit is illustratively honored in{" "}
+              <b>{recip.byPermit.length}</b> other state(s); a permit isn&apos;t
+              required at all in <b>{recip.permitless.length}</b> permitless states.
+            </>
+          ) : (
+            <>
+              A {state.name} resident permit is illustratively honored in{" "}
+              <b>{recip.byPermit.length}</b> state(s) by reciprocity, plus{" "}
+              <b>{recip.permitless.length}</b> permitless states.
+            </>
+          )}{" "}
+          <Link
+            href="/reciprocity"
+            className="text-[var(--accent)] hover:underline"
+          >
+            See the full reciprocity view →
+          </Link>
+        </p>
+        <p className="m-0 text-[11px] text-[var(--muted)]">
+          Illustrative only. Reciprocity changes frequently and depends on permit
+          type/residency — verify with both states before traveling armed.
+        </p>
       </section>
 
       <p className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">

@@ -16,6 +16,16 @@ export type PolicyKey = (typeof POLICY_KEYS)[number];
 
 export type Policies = Record<PolicyKey, boolean>;
 
+/** Human labels for the six headline policy flags (used by alerts + compare). */
+export const POLICY_LABELS: Record<PolicyKey, string> = {
+  permitless_carry: "Permitless carry",
+  universal_bg_check: "Universal background checks",
+  red_flag: "Red-flag (ERPO) law",
+  assault_weapon_ban: "Assault-weapon restriction",
+  magazine_limit: "Magazine limit",
+  waiting_period: "Waiting period",
+};
+
 /** A curated 2021–2025 change layered on the 2020 baseline. */
 export interface StateUpdate {
   year: number;
