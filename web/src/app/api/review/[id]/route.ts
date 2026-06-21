@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { authorizeWrite } from "@/lib/admin";
+import { reportError } from "@/lib/observability";
 import { getPrisma, hasDatabase } from "@/lib/prisma";
 import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 
@@ -93,6 +94,22 @@ export async function POST(
     );
   }
 
+  try {
+    return await applyReview(id, body);
+  } catch (err) {
+    // DB error during publish/edit/reject. Report (log + optional Sentry) and
+    // return a graceful 500 — never leak internals to the caller.
+    reportError(err, { route: "POST /api/review/[id]", id, action: body.action });
+    return NextResponse.json(
+      { error: "Review action failed." },
+      { status: 500 },
+    );
+  }
+}
+
+/** The DB-mutating body of a review action, isolated so the handler can wrap it
+ *  in a single try/catch for error reporting. Behavior is unchanged. */
+async function applyReview(id: number, body: ReviewBody) {
   const prisma = getPrisma();
   const event = await prisma.changeEvent.findUnique({ where: { id } });
   if (!event) {

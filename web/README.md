@@ -620,8 +620,71 @@ presence), but a *present-but-malformed* value (e.g. a non-URL `DATABASE_URL`) i
 rejected. Covers `DATABASE_URL`, `LEGISCAN_API_KEY`, `OPENSTATES_API_KEY`,
 `COURTLISTENER_API_TOKEN`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`,
 `RESEND_API_KEY`, `ADMIN_TOKEN`, `INGEST_TOKEN`, `NEXT_PUBLIC_SITE_URL`,
-`EMAIL_FROM`. `getEnv(source)` accepts an explicit object for testing
-(bypasses the memo cache); `safeGetEnv()` is the non-throwing variant.
+`EMAIL_FROM`, `SENTRY_DSN`. `getEnv(source)` accepts an explicit object for
+testing (bypasses the memo cache); `safeGetEnv()` is the non-throwing variant.
+
+### Observability & error tracking — `src/lib/observability.ts`
+
+A **lightweight, dependency-free, provider-agnostic** observability layer. It
+adds **no** SDK (no `@sentry/nextjs`) so it can't break the dual-mode build: the
+normal server build AND the static `output: "export"` for GitHub Pages both
+compile with **no env / secrets / DB / network**. Everything is a **complete
+no-op by default** and degrades gracefully — it never throws, never blocks
+rendering, and makes **no network call at build time or unless explicitly
+configured**.
+
+**What's logged.** A structured logger (`log.info/warn/error(msg, fields?)`)
+emits a single line of JSON to stdout/stderr — `{level, ts, msg, ...fields}`. A
+`redact()` step masks the **values** of secret-ish keys (anything whose name
+contains `token` / `key` / `secret` / `authorization` / `password` / `email` /
+`dsn`) before they hit the log, so context is safe to attach. What you'll see in
+practice:
+
+- a `server boot` line once on startup (from `src/instrumentation.ts`),
+- a `web-vital` line per Core Web Vital (CLS/LCP/INP/FCP/TTFB) from the client,
+- an `error`-level line for every unhandled error in an instrumented path
+  (route handlers, the ingestion upsert, the React error boundaries).
+
+**Error reporting.** `reportError(error, context?)` **always** logs the error
+(structured + redacted). **Only if `SENTRY_DSN` is set** does it *additionally*
+POST a minimal, hand-rolled **Sentry-compatible envelope** via `fetch`
+(best-effort, short timeout, all failures swallowed). With **no DSN it just
+logs** — no `fetch` is ever attempted. Wired into:
+
+- `src/instrumentation.ts` — `register()` (boot log) and the Next
+  `onRequestError` hook (forward-compatible; called on Next 15+, harmless on 14).
+- `src/app/error.tsx` + `src/app/global-error.tsx` — on-brand dark-theme
+  "Something went wrong" fallbacks with a **reset** button; report client-side.
+- The route handlers' catch blocks (`/api/ingest`, `/api/subscribe`,
+  `/api/states`, `/api/states/[code]`, `/api/changelog`, `/api/review`,
+  `/api/review/[id]`) and the ingestion runner's DB-upsert step. Existing
+  response codes / graceful behavior are **unchanged** — reporting is additive.
+
+**Web Vitals.** `src/components/WebVitals.tsx` (client-only, renders nothing)
+uses `next/web-vitals`' `useReportWebVitals` to log Core Web Vitals, mounted once
+in `layout.tsx`. Set `NEXT_PUBLIC_VITALS_ENDPOINT` to also beacon them to a
+collector (no-op when unset). It's inert under SSR and the static export.
+
+**Health endpoint — `GET /api/health`** (dynamic, nodejs). Returns
+`{ status:"ok", time, version, dbConfigured, commit? }` for uptime checks and
+load balancers. It does **not** open a DB connection — `dbConfigured` only
+reflects whether `DATABASE_URL` is set — so it stays fast and never fails just
+because the DB is down. `commit` is included only when `GIT_SHA` is set. Like the
+other API routes it lives under `app/api/`, so the static export build excludes
+it.
+
+```bash
+curl -s localhost:3000/api/health
+# {"status":"ok","time":"…","version":"0.1.0","dbConfigured":false}
+```
+
+**Export-safe + dependency-free, how:** the layer is plain TS using only the
+standard `fetch`/`console`; it is a no-op without `SENTRY_DSN`. Instrumentation
+(`experimental.instrumentationHook`) is enabled **only in the server config** —
+the export config omits it — and `register()`/`onRequestError` additionally
+hard-no-op when `PAGES_EXPORT=1`, so `output: "export"` never evaluates
+server-only code. `WebVitals` is `"use client"` and renders `null`, so it adds no
+markup and runs only in the browser after hydration.
 
 ### Security headers — `next.config.mjs`
 

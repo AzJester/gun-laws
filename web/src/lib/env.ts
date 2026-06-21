@@ -59,6 +59,14 @@ export const envSchema = z.object({
   ADMIN_TOKEN: optionalNonEmpty,
   INGEST_TOKEN: optionalNonEmpty,
 
+  // --- Observability --------------------------------------------------------
+  // Optional Sentry DSN. When unset, the observability layer (src/lib/
+  // observability.ts) only logs and makes NO network calls. When set, errors
+  // are additionally POSTed as a minimal Sentry envelope (best-effort). A DSN
+  // is a URL of the form https://<key>@<host>/<projectId>, so validate it as
+  // a URL (empty → undefined like the others).
+  SENTRY_DSN: optionalUrl,
+
   // --- Public ---------------------------------------------------------------
   NEXT_PUBLIC_SITE_URL: optionalUrl,
 });

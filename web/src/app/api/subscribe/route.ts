@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sendEmail } from "@/lib/email";
+import { reportError } from "@/lib/observability";
 import {
   intFromEnv,
   rateLimitOrResponse,
@@ -92,8 +93,26 @@ export async function POST(req: Request) {
     );
   }
 
+  try {
+    return await handleSubscribe(req, body, body.email);
+  } catch (err) {
+    // Unexpected failure (DB write, email layer). Report, then keep the existing
+    // graceful 500 shape — never leak internals.
+    reportError(err, { route: "POST /api/subscribe" });
+    return NextResponse.json(
+      { ok: false, error: "Could not create subscription." },
+      { status: 500 },
+    );
+  }
+}
+
+async function handleSubscribe(
+  req: Request,
+  body: SubscribeBody,
+  email: string,
+) {
   const result = await createPendingSubscription({
-    email: body.email,
+    email,
     states: body.states,
     policies: body.policies,
     channel: body.channel,

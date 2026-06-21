@@ -110,6 +110,10 @@ const nextConfig = isExport
     }
   : {
       reactStrictMode: true,
+      // Enable src/instrumentation.ts (register() boot log + onRequestError
+      // forwarding). Server mode only — the export config above deliberately
+      // omits it so `output: "export"` never evaluates server-only code.
+      experimental: { instrumentationHook: true },
       async headers() {
         return [
           {

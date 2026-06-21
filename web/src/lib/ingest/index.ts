@@ -11,6 +11,7 @@
 //
 // Nothing here connects to a DB or the network at import time.
 
+import { reportError } from "../observability";
 import { getPrisma, hasDatabase } from "../prisma";
 import { classifyChange, hasAnthropicKey } from "./classifier";
 import type { ClassifiedChange } from "./classifier";
@@ -194,7 +195,19 @@ export async function runIngestion(
     return summary;
   }
 
-  summary.upserted = await upsertChangeEvents(classified);
+  try {
+    summary.upserted = await upsertChangeEvents(classified);
+  } catch (err) {
+    // The DB upsert is the one step here that can throw (connection / FK /
+    // constraint errors). Report it (log + optional Sentry) and re-throw so the
+    // caller's existing error handling/response code is unchanged.
+    reportError(err, {
+      stage: "runIngestion.upsert",
+      classified: classified.length,
+      states: states.length,
+    });
+    throw err;
+  }
   return summary;
 }
 

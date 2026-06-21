@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getStates } from "@/lib/data";
+import { reportError } from "@/lib/observability";
 import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 import { DISCLAIMER } from "@/lib/types";
 
@@ -16,6 +17,14 @@ export async function GET(req: Request) {
   });
   if (limited) return limited;
 
-  const states = await getStates();
-  return NextResponse.json({ disclaimer: DISCLAIMER, states });
+  try {
+    const states = await getStates();
+    return NextResponse.json({ disclaimer: DISCLAIMER, states });
+  } catch (err) {
+    reportError(err, { route: "GET /api/states" });
+    return NextResponse.json(
+      { error: "Could not load states." },
+      { status: 500 },
+    );
+  }
 }

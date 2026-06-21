@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { reportError } from "@/lib/observability";
 import { getPrisma, hasDatabase } from "@/lib/prisma";
 
 // Editorial review queue. Dynamic + nodejs; never touches the DB at build/import.
@@ -27,31 +28,39 @@ export async function GET() {
     });
   }
 
-  const prisma = getPrisma();
-  const rows = await prisma.changeEvent.findMany({
-    where: { reviewStatus: { in: ["auto_detected", "in_review"] } },
-    orderBy: [{ eventDate: "desc" }, { id: "desc" }],
-    include: { state: true },
-    take: 200,
-  });
+  try {
+    const prisma = getPrisma();
+    const rows = await prisma.changeEvent.findMany({
+      where: { reviewStatus: { in: ["auto_detected", "in_review"] } },
+      orderBy: [{ eventDate: "desc" }, { id: "desc" }],
+      include: { state: true },
+      take: 200,
+    });
 
-  const pending = rows.map((e) => ({
-    id: e.id,
-    stateCode: e.stateCode,
-    stateName: e.state.name,
-    kind: e.kind,
-    headline: e.headline,
-    summary: e.summary,
-    policyKey: e.policyKey,
-    proposedStatus: e.status,
-    citation: e.citation,
-    confidence: e.confidence,
-    method: e.method,
-    url: e.url,
-    eventDate: e.eventDate.toISOString().slice(0, 10),
-    reviewStatus: e.reviewStatus,
-    externalRef: e.externalRef,
-  }));
+    const pending = rows.map((e) => ({
+      id: e.id,
+      stateCode: e.stateCode,
+      stateName: e.state.name,
+      kind: e.kind,
+      headline: e.headline,
+      summary: e.summary,
+      policyKey: e.policyKey,
+      proposedStatus: e.status,
+      citation: e.citation,
+      confidence: e.confidence,
+      method: e.method,
+      url: e.url,
+      eventDate: e.eventDate.toISOString().slice(0, 10),
+      reviewStatus: e.reviewStatus,
+      externalRef: e.externalRef,
+    }));
 
-  return NextResponse.json({ database: true, count: pending.length, pending });
+    return NextResponse.json({ database: true, count: pending.length, pending });
+  } catch (err) {
+    reportError(err, { route: "GET /api/review" });
+    return NextResponse.json(
+      { error: "Could not load the review queue." },
+      { status: 500 },
+    );
+  }
 }
