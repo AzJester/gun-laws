@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getPublishedChanges } from "@/lib/data";
+import { reportError } from "@/lib/observability";
 
 // Public changelog feed. Dynamic; reads at request time, never at build.
 export const dynamic = "force-dynamic";
@@ -20,10 +21,17 @@ export async function GET(req: Request) {
   const limitRaw = Number(searchParams.get("limit"));
   const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 200) : 50;
 
-  const changes = await getPublishedChanges({
-    state: state ?? undefined,
-    limit,
-  });
-
-  return NextResponse.json({ count: changes.length, changes });
+  try {
+    const changes = await getPublishedChanges({
+      state: state ?? undefined,
+      limit,
+    });
+    return NextResponse.json({ count: changes.length, changes });
+  } catch (err) {
+    reportError(err, { route: "GET /api/changelog" });
+    return NextResponse.json(
+      { error: "Could not load changelog." },
+      { status: 500 },
+    );
+  }
 }

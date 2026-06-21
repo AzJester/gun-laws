@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { WebVitals } from "@/components/WebVitals";
+
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gunlawmap.example";
@@ -40,6 +42,8 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
+        {/* Core Web Vitals reporter (client-only, renders nothing). */}
+        <WebVitals />
         {children}
       </body>
     </html>

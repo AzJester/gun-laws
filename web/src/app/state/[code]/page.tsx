@@ -5,10 +5,15 @@ import { notFound } from "next/navigation";
 import StateDetailView from "@/components/StateDetailView";
 import { getState, getStates } from "@/lib/data";
 import { displayGrade, DESC, GRADES } from "@/lib/grading";
+import { embedSnippet } from "@/lib/embed";
 import { honoredIn, isPermitless } from "@/lib/reciprocity";
 import { DISCLAIMER } from "@/lib/types";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gunlawmap.example";
+// In the Pages export the site lives under a project base path (/gun-laws); in
+// server mode it's at the origin root. Embed URLs in the snippet use the public
+// origin + base path so the pasted iframe resolves on the deployed site.
+const EMBED_BASE = `${SITE_URL}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}`;
 
 // SSG: with DATABASE_URL unset, getState() reads data/sample-states.json at build
 // time, so every /state/[code] page is statically generated. No `dynamic` export.
@@ -217,6 +222,28 @@ export default async function StatePage({
           Illustrative only. Reciprocity changes frequently and depends on permit
           type/residency — verify with both states before traveling armed.
         </p>
+      </section>
+
+      {/* Embed this card on a newsroom / blog. */}
+      <section className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">
+        <h2 className="m-0 mb-1 flex items-center gap-2 text-[15px] font-semibold">
+          <span aria-hidden="true">🔗</span> Embed this {state.name} report card
+        </h2>
+        <p className="m-0 mb-2 text-[12.5px] text-[var(--muted)]">
+          Paste this snippet to embed the {state.name} report card on your site. For
+          the full national map, use{" "}
+          <code className="rounded bg-[var(--panel-2)] px-1 py-0.5 text-[11.5px]">
+            /embed
+          </code>{" "}
+          instead of{" "}
+          <code className="rounded bg-[var(--panel-2)] px-1 py-0.5 text-[11.5px]">
+            /embed/{state.code.toLowerCase()}
+          </code>
+          .
+        </p>
+        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[#cdd7e1]">
+          <code>{embedSnippet(EMBED_BASE, state.code)}</code>
+        </pre>
       </section>
 
       <p className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12px] leading-relaxed text-[var(--muted)]">

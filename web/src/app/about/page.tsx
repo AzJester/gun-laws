@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { embedSnippet } from "@/lib/embed";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gunlawmap.example";
+// Public origin + project base path (e.g. /gun-laws on Pages), used to build the
+// copy-paste iframe snippets below.
+const EMBED_BASE = `${SITE_URL}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}`;
+
 export const metadata: Metadata = {
   title: "About",
   description:
-    "What GunLawMap is, who it is for, our neutrality stance, how to report a correction, and credits.",
+    "What GunLawMap is, who it is for, our neutrality stance, how to report a correction, how to embed it, and credits.",
   alternates: { canonical: "/about" },
 };
 
@@ -84,6 +91,37 @@ export default function AboutPage() {
           </a>{" "}
           with the state, the provision, and a citation if you have one.
           (Placeholder address for this demo.)
+        </p>
+
+        <h2 className="mt-6 text-lg font-semibold">Embed GunLawMap</h2>
+        <p>
+          Newsrooms and blogs can embed the map for free. The widget is a
+          lightweight, framable page with no header, nav, or footer. Paste the
+          national-map snippet anywhere:
+        </p>
+        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[#cdd7e1]">
+          <code>{embedSnippet(EMBED_BASE)}</code>
+        </pre>
+        <p className="mt-3">
+          Or embed a single state&rsquo;s report card (Arizona shown):
+        </p>
+        <pre className="m-0 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--panel-2)] p-3 text-[11.5px] leading-relaxed text-[#cdd7e1]">
+          <code>{embedSnippet(EMBED_BASE, "az")}</code>
+        </pre>
+        <p className="mt-3 text-[12.5px] text-[var(--muted)]">
+          The national map accepts an optional{" "}
+          <code className="rounded bg-[var(--panel-2)] px-1 py-0.5 text-[11.5px]">
+            ?mode=
+          </code>{" "}
+          (grade, permitless_carry, universal_bg_check, red_flag) and{" "}
+          <code className="rounded bg-[var(--panel-2)] px-1 py-0.5 text-[11.5px]">
+            ?year=
+          </code>{" "}
+          query, e.g.{" "}
+          <code className="rounded bg-[var(--panel-2)] px-1 py-0.5 text-[11.5px]">
+            /embed?mode=red_flag&amp;year=2018
+          </code>
+          .
         </p>
 
         <h2 className="mt-6 text-lg font-semibold">Credits</h2>

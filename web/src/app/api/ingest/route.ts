@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { runIngestion } from "@/lib/ingest";
 import type { SourceKind } from "@/lib/ingest";
+import { reportError } from "@/lib/observability";
 import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 
 // Always run at request time; never execute ingestion during `next build`.
@@ -79,6 +80,8 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(summary);
   } catch (err) {
+    // Report (log + optional Sentry) but keep the existing graceful 500 + shape.
+    reportError(err, { route: "POST /api/ingest", dryRun });
     return NextResponse.json(
       {
         error: "Ingestion failed",
