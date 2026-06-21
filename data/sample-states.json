@@ -3,7 +3,7 @@
     "description": "Illustrative sample data for the GunLawMap mockup. NOT legal advice and not guaranteed current or accurate. Mirrors docs/DATA-MODEL.md in a flattened form.",
     "generated_for": "concept mockup",
     "schema": {
-      "grade": "curated overall regulation grade (A..F)",
+      "grade": "derived overall grade where A = fewest restrictions and F = most",
       "policies": {
         "permitless_carry": "no permit required to carry",
         "universal_bg_check": "background checks on all sales/transfers",
@@ -19,59 +19,876 @@
       "https://giffords.org/lawcenter/resources/scorecard/",
       "https://legiscan.com/legiscan",
       "https://docs.openstates.org/api-v3/"
-    ]
+    ],
+    "grading": "Grade reflects how FEW restrictions a state imposes (fewer = higher). restrictions = count of the six tracked restriction policies (permit-to-carry counts as a restriction; permitless_carry is its absence). Grade scale by count: 0=A, 1=A-, 2=B, 3=C, 4=D, 5=D-, 6=F. This is the opposite orientation from gun-safety scorecards such as Giffords."
   },
   "states": {
-    "CA": {"name": "California", "grade": "A", "grid": [5,1], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": true}},
-    "NY": {"name": "New York", "grade": "A", "grid": [3,9], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": false}},
-    "NJ": {"name": "New Jersey", "grade": "A", "grid": [4,9], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": false}},
-    "CT": {"name": "Connecticut", "grade": "A", "grid": [4,10], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": false}},
-    "MA": {"name": "Massachusetts", "grade": "A", "grid": [3,10], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": false}},
-    "HI": {"name": "Hawaii", "grade": "A", "grid": [8,1], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": true}},
-    "MD": {"name": "Maryland", "grade": "A", "grid": [5,9], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": false}},
-    "DC": {"name": "District of Columbia", "grade": "A", "grid": [6,9], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": true}},
-    "IL": {"name": "Illinois", "grade": "A-", "grid": [3,6], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": true}},
-    "WA": {"name": "Washington", "grade": "A-", "grid": [3,1], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": true}},
-    "RI": {"name": "Rhode Island", "grade": "B+", "grid": [3,11], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": true, "waiting_period": true}},
-    "CO": {"name": "Colorado", "grade": "B+", "grid": [5,3], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": true, "waiting_period": true}},
-    "DE": {"name": "Delaware", "grade": "B", "grid": [5,10], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": true, "magazine_limit": true, "waiting_period": false}},
-    "OR": {"name": "Oregon", "grade": "B", "grid": [4,1], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": true, "waiting_period": false}},
-    "NM": {"name": "New Mexico", "grade": "B-", "grid": [6,3], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": true}},
-    "VA": {"name": "Virginia", "grade": "B-", "grid": [5,8], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "MN": {"name": "Minnesota", "grade": "B-", "grid": [3,5], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "MI": {"name": "Michigan", "grade": "B-", "grid": [3,8], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "NV": {"name": "Nevada", "grade": "C+", "grid": [4,2], "policies": {"permitless_carry": false, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "VT": {"name": "Vermont", "grade": "C", "grid": [2,10], "policies": {"permitless_carry": true, "universal_bg_check": true, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": true, "waiting_period": true}},
-    "ME": {"name": "Maine", "grade": "C-", "grid": [1,11], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": true}},
-    "FL": {"name": "Florida", "grade": "C-", "grid": [8,9], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": true}},
-    "PA": {"name": "Pennsylvania", "grade": "C-", "grid": [4,8], "policies": {"permitless_carry": false, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "NC": {"name": "North Carolina", "grade": "C-", "grid": [6,7], "policies": {"permitless_carry": false, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "WI": {"name": "Wisconsin", "grade": "C-", "grid": [2,6], "policies": {"permitless_carry": false, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "OH": {"name": "Ohio", "grade": "D", "grid": [4,7], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "NE": {"name": "Nebraska", "grade": "D", "grid": [5,4], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "IN": {"name": "Indiana", "grade": "D-", "grid": [4,6], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": true, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "NH": {"name": "New Hampshire", "grade": "D-", "grid": [2,11], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "IA": {"name": "Iowa", "grade": "D-", "grid": [4,5], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "AL": {"name": "Alabama", "grade": "F", "grid": [7,7], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "AK": {"name": "Alaska", "grade": "F", "grid": [1,1], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "AZ": {"name": "Arizona", "grade": "F", "grid": [6,2], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "AR": {"name": "Arkansas", "grade": "F", "grid": [6,5], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "GA": {"name": "Georgia", "grade": "F", "grid": [7,8], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "ID": {"name": "Idaho", "grade": "F", "grid": [3,2], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "KS": {"name": "Kansas", "grade": "F", "grid": [6,4], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "KY": {"name": "Kentucky", "grade": "F", "grid": [5,6], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "LA": {"name": "Louisiana", "grade": "F", "grid": [7,5], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "MS": {"name": "Mississippi", "grade": "F", "grid": [7,6], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "MO": {"name": "Missouri", "grade": "F", "grid": [5,5], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "MT": {"name": "Montana", "grade": "F", "grid": [3,3], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "ND": {"name": "North Dakota", "grade": "F", "grid": [3,4], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "OK": {"name": "Oklahoma", "grade": "F", "grid": [7,4], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "SC": {"name": "South Carolina", "grade": "F", "grid": [6,8], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "SD": {"name": "South Dakota", "grade": "F", "grid": [4,4], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "TN": {"name": "Tennessee", "grade": "F", "grid": [6,6], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "TX": {"name": "Texas", "grade": "F", "grid": [8,4], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "UT": {"name": "Utah", "grade": "F", "grid": [5,2], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "WV": {"name": "West Virginia", "grade": "F", "grid": [5,7], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}},
-    "WY": {"name": "Wyoming", "grade": "F", "grid": [4,3], "policies": {"permitless_carry": true, "universal_bg_check": false, "red_flag": false, "assault_weapon_ban": false, "magazine_limit": false, "waiting_period": false}}
+    "CA": {
+      "name": "California",
+      "grade": "F",
+      "grid": [
+        5,
+        1
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 6
+    },
+    "NY": {
+      "name": "New York",
+      "grade": "D-",
+      "grid": [
+        3,
+        9
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 5
+    },
+    "NJ": {
+      "name": "New Jersey",
+      "grade": "D-",
+      "grid": [
+        4,
+        9
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 5
+    },
+    "CT": {
+      "name": "Connecticut",
+      "grade": "D-",
+      "grid": [
+        4,
+        10
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 5
+    },
+    "MA": {
+      "name": "Massachusetts",
+      "grade": "D-",
+      "grid": [
+        3,
+        10
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 5
+    },
+    "HI": {
+      "name": "Hawaii",
+      "grade": "F",
+      "grid": [
+        8,
+        1
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 6
+    },
+    "MD": {
+      "name": "Maryland",
+      "grade": "D-",
+      "grid": [
+        5,
+        9
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 5
+    },
+    "DC": {
+      "name": "District of Columbia",
+      "grade": "F",
+      "grid": [
+        6,
+        9
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 6
+    },
+    "IL": {
+      "name": "Illinois",
+      "grade": "F",
+      "grid": [
+        3,
+        6
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 6
+    },
+    "WA": {
+      "name": "Washington",
+      "grade": "F",
+      "grid": [
+        3,
+        1
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 6
+    },
+    "RI": {
+      "name": "Rhode Island",
+      "grade": "D-",
+      "grid": [
+        3,
+        11
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 5
+    },
+    "CO": {
+      "name": "Colorado",
+      "grade": "D-",
+      "grid": [
+        5,
+        3
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 5
+    },
+    "DE": {
+      "name": "Delaware",
+      "grade": "D-",
+      "grid": [
+        5,
+        10
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 5
+    },
+    "OR": {
+      "name": "Oregon",
+      "grade": "D",
+      "grid": [
+        4,
+        1
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": true,
+        "waiting_period": false
+      },
+      "restrictions": 4
+    },
+    "NM": {
+      "name": "New Mexico",
+      "grade": "D",
+      "grid": [
+        6,
+        3
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": true
+      },
+      "restrictions": 4
+    },
+    "VA": {
+      "name": "Virginia",
+      "grade": "C",
+      "grid": [
+        5,
+        8
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 3
+    },
+    "MN": {
+      "name": "Minnesota",
+      "grade": "C",
+      "grid": [
+        3,
+        5
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 3
+    },
+    "MI": {
+      "name": "Michigan",
+      "grade": "C",
+      "grid": [
+        3,
+        8
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 3
+    },
+    "NV": {
+      "name": "Nevada",
+      "grade": "C",
+      "grid": [
+        4,
+        2
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 3
+    },
+    "VT": {
+      "name": "Vermont",
+      "grade": "D",
+      "grid": [
+        2,
+        10
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": true,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": true,
+        "waiting_period": true
+      },
+      "restrictions": 4
+    },
+    "ME": {
+      "name": "Maine",
+      "grade": "A-",
+      "grid": [
+        1,
+        11
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": true
+      },
+      "restrictions": 1
+    },
+    "FL": {
+      "name": "Florida",
+      "grade": "B",
+      "grid": [
+        8,
+        9
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": true
+      },
+      "restrictions": 2
+    },
+    "PA": {
+      "name": "Pennsylvania",
+      "grade": "A-",
+      "grid": [
+        4,
+        8
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 1
+    },
+    "NC": {
+      "name": "North Carolina",
+      "grade": "A-",
+      "grid": [
+        6,
+        7
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 1
+    },
+    "WI": {
+      "name": "Wisconsin",
+      "grade": "A-",
+      "grid": [
+        2,
+        6
+      ],
+      "policies": {
+        "permitless_carry": false,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 1
+    },
+    "OH": {
+      "name": "Ohio",
+      "grade": "A",
+      "grid": [
+        4,
+        7
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "NE": {
+      "name": "Nebraska",
+      "grade": "A",
+      "grid": [
+        5,
+        4
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "IN": {
+      "name": "Indiana",
+      "grade": "A-",
+      "grid": [
+        4,
+        6
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": true,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 1
+    },
+    "NH": {
+      "name": "New Hampshire",
+      "grade": "A",
+      "grid": [
+        2,
+        11
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "IA": {
+      "name": "Iowa",
+      "grade": "A",
+      "grid": [
+        4,
+        5
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "AL": {
+      "name": "Alabama",
+      "grade": "A",
+      "grid": [
+        7,
+        7
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "AK": {
+      "name": "Alaska",
+      "grade": "A",
+      "grid": [
+        1,
+        1
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "AZ": {
+      "name": "Arizona",
+      "grade": "A",
+      "grid": [
+        6,
+        2
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "AR": {
+      "name": "Arkansas",
+      "grade": "A",
+      "grid": [
+        6,
+        5
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "GA": {
+      "name": "Georgia",
+      "grade": "A",
+      "grid": [
+        7,
+        8
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "ID": {
+      "name": "Idaho",
+      "grade": "A",
+      "grid": [
+        3,
+        2
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "KS": {
+      "name": "Kansas",
+      "grade": "A",
+      "grid": [
+        6,
+        4
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "KY": {
+      "name": "Kentucky",
+      "grade": "A",
+      "grid": [
+        5,
+        6
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "LA": {
+      "name": "Louisiana",
+      "grade": "A",
+      "grid": [
+        7,
+        5
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "MS": {
+      "name": "Mississippi",
+      "grade": "A",
+      "grid": [
+        7,
+        6
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "MO": {
+      "name": "Missouri",
+      "grade": "A",
+      "grid": [
+        5,
+        5
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "MT": {
+      "name": "Montana",
+      "grade": "A",
+      "grid": [
+        3,
+        3
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "ND": {
+      "name": "North Dakota",
+      "grade": "A",
+      "grid": [
+        3,
+        4
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "OK": {
+      "name": "Oklahoma",
+      "grade": "A",
+      "grid": [
+        7,
+        4
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "SC": {
+      "name": "South Carolina",
+      "grade": "A",
+      "grid": [
+        6,
+        8
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "SD": {
+      "name": "South Dakota",
+      "grade": "A",
+      "grid": [
+        4,
+        4
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "TN": {
+      "name": "Tennessee",
+      "grade": "A",
+      "grid": [
+        6,
+        6
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "TX": {
+      "name": "Texas",
+      "grade": "A",
+      "grid": [
+        8,
+        4
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "UT": {
+      "name": "Utah",
+      "grade": "A",
+      "grid": [
+        5,
+        2
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "WV": {
+      "name": "West Virginia",
+      "grade": "A",
+      "grid": [
+        5,
+        7
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    },
+    "WY": {
+      "name": "Wyoming",
+      "grade": "A",
+      "grid": [
+        4,
+        3
+      ],
+      "policies": {
+        "permitless_carry": true,
+        "universal_bg_check": false,
+        "red_flag": false,
+        "assault_weapon_ban": false,
+        "magazine_limit": false,
+        "waiting_period": false
+      },
+      "restrictions": 0
+    }
   }
 }

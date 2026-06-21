@@ -106,8 +106,12 @@ trackers, with a human editor confirming every change before it goes live.
   CSV/Excel). Excellent starting skeleton for "which categories of law exist in
   which state, since when." <https://www.rand.org/research/gun-policy/tools-and-data.html>
 - **Giffords Law Center Scorecard** — annual letter-grade per state + policy
-  breakdowns; good for the "overall regulation strength" color scale.
+  breakdowns; a useful cross-check for the overall measure.
   <https://giffords.org/lawcenter/resources/scorecard/>
+  *Note on grade orientation:* this product grades **fewer restrictions = higher
+  grade** (A = fewest, F = most), derived from a count of tracked restriction
+  policies — the **opposite** orientation from Giffords' gun-safety scale. Keep the
+  framing explicit in the UI so the two are never confused.
 - **Everytown / state-firearm-laws.org**, Cornell LII, and **Justia** for statute
   text and citations.
 
@@ -220,7 +224,7 @@ Key design choices:
 | Layer | Choice | Why |
 |---|---|---|
 | Frontend | **Next.js (React) + TypeScript**, Tailwind | SSR/ISR for SEO + speed; static where possible |
-| Map | **react-simple-maps + us-atlas TopoJSON** (geographic) and/or a **tile-grid cartogram** (categorical clarity) | TopoJSON = real geography; tile grid = every state equally clickable. Mockup uses the tile grid. |
+| Map | **react-simple-maps + us-atlas TopoJSON** (geographic) and/or a **tile-grid cartogram** (categorical clarity) | TopoJSON = real geography; tile grid = every state equally clickable. Mockup uses the geographic us-atlas map. |
 | Data viz | D3 scales for color/legends | Standard, flexible |
 | API | **GraphQL** (or REST) over a cached read layer | Flexible queries for compare/filter |
 | Database | **PostgreSQL** (+ JSONB for provisions, full versioning tables) | Relational integrity + history |
@@ -239,12 +243,18 @@ Key design choices:
 ## 9. Frontend / UX
 
 - **Map choices:**
-  - *Tile-grid cartogram* (used in the mockup): one equal square per state — tiny
-    states (RI, DC) are as clickable as big ones, and categorical color reads
-    cleanly. Great default for policy data.
-  - *Geographic TopoJSON map*: more recognizable; offer as a toggle.
-- **Color encoding:** sequential single-hue scale (light = fewer restrictions →
-  dark = more) to avoid politically loaded red/blue. Diverging palettes avoided.
+  - *Geographic map* (used in the mockup): real US geography via an Albers-USA
+    projection with Alaska & Hawaii inset — recognizable and familiar. Geometry from
+    [us-atlas](https://github.com/topojson/us-atlas) (US Census TIGER, public domain),
+    inlined as SVG paths so the mockup is self-contained. Small Northeast states get
+    external leader-line labels.
+  - *Tile-grid cartogram*: an optional alternate view where one equal square per
+    state keeps tiny states (RI, DC) as clickable as big ones — handy for pure
+    policy comparison. Offer as a toggle.
+- **Color encoding:** sequential single-hue (teal) scale, **light = fewer
+  restrictions → dark = more**, to avoid politically loaded red/blue. Diverging
+  palettes avoided. The grade letter (A = fewest restrictions) is shown on each
+  state and in the legend.
 - **State detail panel:** grade badge + at-a-glance policy flags + categorized
   provisions, each with citation, source link, and verified date.
 - **Color modes:** overall grade, or highlight a single policy across the map
@@ -297,7 +307,7 @@ A static ASCII wireframe of the layout is in [`docs/WIREFRAME.md`](WIREFRAME.md)
 
 | Phase | Deliverables |
 |---|---|
-| **0 — Foundations (now)** | This plan, data model, wireframe, **interactive mockup** ✅ |
+| **0 — Foundations (now)** | This plan, data model, wireframe, **interactive geographic mockup** ✅ |
 | **1 — Data spine** | Postgres schema + versioning; import RAND baseline; categories; seed 50+DC overall grades |
 | **2 — Public MVP** | Next.js site, map (tile grid + geo toggle), detail view with citations, search, disclaimer |
 | **3 — Live updates** | LegiScan + Open States ingestion → classifier → editorial review queue → publish + changelog |

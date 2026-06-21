@@ -18,8 +18,8 @@ state ──< state_policy >── policy_type          provision ──< provis
 |---|---|---|
 | code | char(2) PK | `CA`, `TX`, `DC`… |
 | name | text | "California" |
-| overall_grade | text | e.g. `A`, `C-`, `F` (derived/curated) |
-| grid_row, grid_col | int | tile-grid position for the map |
+| overall_grade | text | derived; **A = fewest restrictions, F = most** (count of tracked restriction policies). Opposite orientation from gun-safety scorecards. |
+| grid_row, grid_col | int | optional tile-grid position (alternate cartogram view) |
 | preemption_note | text | local-authority summary |
 
 ### `policy_type`

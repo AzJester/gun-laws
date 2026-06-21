@@ -4,16 +4,31 @@ An **interactive US map of state firearm laws** that stays current as states ena
 amend, or repeal gun legislation. This repository currently holds the **project
 plan and a working visual mockup** (concept stage).
 
+![GunLawMap mockup preview](mockup/preview.png)
+
 > ⚠️ **Not legal advice.** All law data in the mockup is *illustrative sample data*
 > for design purposes — not guaranteed current or accurate. A production build would
 > cite primary statutes and stamp every fact with a source and a last-verified date.
 > Always consult official state resources and an attorney.
+
+## Grading orientation
+
+In this mockup, a state's **grade reflects how few restrictions it imposes**:
+
+- **A = fewest restrictions** (e.g. Arizona, Texas), **F = most restrictions** (e.g. California, Hawaii).
+- The grade is derived transparently from the **count of six tracked restriction
+  policies** (carry-permit requirement, universal background checks, red-flag law,
+  assault-weapon restriction, magazine limit, waiting period): 0 → A, 1 → A-, 2 → B,
+  3 → C, 4 → D, 5 → D-, 6 → F.
+- This is the **opposite orientation** from gun-safety scorecards (e.g. Giffords),
+  which grade more restrictions as an A.
 
 ## What's here
 
 | Path | What it is |
 |---|---|
 | [`mockup/index.html`](mockup/index.html) | **Interactive visual mockup** — self-contained, no dependencies. Open it in any browser. |
+| [`mockup/preview.png`](mockup/preview.png) | Static preview of the map (shown above). |
 | [`docs/PLAN.md`](docs/PLAN.md) | Detailed build plan: vision, scope, data sources, the auto-update pipeline, architecture, stack, roadmap, risks. |
 | [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) | Versioned, provenance-first database schema. |
 | [`docs/WIREFRAME.md`](docs/WIREFRAME.md) | ASCII wireframe of the UI for quick reference. |
@@ -32,17 +47,21 @@ xdg-open mockup/index.html
 ```
 
 ### What the mockup demonstrates
-- A **tile-grid US map** (one clickable square per state + DC), color-coded by
-  overall regulation strength.
+- A **real geographic US map** (Albers-USA projection, with Alaska & Hawaii inset),
+  one clickable state per shape, color-coded by number of restrictions.
 - **Color modes** to recolor the whole map by a single policy (permitless carry,
   universal background checks, red-flag laws).
-- A **state detail panel** with at-a-glance policy flags and categorized,
-  citation-style provisions (full detail for CA, TX, NY, FL, CO; summary flags for
+- A **state detail panel** with at-a-glance restriction flags and categorized,
+  citation-style provisions (full detail for AZ, CA, TX, NY, FL; summary flags for
   the rest).
-- A **"recent & pending changes" feed** — the design hook for the
-  auto-updating behavior — with status tags (Enacted / Effective / Court ruling /
-  In committee) and change dots on affected states.
+- A **"recent & pending changes" feed** — the design hook for the auto-updating
+  behavior — with status tags (Enacted / Effective / Court ruling / In committee)
+  and a dashed-gold outline on states with a recent change.
 - Search, a filterable legend, and a persistent **"not legal advice"** disclaimer.
+
+Map geometry comes from [us-atlas](https://github.com/topojson/us-atlas) (US Census
+TIGER, public domain; us-atlas is ISC-licensed), inlined as SVG paths so the file
+stays self-contained.
 
 ## The core idea: staying current
 
