@@ -63,7 +63,19 @@ interface RawState {
   lawCount: number | null;
   restrictions: number | null;
   policies: Record<PolicyKey, boolean>;
-  provisions: { category: string; items: { text: string; citation: string | null }[] }[];
+  provisions: {
+    category: string;
+    items: {
+      text: string;
+      citation: string | null;
+      status?:
+        | "in_effect"
+        | "enacted_not_yet_effective"
+        | "enjoined"
+        | "struck"
+        | "repealed";
+    }[];
+  }[];
   detailed: boolean;
   year?: number | null;
   source?: string | null;
@@ -169,7 +181,9 @@ async function main() {
               provisionId,
               summary: item.text,
               citation: item.citation,
-              status: "in_effect",
+              // Carry the court-status overlay through to the DB so the DB read
+              // path surfaces enjoined/struck the same as the JSON fallback.
+              status: item.status ?? "in_effect",
               verifiedAt: now,
               verifiedBy: "seed",
               confidence: "confirmed",

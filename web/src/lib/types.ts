@@ -50,6 +50,19 @@ export interface SourceLink {
   url: string;
 }
 
+/** A litigation note: a provision currently enjoined/struck by a court. */
+export interface LitigationItem {
+  /** Internal Siegel var key the note attaches to (e.g. "magazine"). */
+  var?: string;
+  /** Human label of the affected provision. */
+  label: string;
+  /** Court-driven status of the provision. */
+  status: ProvisionStatus;
+  citation?: string | null;
+  url?: string | null;
+  note?: string | null;
+}
+
 /** Summary shape returned by GET /api/states (the list / map payload). */
 export interface StateSummary {
   code: string;
@@ -69,6 +82,8 @@ export interface StateSummary {
   verifiedThrough?: number | null;
   /** Authoritative source links (dataset + official state code). */
   sources?: SourceLink[];
+  /** Provisions currently enjoined/struck by a court (may be empty). */
+  litigation?: LitigationItem[];
 }
 
 /** Full detail shape returned by GET /api/states/[code]. */

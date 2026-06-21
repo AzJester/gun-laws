@@ -182,7 +182,7 @@ model Source {
   @@map("source")
 }
 
-// Powers the "recent changes" feed + (v2) notifications.
+// Powers the "recent changes" feed + the editorial review queue + (v2) notifications.
 model ChangeEvent {
   id          Int          @id @default(autoincrement())
   stateCode   String       @map("state_code") @db.Char(2)
@@ -192,13 +192,28 @@ model ChangeEvent {
   headline    String
   eventDate   DateTime     @map("event_date") @db.Date
   externalRef String?      @map("external_ref")
+  url         String?
   reviewStatus ReviewStatus @default(published) @map("review_status")
+
+  // --- Draft metadata produced by the classifier (detect → draft step) -------
+  // Plain-language draft summary the editor reviews before publishing.
+  summary    String?
+  // Proposed legal status for the affected provision (if the change implies one).
+  status     ProvisionStatus?
+  // Citation/url proposed for the published version (e.g. court cite).
+  citation   String?
+  // Classifier confidence 0..1 and how it was produced ("llm" | "rules").
+  confidence Float?
+  method     String?
+  // When the change was published, its date string used for ordering the feed.
+  publishedAt DateTime? @map("published_at")
 
   state     State      @relation(fields: [stateCode], references: [code], onDelete: Cascade)
   provision Provision? @relation(fields: [provisionId], references: [id], onDelete: SetNull)
 
   @@index([stateCode])
   @@index([eventDate])
+  @@index([reviewStatus])
   @@map("change_event")
 }
 

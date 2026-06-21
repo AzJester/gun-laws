@@ -2,7 +2,7 @@
 
 import type { ChangeKind } from "../types";
 
-export type SourceKind = "legiscan" | "openstates";
+export type SourceKind = "legiscan" | "openstates" | "courtlistener";
 
 /**
  * Provider-agnostic normalized record. One per firearm-related bill found.

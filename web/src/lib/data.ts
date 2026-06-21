@@ -17,6 +17,7 @@ import {
   POLICY_KEYS,
   type ChangeEventDTO,
   type Grade,
+  type LitigationItem,
   type Policies,
   type PolicyKey,
   type ProvisionCategory,
@@ -43,6 +44,7 @@ interface RawState {
   updates?: StateUpdate[];
   verifiedThrough?: number | null;
   sources?: SourceLink[];
+  litigation?: LitigationItem[];
 }
 
 interface RawDataset {
@@ -78,6 +80,7 @@ function toSummaryFromRaw(code: string, s: RawState): StateSummary {
     updates: s.updates ?? [],
     verifiedThrough: s.verifiedThrough ?? null,
     sources: s.sources ?? [],
+    litigation: s.litigation ?? [],
   };
 }
 
@@ -192,6 +195,22 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
   }
   const provisions = [...byCategory.values()];
 
+  // Derive a litigation summary from any provision whose current version is
+  // enjoined/struck (the soft-transition status the court overlay/publish sets).
+  const litigation: LitigationItem[] = [];
+  for (const prov of st.provisions) {
+    const v = prov.currentVersion;
+    if (v && (v.status === "enjoined" || v.status === "struck")) {
+      litigation.push({
+        label: v.summary ?? prov.title,
+        status: v.status,
+        citation: v.citation ?? null,
+        url: null,
+        note: null,
+      });
+    }
+  }
+
   // A state is "detailed" if it has at least one real statute citation.
   const detailed = provisions.some((c) => c.items.some((it) => it.citation));
 
@@ -208,6 +227,7 @@ async function getStateDb(code: string): Promise<StateDetail | null> {
     updates,
     verifiedThrough: meta.verifiedThrough,
     sources: meta.sources,
+    litigation,
     provisions,
   };
 }
@@ -247,9 +267,13 @@ export async function getState(code: string): Promise<StateDetail | null> {
 export async function getRecentChanges(): Promise<ChangeEventDTO[]> {
   if (hasDatabase()) {
     const prisma = getPrisma();
+    // Only PUBLISHED events reach the public feed — auto_detected / in_review
+    // drafts stay in the editorial queue until an editor approves them.
     const events = await prisma.changeEvent.findMany({
+      where: { reviewStatus: "published" },
       orderBy: { eventDate: "desc" },
       include: { state: true },
+      take: 50,
     });
     return events.map((e) => ({
       stateCode: e.stateCode,
@@ -271,6 +295,51 @@ export async function getRecentChanges(): Promise<ChangeEventDTO[]> {
     headline: c.headline,
     date: c.display,
   }));
+}
+
+/**
+ * Published changelog entries, newest first. DB path returns published
+ * ChangeEvents (optionally filtered to one state). JSON fallback returns the
+ * curated sample changes so the changelog is never empty in the demo.
+ */
+export async function getPublishedChanges(
+  opts: { state?: string; limit?: number } = {},
+): Promise<ChangeEventDTO[]> {
+  const limit = opts.limit ?? 50;
+  const stateCode = opts.state?.toUpperCase();
+
+  if (hasDatabase()) {
+    const prisma = getPrisma();
+    const events = await prisma.changeEvent.findMany({
+      where: {
+        reviewStatus: "published",
+        ...(stateCode ? { stateCode } : {}),
+      },
+      orderBy: { eventDate: "desc" },
+      include: { state: true },
+      take: limit,
+    });
+    return events.map((e) => ({
+      stateCode: e.stateCode,
+      stateName: e.state.name,
+      kind: e.kind,
+      tagLabel: tagLabelFor(e.kind),
+      headline: e.headline,
+      date: formatDate(e.eventDate),
+    }));
+  }
+
+  const ds = await loadDataset();
+  return CHANGES.filter((c) => !stateCode || c.stateCode === stateCode)
+    .slice(0, limit)
+    .map((c) => ({
+      stateCode: c.stateCode,
+      stateName: ds.states[c.stateCode]?.name ?? c.stateCode,
+      kind: c.kind,
+      tagLabel: c.tagLabel,
+      headline: c.headline,
+      date: c.display,
+    }));
 }
 
 function tagLabelFor(kind: string): string {

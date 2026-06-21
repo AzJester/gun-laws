@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import MapExplorer from "@/components/MapExplorer";
 import { getRecentChanges, getStates } from "@/lib/data";
 import { getGeo } from "@/lib/geo";
@@ -18,6 +20,14 @@ export default async function HomePage() {
       <MapExplorer geo={geo} states={states} changes={changes} />
 
       <footer className="mx-auto max-w-[1560px] px-[22px] pb-12">
+        <p className="mb-3 text-[12.5px]">
+          <Link
+            href="/changelog"
+            className="text-[var(--accent)] hover:underline"
+          >
+            View the published changelog →
+          </Link>
+        </p>
         <p className="rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-4 text-[12.5px] leading-relaxed text-[var(--muted)]">
           <strong className="text-[#e3b341]">⚠ Not legal advice.</strong> Law
           data is from the{" "}

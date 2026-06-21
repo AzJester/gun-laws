@@ -31,9 +31,12 @@ function parseArgs(argv: string[]): Args {
       args.dryRun = true;
     } else if (raw.startsWith("--source=")) {
       const v = raw.slice("--source=".length).toLowerCase();
-      if (v === "legiscan" || v === "openstates") args.source = v;
-      else {
-        console.error(`Unknown --source "${v}" (use legiscan|openstates)`);
+      if (v === "legiscan" || v === "openstates" || v === "courtlistener") {
+        args.source = v;
+      } else {
+        console.error(
+          `Unknown --source "${v}" (use legiscan|openstates|courtlistener)`,
+        );
         process.exit(2);
       }
     } else if (raw.startsWith("--states=")) {
@@ -63,7 +66,7 @@ function printHelp(): void {
       "",
       "Usage: npm run ingest -- [flags]",
       "  --dry-run            fetch + normalize, do not write to the DB",
-      "  --source=NAME        legiscan | openstates (default: all with a key)",
+      "  --source=NAME        legiscan | openstates | courtlistener (default: all available)",
       "  --states=CA,TX,...   restrict to these states (default: 50 + DC)",
       "  --query=TEXT         search query (default: firearm)",
     ].join("\n"),
@@ -101,6 +104,10 @@ async function main() {
   }
   console.log(`Fetched:   ${summary.fetched}`);
   console.log(`Unique:    ${summary.unique}`);
+  console.log(
+    `Classified:${summary.classified} ` +
+      `(llm=${summary.classifyMethod.llm}, rules=${summary.classifyMethod.rules})`,
+  );
   console.log(`Upserted:  ${summary.upserted}`);
   const states = Object.entries(summary.byState).sort((a, b) => b[1] - a[1]);
   if (states.length) {
@@ -109,6 +116,16 @@ async function main() {
     );
   }
   for (const w of summary.warnings) console.log(`Warning:   ${w}`);
+  if (summary.sampleDrafts?.length) {
+    console.log("\n--- Sample drafts (for review) ---");
+    for (const d of summary.sampleDrafts) {
+      console.log(
+        `  [${d.state}] ${d.summary} ` +
+          `(policy=${d.policyKey ?? "—"}, status=${d.proposedStatus ?? "—"}, ` +
+          `conf=${d.confidence}, via=${d.method})`,
+      );
+    }
+  }
   console.log("=========================");
 }
 

@@ -98,25 +98,82 @@ Both `GET` responses carry a `disclaimer` field.
 
 ---
 
-## Ingestion — recent firearm legislation → ChangeEvents
+## Update pipeline — detect → draft → review → publish → changelog
+
+This implements the pipeline in [`../docs/PLAN.md` §6](../docs/PLAN.md). Nothing
+publishes without human approval; data is versioned and append-only.
+
+```
+ingest (LegiScan / Open States / CourtListener)
+  → normalize + dedupe
+  → CLASSIFY  (LLM draft, rules fallback)         src/lib/ingest/classifier.ts
+  → persist as ChangeEvent (reviewStatus=auto_detected, with draft + confidence)
+  → EDITORIAL REVIEW QUEUE  (GET/POST /api/review) src/app/admin/review/page.tsx
+  → APPROVE ⇒ versioned PUBLISH (new ProvisionVersion, move currentVersionId)
+  → public CHANGELOG + recent-changes feed         /changelog, /api/changelog
+```
+
+### Ingestion — recent firearm legislation/rulings → ChangeEvents
 
 `src/lib/ingest/` fetches recent firearm-related bills from **LegiScan** and
-**Open States v3**, normalizes them to a common shape, dedupes by external id,
-and upserts `ChangeEvent` rows with `reviewStatus = auto_detected` (an editor
-then promotes them to `published`). The recent-changes feed prefers DB
-`ChangeEvent`s when a database is present, falling back to the sample data in
-`src/lib/changes.ts` otherwise.
+**Open States v3**, plus firearm-related court opinions/dockets from
+**CourtListener**, normalizes them to a common shape, dedupes by external id,
+**classifies** each into a reviewable draft, and upserts `ChangeEvent` rows with
+`reviewStatus = auto_detected` (an editor then promotes them to `published`).
+The recent-changes feed and changelog show **published** DB `ChangeEvent`s when a
+database is present, falling back to the sample data in `src/lib/changes.ts`.
 
 ```
 src/lib/ingest/
-├─ http.ts         # fetch helper: timeout + retry/backoff + typed errors
-├─ types.ts        # NormalizedChange / ProviderResult / state codes
-├─ legiscan.ts     # LegiScan client (getSearchRaw / getMasterListRaw)
-├─ openstates.ts   # Open States v3 client (/bills, X-API-KEY header)
-└─ index.ts        # runIngestion({states?, source?, dryRun?}) orchestrator
-scripts/ingest.ts  # CLI wrapper (tsx)
+├─ http.ts          # fetch helper: timeout + retry/backoff + typed errors
+├─ types.ts         # NormalizedChange / ProviderResult / state codes
+├─ legiscan.ts      # LegiScan client (getSearchRaw / getMasterListRaw)
+├─ openstates.ts    # Open States v3 client (/bills, X-API-KEY header)
+├─ courtlistener.ts # CourtListener v4 client (court rulings → court_ruling)
+├─ classifier.ts    # classifyChange(): LLM draft (Anthropic) → rules fallback
+└─ index.ts         # runIngestion({states?, source?, dryRun?}) orchestrator
+scripts/ingest.ts   # CLI wrapper (tsx)
 src/app/api/ingest/route.ts  # POST endpoint (guarded by INGEST_TOKEN)
 ```
+
+### The classifier (LLM draft step)
+
+`classifyChange(change)` turns each normalized change into a draft for the
+editor: a plain-language `summary`, best-guess `policyKey` + `category`, a
+proposed provision `status` (e.g. a court injunction → `enjoined`), a proposed
+`citation`, plus a `confidence` (0–1) and `method` (`"llm"` | `"rules"`).
+
+- **LLM path** — the official Anthropic SDK (`@anthropic-ai/sdk`). Used when
+  `ANTHROPIC_API_KEY` is set; model from `ANTHROPIC_MODEL` (default
+  `claude-sonnet-4-6`). Requests structured JSON and parses it defensively.
+- **Rules fallback** — a deterministic keyword classifier. Used when no key is
+  set **or the LLM call fails for any reason** (incl. egress 403, network error,
+  unparseable JSON). It **never throws**, so ingestion always produces drafts.
+
+### Editorial review queue + versioned publish
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/review` | Pending drafts (`reviewStatus` ∈ auto_detected/in_review). Read-only; no token required. Empty (with a note) when no DB. |
+| `POST /api/review/[id]` | `{action: "approve" \| "reject" \| "edit"}`. **Write — requires `ADMIN_TOKEN`** (Bearer or `x-admin-token`). |
+
+- **approve** → appends a new immutable `ProvisionVersion`
+  (summary/citation/status/effectiveDate/verifiedAt + a `Source` when a URL is
+  known), points `Provision.currentVersionId` at it (creating the `Provision`
+  if the change introduces a new one), supersedes the prior version, and sets the
+  `ChangeEvent` `reviewStatus = published` (so it appears in the changelog/feed).
+- **edit** → saves editor overrides and sets `reviewStatus = in_review` (does
+  not publish).
+- **reject** → sets `reviewStatus = rejected` (no version written).
+
+A minimal admin UI lives at **`/admin/review`** — enter `ADMIN_TOKEN` in the
+field and Approve/Reject the listed drafts.
+
+### Changelog
+
+- `GET /api/changelog?state=CA&limit=50` — recent **published** changes (DB path),
+  or the curated sample changes when no DB.
+- **`/changelog`** — a public page rendering the same feed.
 
 ### Required env vars
 
@@ -124,12 +181,17 @@ src/app/api/ingest/route.ts  # POST endpoint (guarded by INGEST_TOKEN)
 |---|---|
 | `LEGISCAN_API_KEY` | LegiScan API key. Register at https://legiscan.com/legiscan |
 | `OPENSTATES_API_KEY` | Open States v3 key. https://open.pluralpolicy.com/accounts/profile/ |
+| `COURTLISTENER_API_TOKEN` | *Optional* CourtListener token (raises rate limit). https://www.courtlistener.com/profile/ |
+| `ANTHROPIC_API_KEY` | *Optional* Anthropic key for the LLM classifier draft step. Unset ⇒ rules fallback. |
+| `ANTHROPIC_MODEL` | *Optional* model id for the classifier (default `claude-sonnet-4-6`). |
+| `ADMIN_TOKEN` | Bearer token guarding review approve/reject/edit. Unset ⇒ review writes disabled. |
 | `INGEST_TOKEN` | Bearer token guarding write runs of `POST /api/ingest` |
 | `DATABASE_URL` | Postgres connection — required to persist (write) events |
 
-Only the providers whose key is set are called. **With neither key set,
-ingestion skips gracefully** (returns `{ skipped: true, reason }`, exits 0 — it
-never crashes).
+Only the providers that are available are called (LegiScan/Open States need a
+key; CourtListener is key-optional). **With no provider available, ingestion
+skips gracefully** (returns `{ skipped: true, reason }`, exits 0 — it never
+crashes). The classifier likewise never crashes the run.
 
 ### How to run
 
@@ -181,18 +243,20 @@ jobs:
 
 ### Network / egress allowlist (important)
 
-Live ingestion needs outbound HTTPS to:
+Live runs need outbound HTTPS to:
 
-- `api.legiscan.com`
-- `v3.openstates.org`
+- `api.legiscan.com` (LegiScan)
+- `v3.openstates.org` (Open States)
+- `www.courtlistener.com` (CourtListener court feeds)
+- `api.anthropic.com` (the LLM classifier draft step)
 
 In a restricted/sandboxed environment (e.g. Claude Code on the web — see the
 network-policy docs at **code.claude.com/docs**) these hosts must be on the
 egress allowlist. Otherwise calls return **HTTP 403 `host_not_allowed`**. The
 ingestion layer detects that specific failure and reports it actionably
 ("Egress blocked for <host> … add it to the allowlist"), marking the provider
-skipped instead of crashing — so a dry run in a blocked environment still
-exits 0.
+skipped instead of crashing; the classifier catches it and falls back to the
+rules path — so a dry run in a blocked environment still exits 0.
 
 ---
 
@@ -210,6 +274,24 @@ See [`../docs/DATA-MODEL.md`](../docs/DATA-MODEL.md). Implemented in
 
 Enjoined/struck laws keep their row with a `status` change (soft transition) —
 never hard-deleted.
+
+### Court tracking + enjoined/struck status
+
+The court lane has two halves:
+
+- **Live detection** — `src/lib/ingest/courtlistener.ts` pulls recent
+  firearm-related rulings; the classifier proposes an `enjoined`/`struck` status;
+  on approve, the versioned publish records that status on the new
+  `ProvisionVersion` (the DB read path surfaces it as `status` + a `litigation`
+  summary; see `getStateDb` in `src/lib/data.ts`).
+- **Static overlay (no-DB demo)** — `../tools/court-status.js` is a small,
+  clearly-labeled *illustrative* overlay marking a few well-known provisions as
+  `enjoined`/`struck` with a court citation + url + note. `../tools/build-from-sfl.js`
+  applies it when building `data/sample-states.json`, setting the matching
+  provision items' `status` and adding a per-state `litigation` array. Rebuild
+  with `node tools/build-from-sfl.js && node tools/build-mockup.js` from the repo
+  root. The detail view renders an "Under litigation" callout and an
+  enjoined/struck badge on the affected provisions.
 
 ---
 
@@ -248,22 +330,28 @@ web/
 │  │  ├─ api/states/route.ts            # GET /api/states
 │  │  ├─ api/states/[code]/route.ts     # GET /api/states/[code]
 │  │  ├─ api/ingest/route.ts            # POST /api/ingest (guarded)
+│  │  ├─ api/review/route.ts            # GET pending review queue
+│  │  ├─ api/review/[id]/route.ts       # POST approve|reject|edit (ADMIN_TOKEN)
+│  │  ├─ api/changelog/route.ts         # GET published changelog (?state=)
+│  │  ├─ admin/review/page.tsx          # minimal editorial review UI (client)
+│  │  ├─ changelog/page.tsx             # public changelog page
 │  │  ├─ globals.css
 │  │  ├─ layout.tsx
 │  │  └─ page.tsx                        # home (server) → MapExplorer
 │  ├─ components/
 │  │  ├─ MapExplorer.tsx   # client: color-mode toggle, legend, selection, search
 │  │  ├─ GeoMap.tsx        # inline SVG geographic map
-│  │  ├─ StateDetail.tsx   # detail panel (+ 2021–2025 updates callout)
+│  │  ├─ StateDetail.tsx   # detail panel (+ updates + litigation callouts, status badges)
 │  │  └─ ChangesFeed.tsx   # recent-changes feed
 │  └─ lib/
-│     ├─ data.ts           # read layer (DB or JSON fallback)
+│     ├─ data.ts           # read layer (DB or JSON fallback) + getPublishedChanges
 │     ├─ prisma.ts         # lazy Prisma client
+│     ├─ admin.ts          # ADMIN_TOKEN guard for review writes
 │     ├─ geo.ts            # loads us-geo.json
 │     ├─ grading.ts        # grade/color logic (friendly green→red ramp)
 │     ├─ changes.ts        # recent-changes seed data
 │     ├─ types.ts          # shared types + DISCLAIMER
-│     └─ ingest/           # LegiScan + Open States ingestion (see above)
+│     └─ ingest/           # LegiScan + Open States + CourtListener + classifier
 ├─ docker-compose.yml      # Postgres 16
 ├─ .env.example
 └─ ...config (tsconfig, tailwind, postcss, next)

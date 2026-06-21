@@ -114,6 +114,49 @@ export default function StateDetail({ detail, loading }: StateDetailProps) {
         </div>
       ) : null}
 
+      {detail.litigation?.length ? (
+        <div className="mb-4 rounded-[10px] border border-[#5b4a1d] bg-[#241d0d] p-3.5">
+          <h3 className="m-0 mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#e3b341]">
+            <span className="text-[14px]">⚖️</span>
+            Under litigation
+          </h3>
+          <ul className="m-0 list-none p-0">
+            {detail.litigation.map((l, i) => (
+              <li
+                key={i}
+                className="mb-1.5 text-[12.5px] leading-snug text-[#ecdcb0] last:mb-0"
+              >
+                <span className="mr-1 rounded-full border border-[#5b4a1d] bg-[#2a2210] px-1.5 text-[9.5px] font-bold uppercase text-[#e3b341]">
+                  {STATUS_LABEL[l.status] ?? l.status}
+                </span>
+                {l.label}
+                {l.citation ? (
+                  l.url ? (
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener"
+                      className="ml-1 text-[11px] text-[#8fb8e6] hover:underline"
+                    >
+                      ({l.citation})
+                    </a>
+                  ) : (
+                    <span className="ml-1 text-[11px] text-[#8fb8e6]">
+                      ({l.citation})
+                    </span>
+                  )
+                ) : null}
+                {l.note ? (
+                  <span className="block text-[11px] text-[var(--muted)]">
+                    {l.note}
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {detail.provisions.length > 0 ? (
         <div className="max-h-[520px] overflow-y-auto pr-1">
           {detail.provisions.map((cat) => (
