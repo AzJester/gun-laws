@@ -7,14 +7,18 @@ name: Deploy static site to GitHub Pages
 #
 # The repo is a PROJECT pages site, served under the base path /gun-laws at
 # https://azjester.github.io/gun-laws.
+# Runs on pushes to the default branch (after the PR merges) and on manual
+# dispatch. It deliberately does NOT run on the feature branch: GitHub Pages must
+# be enabled once by a repo admin (the Actions token cannot create the Pages
+# site — see the "Configure Pages" step), so auto-running on every branch push
+# would just red-flag the PR. ONE-TIME SETUP: Settings → Pages → Build and
+# deployment → Source: "GitHub Actions". After that, merging to main (or running
+# this workflow manually) publishes https://azjester.github.io/gun-laws.
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-      # Also build/deploy from the working branch so the result can be seen
-      # before merging. See the env/branch note on the deploy job below.
-      - claude/practical-allen-oesuea
 
 # Least-privilege token for Pages deploys via the official actions.
 permissions:
@@ -68,10 +72,12 @@ jobs:
       - name: Disable Jekyll
         run: touch out/.nojekyll
 
+      # Requires Pages to already be enabled (Settings → Pages → Source: GitHub
+      # Actions). We do NOT pass `enablement: true` because the default Actions
+      # token isn't permitted to create a Pages site ("Resource not accessible by
+      # integration"); the one-time enable is a repo-admin action.
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
