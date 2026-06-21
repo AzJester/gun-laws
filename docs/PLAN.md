@@ -105,8 +105,9 @@ trackers, with a human editor confirming every change before it goes live.
   current mockup & app.* 134 firearm-law provisions across 14 categories for all 50
   states, 1991–2020, coded 0/1, with a codebook. Excellent breadth baseline.
   <https://www.statefirearmlaws.org> (data via the `dynamicalsystemslaboratory/Firearm-database`
-  mirror; our build: `tools/build-from-sfl.js` + `tools/sfl-codebook.js`). **Vintage 2020** —
-  the update pipeline (§6) is what carries it past 2020.
+  mirror; our build: `tools/build-from-sfl.js` + `tools/sfl-codebook.js`). The 2020
+  baseline is brought current with a **curated 2021–2025 overlay**
+  (`tools/updates-2021-2025.js`); from here, §6's live ingestion keeps it current.
 - **RAND State Firearm Law Database** — longitudinal, machine-readable database of
   state firearm law provisions across ~134 detailed categories (downloadable
   CSV/Excel). Excellent starting skeleton for "which categories of law exist in
@@ -126,9 +127,13 @@ trackers, with a human editor confirming every change before it goes live.
   status, sponsors, full text, roll calls. Free tier ~30k queries/month; push
   service replicates the DB every 15 min–4 hrs. Use keyword/subject monitors for
   firearm bills. <https://legiscan.com/legiscan> · <https://legiscan.com/gaits/documentation/legiscan>
+  *A real client + ingestion runner is implemented in [`web/src/lib/ingest/`](../web/)
+  (`npm run ingest`); it needs `LEGISCAN_API_KEY` and egress to `api.legiscan.com`.*
 - **Open States API v3** (Plural) — normalized legislative data for all 50 states
   + DC + PR; API key via `X-API-KEY`; bulk downloads available.
   <https://docs.openstates.org/api-v3/>
+  *Client implemented alongside LegiScan in [`web/src/lib/ingest/`](../web/); needs
+  `OPENSTATES_API_KEY` and egress to `v3.openstates.org`.*
 - **Court trackers** — CourtListener/RECAP + curated dockets for major Second
   Amendment litigation that enjoins or revives statutes.
 - **State legislature & AG/agency sites** — primary source of truth for final
@@ -316,7 +321,7 @@ A static ASCII wireframe of the layout is in [`docs/WIREFRAME.md`](WIREFRAME.md)
 | **0 — Foundations** | This plan, data model, wireframe; **interactive geographic mockup** with **all 134 tracked laws for every state** (State Firearm Laws Database, 2020) ✅ |
 | **1 — Data spine** | Postgres schema + versioning (Prisma); seed all 50+DC from the canonical dataset; import RAND baseline 🚧 *scaffold in [`web/`](../web/)* |
 | **2 — Public MVP** | Next.js site, map (geo + tile toggle), detail view with citations, search, disclaimer 🚧 *scaffold in [`web/`](../web/)* |
-| **3 — Live updates** | LegiScan + Open States ingestion → classifier → editorial review queue → publish + changelog |
+| **3 — Live updates** | LegiScan + Open States ingestion → classifier → editorial review queue → publish + changelog 🚧 *real ingestion clients + runner built in [`web/src/lib/ingest/`](../web/); needs API keys + host egress* |
 | **4 — Engagement** | Email/RSS subscriptions, compare view, recent-changes feed in prod |
 | **5 — Depth** | Court-feed integration, historical "as-of" view, public API + downloads |
 | **6 — Breadth** | Carry-reciprocity matrix, county/municipal layer, i18n, accessibility audit |

@@ -101,8 +101,10 @@ and the at-a-glance flags).
 - **Soft transitions:** an enjoined/struck law keeps its row with a status change —
   never hard-deleted — so history stays intact.
 - The canonical sample dataset (all 50 states + DC, with policy flags, derived
-  grade, and categorized `provisions`) lives in
-  [`data/sample-states.json`](../data/sample-states.json); pre-projected map
-  geometry is in [`data/us-geo.json`](../data/us-geo.json). Both the mockup and the
-  `web/` app are built from these. Regenerate provisions with
-  [`tools/gen-provisions.js`](../tools/gen-provisions.js).
+  grade, `lawCount`, categorized `provisions`, and an `updates` list of post-2020
+  changes) lives in [`data/sample-states.json`](../data/sample-states.json);
+  pre-projected map geometry is in [`data/us-geo.json`](../data/us-geo.json). Both the
+  mockup and the `web/` app are built from these. Rebuild with
+  [`tools/build-from-sfl.js`](../tools/build-from-sfl.js) (State Firearm Laws Database
+  2020 baseline + [`tools/updates-2021-2025.js`](../tools/updates-2021-2025.js) overlay,
+  via [`tools/sfl-codebook.js`](../tools/sfl-codebook.js)).

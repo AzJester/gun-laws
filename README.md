@@ -13,16 +13,26 @@ plan and a working visual mockup** (concept stage).
 
 ## Data: all 134 tracked laws, every state
 
-State law data comes from the **[State Firearm Laws Database](https://www.statefirearmlaws.org)**
+State law data starts from the **[State Firearm Laws Database](https://www.statefirearmlaws.org)**
 (Siegel et al., Boston University) — **134 firearm-law provisions across 14 categories
-for all 50 states**, latest year **2020**. Each state's page lists every tracked law
-it has in effect, grouped by category (California has 111; Arizona has 8). Category
-labels are simplified renderings of the official codebook.
+for all 50 states** — and then **layers curated 2021–2025 changes on top so it reflects
+current law** (the permitless-carry wave, plus tightening in MI, MN, IL, WA, CO, DE, RI,
+VT, ME, NM…). Each state lists every tracked law in effect, grouped by category
+(California has 111; Arizona has 8), and a **"changes since the 2020 baseline"** callout.
+The overlay lives in [`tools/updates-2021-2025.js`](tools/updates-2021-2025.js); labels
+are simplified renderings of the official codebook.
 
-> ⚠️ The dataset's latest year is **2020**, so changes since then (e.g. several states
-> adopting permitless carry in 2021–2024) are not yet reflected. Keeping it current is
-> exactly what the update pipeline in [`docs/PLAN.md`](docs/PLAN.md) §6 is for. DC isn't
-> in the 50-state database, so it shows a curated summary.
+> ⚠️ The 2021–2025 layer is a **curated** set of the major, well-documented changes —
+> not every minor amendment. Keeping it fully current is what the live
+> **LegiScan / Open States ingestion** ([`web/src/lib/ingest/`](web/)) and the pipeline
+> in [`docs/PLAN.md`](docs/PLAN.md) §6 are for. DC isn't in the 50-state database, so it
+> shows a curated summary.
+
+## Friendly colors
+
+The map uses an intuitive **report-card palette** — **A is green, F is red** — so the
+grade reads at a glance. The letter grade is always drawn on each state, so the map
+stays usable for color-blind users.
 
 ## Grading orientation
 
@@ -41,7 +51,8 @@ A state's **grade reflects how few laws/restrictions it imposes**:
 | [`mockup/index.html`](mockup/index.html) | **Interactive visual mockup** — self-contained, no dependencies. Real geographic US map; all 50 states + DC with every tracked law. |
 | [`mockup/preview.png`](mockup/preview.png) | Static preview of the map (shown above). |
 | [`web/`](web/) | **Phase-1 Next.js + Postgres app** (the real build): geographic map, Prisma data spine, seed, API. See `web/README.md`. |
-| [`data/sample-states.json`](data/sample-states.json) | Canonical dataset — 50 states + DC, each with its tracked laws. Built by `tools/build-from-sfl.js` from `data/sources/State_laws.xlsx` using `tools/sfl-codebook.js`. |
+| [`data/sample-states.json`](data/sample-states.json) | Canonical dataset — 50 states + DC, each with its tracked laws + 2021–2025 updates. Built by `tools/build-from-sfl.js` from `data/sources/State_laws.xlsx` using `tools/sfl-codebook.js` + `tools/updates-2021-2025.js`. |
+| [`tools/`](tools/) | Reproducible build: codebook, 2021–2025 overlay, dataset + mockup builders. |
 | [`docs/PLAN.md`](docs/PLAN.md) | Detailed build plan: vision, scope, data sources, the auto-update pipeline, architecture, stack, roadmap, risks. |
 | [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) | Versioned, provenance-first database schema. |
 | [`docs/WIREFRAME.md`](docs/WIREFRAME.md) | ASCII wireframe of the UI for quick reference. |

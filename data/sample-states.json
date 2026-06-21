@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "description": "Per-state firearm-law data for the GunLawMap mockup/app. Provision values are from the State Firearm Laws Database (latest year 2020); labels are simplified renderings of its codebook for display. NOT legal advice and not guaranteed current — many states changed laws after 2020.",
+    "description": "Per-state firearm-law data for the GunLawMap mockup/app. Baseline values are from the State Firearm Laws Database (2020); 2021–2025 changes are layered on via tools/updates-2021-2025.js so the data reflects current law. Provision labels are simplified renderings of the codebook. NOT legal advice; verify against official statutes.",
     "source": "State Firearm Laws Database — Siegel et al., Boston University (statefirearmlaws.org); mirror: dynamicalsystemslaboratory/Firearm-database",
-    "vintage": "2020",
-    "grading": "Grade reflects how FEW laws/restrictions a state imposes (fewer = higher). Derived from lawtotal (count of the 134 tracked provisions in effect): 0-9=A, 10-19=A-, 20-29=B, 30-44=C, 45-59=D, 60-79=D-, 80+=F. Opposite orientation from gun-safety scorecards.",
+    "vintage": "2020 baseline + 2021–2025 curated updates",
+    "grading": "Grade reflects how FEW laws/restrictions a state imposes (fewer = higher). From lawtotal (count of the 134 tracked provisions in effect): 0-9=A, 10-19=A-, 20-29=B, 30-44=C, 45-59=D, 60-79=D-, 80+=F. Opposite orientation from gun-safety scorecards.",
     "grades": [
       "A",
       "A-",
@@ -13,17 +13,17 @@
       "D-",
       "F"
     ],
-    "coverage": "50 states from the database + a curated DC summary = 51 jurisdictions.",
+    "coverage": "50 states from the database (with 2021–2025 updates) + a curated DC summary = 51 jurisdictions.",
     "disclaimer": "Illustrative; verify against official state statutes and counsel."
   },
   "states": {
     "AL": {
       "name": "Alabama",
-      "grade": "A-",
-      "lawCount": 10,
-      "restrictions": 10,
+      "grade": "A",
+      "lawCount": 9,
+      "restrictions": 9,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -34,10 +34,6 @@
         {
           "category": "Concealed & open carry",
           "items": [
-            {
-              "text": "Permit required to carry a concealed firearm.",
-              "citation": null
-            },
             {
               "text": "Background check required for a concealed-carry permit.",
               "citation": null
@@ -92,9 +88,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "AK": {
       "name": "Alaska",
@@ -138,9 +140,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "AZ": {
       "name": "Arizona",
@@ -204,9 +207,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "AR": {
       "name": "Arkansas",
@@ -282,9 +286,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "CA": {
       "name": "California",
@@ -830,22 +835,23 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "CO": {
       "name": "Colorado",
       "grade": "C",
-      "lawCount": 32,
-      "restrictions": 32,
+      "lawCount": 38,
+      "restrictions": 38,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": true,
         "red_flag": true,
         "assault_weapon_ban": false,
         "magazine_limit": true,
-        "waiting_period": false
+        "waiting_period": true
       },
       "provisions": [
         {
@@ -910,6 +916,32 @@
             },
             {
               "text": "State runs background checks on handgun sales.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Waiting periods",
+          "items": [
+            {
+              "text": "Waiting period before taking possession of any firearm.",
+              "citation": null
+            },
+            {
+              "text": "Waiting period before taking possession of a handgun.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Minimum age requirements",
+          "items": [
+            {
+              "text": "Minimum age 21 to buy a long gun from a dealer.",
+              "citation": null
+            },
+            {
+              "text": "Minimum age 21 to buy a long gun (all sellers).",
               "citation": null
             }
           ]
@@ -992,6 +1024,15 @@
           ]
         },
         {
+          "category": "Safe storage & child access",
+          "items": [
+            {
+              "text": "Firearms must be stored locked in certain circumstances.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Trafficking & straw purchases",
           "items": [
             {
@@ -1008,6 +1049,10 @@
           "category": "Possession & location limits",
           "items": [
             {
+              "text": "Owners must report lost or stolen firearms.",
+              "citation": null
+            },
+            {
               "text": "Firearms restricted on college/university campuses.",
               "citation": null
             },
@@ -1022,9 +1067,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Safe-storage + lost/stolen reporting"
+        },
+        {
+          "year": 2023,
+          "label": "3-day waiting period enacted"
+        },
+        {
+          "year": 2023,
+          "label": "Purchase age raised to 21"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "CT": {
       "name": "Connecticut",
@@ -1472,21 +1531,22 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "DE": {
       "name": "Delaware",
-      "grade": "C",
-      "lawCount": 41,
-      "restrictions": 41,
+      "grade": "D",
+      "lawCount": 45,
+      "restrictions": 45,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": true,
         "red_flag": true,
-        "assault_weapon_ban": false,
-        "magazine_limit": false,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
         "waiting_period": false
       },
       "provisions": [
@@ -1548,6 +1608,19 @@
             },
             {
               "text": "State reports mental-health records to the federal NICS system.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Buyer regulations & permits",
+          "items": [
+            {
+              "text": "Permit/license required to purchase a firearm.",
+              "citation": null
+            },
+            {
+              "text": "Permit/license required to purchase a handgun.",
               "citation": null
             }
           ]
@@ -1620,6 +1693,19 @@
             },
             {
               "text": "Red-flag petitions limited to law enforcement.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Assault weapons & magazines",
+          "items": [
+            {
+              "text": "Assault-weapon restriction or ban.",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazine restriction.",
               "citation": null
             }
           ]
@@ -1710,17 +1796,27 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Assault-weapon ban + magazine limit"
+        },
+        {
+          "year": 2024,
+          "label": "Permit-to-purchase enacted (eff. 2025)"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "FL": {
       "name": "Florida",
-      "grade": "C",
-      "lawCount": 30,
-      "restrictions": 30,
+      "grade": "B",
+      "lawCount": 29,
+      "restrictions": 29,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -1745,10 +1841,6 @@
             },
             {
               "text": "Permit required to openly carry a long gun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -1909,17 +2001,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2023,
+          "label": "Permitless carry enacted (HB 543)"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "GA": {
       "name": "Georgia",
       "grade": "A",
-      "lawCount": 6,
-      "restrictions": 6,
+      "lawCount": 5,
+      "restrictions": 5,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -1932,10 +2030,6 @@
           "items": [
             {
               "text": "Permit required to openly carry a handgun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -1962,9 +2056,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "HI": {
       "name": "Hawaii",
@@ -2384,9 +2484,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "ID": {
       "name": "Idaho",
@@ -2412,21 +2513,22 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "IL": {
       "name": "Illinois",
       "grade": "D-",
-      "lawCount": 70,
-      "restrictions": 70,
+      "lawCount": 74,
+      "restrictions": 74,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": false,
         "red_flag": true,
-        "assault_weapon_ban": false,
-        "magazine_limit": false,
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
         "waiting_period": true
       },
       "provisions": [
@@ -2654,6 +2756,27 @@
           ]
         },
         {
+          "category": "Assault weapons & magazines",
+          "items": [
+            {
+              "text": "Assault-weapon restriction or ban.",
+              "citation": null
+            },
+            {
+              "text": "Assault-weapon ban names specific listed models.",
+              "citation": null
+            },
+            {
+              "text": "Grandfathered assault weapons must be registered.",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazine restriction.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Dealer regulations",
           "items": [
             {
@@ -2786,17 +2909,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2023,
+          "label": "Assault-weapon ban + magazine limit (PICA)"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "IN": {
       "name": "Indiana",
       "grade": "A-",
-      "lawCount": 12,
-      "restrictions": 12,
+      "lawCount": 11,
+      "restrictions": 11,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -2809,10 +2938,6 @@
           "items": [
             {
               "text": "Permit required to openly carry a handgun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -2883,17 +3008,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "IA": {
       "name": "Iowa",
       "grade": "B",
-      "lawCount": 24,
-      "restrictions": 24,
+      "lawCount": 23,
+      "restrictions": 23,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -2904,10 +3035,6 @@
         {
           "category": "Concealed & open carry",
           "items": [
-            {
-              "text": "Permit required to carry a concealed firearm.",
-              "citation": null
-            },
             {
               "text": "Background check required for a concealed-carry permit.",
               "citation": null
@@ -3048,9 +3175,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "KS": {
       "name": "Kansas",
@@ -3105,9 +3238,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "KY": {
       "name": "Kentucky",
@@ -3163,17 +3297,18 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "LA": {
       "name": "Louisiana",
       "grade": "A-",
-      "lawCount": 19,
-      "restrictions": 19,
+      "lawCount": 18,
+      "restrictions": 18,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -3184,10 +3319,6 @@
         {
           "category": "Concealed & open carry",
           "items": [
-            {
-              "text": "Permit required to carry a concealed firearm.",
-              "citation": null
-            },
             {
               "text": "Background check required for a concealed-carry permit.",
               "citation": null
@@ -3283,24 +3414,43 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2024,
+          "label": "Permitless carry effective"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "ME": {
       "name": "Maine",
       "grade": "A-",
-      "lawCount": 11,
-      "restrictions": 11,
+      "lawCount": 13,
+      "restrictions": 13,
       "policies": {
         "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
         "magazine_limit": false,
-        "waiting_period": false
+        "waiting_period": true
       },
       "provisions": [
+        {
+          "category": "Waiting periods",
+          "items": [
+            {
+              "text": "Waiting period before taking possession of any firearm.",
+              "citation": null
+            },
+            {
+              "text": "Waiting period before taking possession of a handgun.",
+              "citation": null
+            }
+          ]
+        },
         {
           "category": "Prohibited people (high-risk)",
           "items": [
@@ -3366,9 +3516,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2024,
+          "label": "72-hour waiting period enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MD": {
       "name": "Maryland",
@@ -3741,9 +3897,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MA": {
       "name": "Massachusetts",
@@ -4252,19 +4409,20 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MI": {
       "name": "Michigan",
       "grade": "B",
-      "lawCount": 21,
-      "restrictions": 21,
+      "lawCount": 26,
+      "restrictions": 26,
       "policies": {
         "permitless_carry": false,
-        "universal_bg_check": false,
-        "red_flag": false,
+        "universal_bg_check": true,
+        "red_flag": true,
         "assault_weapon_ban": false,
         "magazine_limit": false,
         "waiting_period": false
@@ -4298,6 +4456,14 @@
         {
           "category": "Background checks",
           "items": [
+            {
+              "text": "Universal background checks for all firearm sales (incl. private).",
+              "citation": null
+            },
+            {
+              "text": "Universal background checks for all handgun sales.",
+              "citation": null
+            },
             {
               "text": "Universal check enforced via a permit requirement (handguns).",
               "citation": null
@@ -4348,6 +4514,15 @@
           ]
         },
         {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "Extreme Risk Protection Order ('red flag') law.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Dealer regulations",
           "items": [
             {
@@ -4382,6 +4557,14 @@
             {
               "text": "Locking device must be sold with handguns (dealers).",
               "citation": null
+            },
+            {
+              "text": "Firearms must be stored locked in certain circumstances.",
+              "citation": null
+            },
+            {
+              "text": "CAP liability when a child gains access to a firearm.",
+              "citation": null
             }
           ]
         },
@@ -4395,19 +4578,33 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2023,
+          "label": "Universal background checks enacted"
+        },
+        {
+          "year": 2023,
+          "label": "Red-flag (ERPO) law enacted"
+        },
+        {
+          "year": 2023,
+          "label": "Safe-storage law enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MN": {
       "name": "Minnesota",
-      "grade": "C",
-      "lawCount": 41,
-      "restrictions": 41,
+      "grade": "D",
+      "lawCount": 45,
+      "restrictions": 45,
       "policies": {
         "permitless_carry": false,
-        "universal_bg_check": false,
-        "red_flag": false,
+        "universal_bg_check": true,
+        "red_flag": true,
         "assault_weapon_ban": false,
         "magazine_limit": false,
         "waiting_period": true
@@ -4442,6 +4639,19 @@
             },
             {
               "text": "Concealed-carry permits revoked for disqualifying conduct.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Background checks",
+          "items": [
+            {
+              "text": "Universal background checks for all firearm sales (incl. private).",
+              "citation": null
+            },
+            {
+              "text": "Universal background checks for all handgun sales.",
               "citation": null
             }
           ]
@@ -4546,6 +4756,15 @@
           ]
         },
         {
+          "category": "Extreme risk (red flag)",
+          "items": [
+            {
+              "text": "Extreme Risk Protection Order ('red flag') law.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Dealer regulations",
           "items": [
             {
@@ -4557,6 +4776,10 @@
         {
           "category": "Safe storage & child access",
           "items": [
+            {
+              "text": "Firearms must be stored locked in certain circumstances.",
+              "citation": null
+            },
             {
               "text": "Child-access-prevention liability for negligent storage.",
               "citation": null
@@ -4628,9 +4851,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2023,
+          "label": "Universal background checks enacted"
+        },
+        {
+          "year": 2023,
+          "label": "Red-flag (ERPO) law enacted"
+        },
+        {
+          "year": 2024,
+          "label": "Safe-storage requirements"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MS": {
       "name": "Mississippi",
@@ -4665,9 +4902,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MO": {
       "name": "Missouri",
@@ -4697,17 +4935,18 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "MT": {
       "name": "Montana",
       "grade": "A",
-      "lawCount": 4,
-      "restrictions": 4,
+      "lawCount": 3,
+      "restrictions": 3,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -4718,10 +4957,6 @@
         {
           "category": "Concealed & open carry",
           "items": [
-            {
-              "text": "Permit required to carry a concealed firearm.",
-              "citation": null
-            },
             {
               "text": "Background check required for a concealed-carry permit.",
               "citation": null
@@ -4747,17 +4982,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Permitless carry expanded"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NE": {
       "name": "Nebraska",
       "grade": "B",
-      "lawCount": 22,
-      "restrictions": 22,
+      "lawCount": 21,
+      "restrictions": 21,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -4768,10 +5009,6 @@
         {
           "category": "Concealed & open carry",
           "items": [
-            {
-              "text": "Permit required to carry a concealed firearm.",
-              "citation": null
-            },
             {
               "text": "Background check required for a concealed-carry permit.",
               "citation": null
@@ -4904,9 +5141,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2023,
+          "label": "Permitless carry enacted (LB 77)"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NV": {
       "name": "Nevada",
@@ -5088,9 +5331,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NH": {
       "name": "New Hampshire",
@@ -5158,9 +5402,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NJ": {
       "name": "New Jersey",
@@ -5577,22 +5822,23 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NM": {
       "name": "New Mexico",
       "grade": "B",
-      "lawCount": 22,
-      "restrictions": 22,
+      "lawCount": 24,
+      "restrictions": 24,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": true,
         "red_flag": false,
         "assault_weapon_ban": false,
         "magazine_limit": false,
-        "waiting_period": false
+        "waiting_period": true
       },
       "provisions": [
         {
@@ -5645,6 +5891,19 @@
             },
             {
               "text": "Completed background-check records are purged after a set time.",
+              "citation": null
+            }
+          ]
+        },
+        {
+          "category": "Waiting periods",
+          "items": [
+            {
+              "text": "Waiting period before taking possession of any firearm.",
+              "citation": null
+            },
+            {
+              "text": "Waiting period before taking possession of a handgun.",
               "citation": null
             }
           ]
@@ -5714,9 +5973,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2024,
+          "label": "7-day waiting period enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NY": {
       "name": "New York",
@@ -6116,9 +6381,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "NC": {
       "name": "North Carolina",
@@ -6295,9 +6561,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "ND": {
       "name": "North Dakota",
@@ -6374,17 +6641,18 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "OH": {
       "name": "Ohio",
       "grade": "A-",
-      "lawCount": 15,
-      "restrictions": 15,
+      "lawCount": 14,
+      "restrictions": 14,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -6395,10 +6663,6 @@
         {
           "category": "Concealed & open carry",
           "items": [
-            {
-              "text": "Permit required to carry a concealed firearm.",
-              "citation": null
-            },
             {
               "text": "Background check required for a concealed-carry permit.",
               "citation": null
@@ -6483,9 +6747,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "OK": {
       "name": "Oklahoma",
@@ -6554,15 +6824,16 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "OR": {
       "name": "Oregon",
       "grade": "C",
-      "lawCount": 42,
-      "restrictions": 42,
+      "lawCount": 43,
+      "restrictions": 43,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": true,
@@ -6769,6 +7040,15 @@
           ]
         },
         {
+          "category": "Safe storage & child access",
+          "items": [
+            {
+              "text": "Firearms must be stored locked in certain circumstances.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Possession & location limits",
           "items": [
             {
@@ -6791,9 +7071,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Safe-storage law enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "PA": {
       "name": "Pennsylvania",
@@ -7026,21 +7312,22 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "RI": {
       "name": "Rhode Island",
       "grade": "D",
-      "lawCount": 53,
-      "restrictions": 53,
+      "lawCount": 55,
+      "restrictions": 55,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": true,
         "red_flag": false,
         "assault_weapon_ban": false,
-        "magazine_limit": false,
+        "magazine_limit": true,
         "waiting_period": true
       },
       "provisions": [
@@ -7233,6 +7520,19 @@
           ]
         },
         {
+          "category": "Assault weapons & magazines",
+          "items": [
+            {
+              "text": "Large-capacity magazine restriction.",
+              "citation": null
+            },
+            {
+              "text": "Magazine capacity limited to 10 rounds.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Dealer regulations",
           "items": [
             {
@@ -7322,17 +7622,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Large-capacity magazine limit (10 rds)"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "SC": {
       "name": "South Carolina",
       "grade": "A-",
-      "lawCount": 12,
-      "restrictions": 12,
+      "lawCount": 10,
+      "restrictions": 10,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -7344,15 +7650,7 @@
           "category": "Concealed & open carry",
           "items": [
             {
-              "text": "Open carry of handguns regulated or prohibited.",
-              "citation": null
-            },
-            {
               "text": "Permit required to openly carry a handgun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -7404,9 +7702,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2024,
+          "label": "Permitless & open carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "SD": {
       "name": "South Dakota",
@@ -7458,17 +7762,18 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "TN": {
       "name": "Tennessee",
       "grade": "B",
-      "lawCount": 22,
-      "restrictions": 22,
+      "lawCount": 21,
+      "restrictions": 21,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -7485,10 +7790,6 @@
             },
             {
               "text": "Permit required to openly carry a long gun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -7595,17 +7896,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "TX": {
       "name": "Texas",
       "grade": "A-",
-      "lawCount": 18,
-      "restrictions": 18,
+      "lawCount": 17,
+      "restrictions": 17,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -7618,10 +7925,6 @@
           "items": [
             {
               "text": "Permit required to openly carry a handgun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -7716,17 +8019,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Permitless carry enacted (HB 1927)"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "UT": {
       "name": "Utah",
       "grade": "A-",
-      "lawCount": 15,
-      "restrictions": 15,
+      "lawCount": 14,
+      "restrictions": 14,
       "policies": {
-        "permitless_carry": false,
+        "permitless_carry": true,
         "universal_bg_check": false,
         "red_flag": false,
         "assault_weapon_ban": false,
@@ -7743,10 +8052,6 @@
             },
             {
               "text": "Permit required to openly carry a long gun.",
-              "citation": null
-            },
-            {
-              "text": "Permit required to carry a concealed firearm.",
               "citation": null
             },
             {
@@ -7815,15 +8120,21 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2021,
+          "label": "Permitless carry enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "VT": {
       "name": "Vermont",
       "grade": "B",
-      "lawCount": 20,
-      "restrictions": 20,
+      "lawCount": 21,
+      "restrictions": 21,
       "policies": {
         "permitless_carry": true,
         "universal_bg_check": true,
@@ -7869,6 +8180,10 @@
         {
           "category": "Waiting periods",
           "items": [
+            {
+              "text": "Waiting period before taking possession of any firearm.",
+              "citation": null
+            },
             {
               "text": "Waiting period before taking possession of a handgun.",
               "citation": null
@@ -7959,9 +8274,15 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2023,
+          "label": "72-hour waiting period enacted"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "VA": {
       "name": "Virginia",
@@ -8113,22 +8434,23 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "WA": {
       "name": "Washington",
-      "grade": "D",
-      "lawCount": 55,
-      "restrictions": 55,
+      "grade": "D-",
+      "lawCount": 61,
+      "restrictions": 61,
       "policies": {
         "permitless_carry": false,
         "universal_bg_check": true,
         "red_flag": true,
-        "assault_weapon_ban": false,
-        "magazine_limit": false,
-        "waiting_period": false
+        "assault_weapon_ban": true,
+        "magazine_limit": true,
+        "waiting_period": true
       },
       "provisions": [
         {
@@ -8206,10 +8528,27 @@
           ]
         },
         {
+          "category": "Waiting periods",
+          "items": [
+            {
+              "text": "Waiting period before taking possession of any firearm.",
+              "citation": null
+            },
+            {
+              "text": "Waiting period before taking possession of a handgun.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Buyer regulations & permits",
           "items": [
             {
               "text": "Permit/license required to purchase a handgun.",
+              "citation": null
+            },
+            {
+              "text": "Safety training required to purchase/own a firearm.",
               "citation": null
             },
             {
@@ -8323,6 +8662,27 @@
           ]
         },
         {
+          "category": "Assault weapons & magazines",
+          "items": [
+            {
+              "text": "Assault-weapon restriction or ban.",
+              "citation": null
+            },
+            {
+              "text": "Assault-weapon ban names specific listed models.",
+              "citation": null
+            },
+            {
+              "text": "Large-capacity magazine restriction.",
+              "citation": null
+            },
+            {
+              "text": "Magazine capacity limited to 10 rounds.",
+              "citation": null
+            }
+          ]
+        },
+        {
           "category": "Dealer regulations",
           "items": [
             {
@@ -8403,9 +8763,23 @@
           ]
         }
       ],
+      "updates": [
+        {
+          "year": 2022,
+          "label": "Large-capacity magazine limit (10 rds)"
+        },
+        {
+          "year": 2023,
+          "label": "Assault-weapon sales ban enacted"
+        },
+        {
+          "year": 2023,
+          "label": "10-day waiting period + training"
+        }
+      ],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "WV": {
       "name": "West Virginia",
@@ -8519,9 +8893,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "WI": {
       "name": "Wisconsin",
@@ -8665,9 +9040,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "WY": {
       "name": "Wyoming",
@@ -8732,9 +9108,10 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": true,
-      "year": 2020,
-      "source": "State Firearm Laws Database (Siegel et al., Boston University)"
+      "year": 2025,
+      "source": "State Firearm Laws Database (Siegel et al., Boston University), 2020 baseline + 2021–2025 curated updates"
     },
     "DC": {
       "name": "District of Columbia",
@@ -8760,8 +9137,9 @@
           ]
         }
       ],
+      "updates": [],
       "detailed": false,
-      "year": 2020,
+      "year": 2025,
       "source": "curated note"
     }
   }
