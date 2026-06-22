@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import ReciprocityExplorer from "@/components/ReciprocityExplorer";
+import ThemeToggle from "@/components/ThemeToggle";
 import { getStates } from "@/lib/data";
 import {
   reciprocityCodes,
@@ -37,6 +38,7 @@ export default async function ReciprocityPage() {
           aria-label="Section"
           className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
         >
+          <ThemeToggle className="theme-toggle theme-toggle--inline" />
           <Link href="/compare" className="hover:text-[var(--accent)] hover:underline">
             Compare
           </Link>

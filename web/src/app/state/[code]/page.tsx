@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import StateDetailView from "@/components/StateDetailView";
+import ThemeToggle from "@/components/ThemeToggle";
 import { getState, getStates } from "@/lib/data";
 import { DESC, GRADES } from "@/lib/grading";
 import { embedSnippet } from "@/lib/embed";
@@ -156,6 +157,7 @@ export default async function StatePage({
           aria-label="Section"
           className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
         >
+          <ThemeToggle className="theme-toggle theme-toggle--inline" />
           <Link
             href={`/compare?states=${state.code}`}
             className="hover:text-[var(--accent)] hover:underline"

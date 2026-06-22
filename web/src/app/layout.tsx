@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import ThemeToggle from "@/components/ThemeToggle";
+import SiteFooter from "@/components/SiteFooter";
 import { WebVitals } from "@/components/WebVitals";
 import { DEFAULT_THEME, THEME_STORAGE_KEY } from "@/lib/theme";
 
@@ -60,11 +60,13 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
-        {/* Global dark/light toggle — appears on every page (fixed, top-right). */}
-        <ThemeToggle />
         {/* Core Web Vitals reporter (client-only, renders nothing). */}
         <WebVitals />
         {children}
+        {/* Global copyright footer (hidden on /embed routes). The dark/light
+            toggle now lives in each page's header (in-flow) so it never overlaps
+            page content. */}
+        <SiteFooter />
       </body>
     </html>
   );

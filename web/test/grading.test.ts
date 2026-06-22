@@ -61,16 +61,20 @@ describe("grading: displayGrade", () => {
 });
 
 describe("grading: policyYes", () => {
-  it("red_flag reads red", () => {
+  it("the default 'yes' reads green", () => {
+    expect(POLICY_YES.bg).toBe("#15803d");
+  });
+
+  it("red_flag reads red (those states stand out)", () => {
     expect(policyYes("red_flag").bg).toBe("#d73027");
   });
 
-  it("other policies use the default blue 'yes'", () => {
+  it("other policies use the default green 'yes'", () => {
     expect(policyYes("permitless_carry")).toEqual(POLICY_YES);
     expect(policyYes("universal_bg_check")).toEqual(POLICY_YES);
   });
 
-  it("an unknown mode falls back to the default blue 'yes'", () => {
+  it("an unknown mode falls back to the default green 'yes'", () => {
     expect(policyYes("does_not_exist")).toEqual(POLICY_YES);
   });
 });
