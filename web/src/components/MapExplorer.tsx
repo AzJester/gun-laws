@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import GeoMap from "./GeoMap";
 import StateDetail from "./StateDetail";
+import ThemeToggle from "./ThemeToggle";
 
 // ChangesFeed lives below the fold (right column, after the detail panel) and is
 // not needed for first paint, so it's code-split out of the initial bundle. It's
@@ -400,6 +401,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
           />{" "}
           State Firearm Laws Database · 2020
         </div>
+        <ThemeToggle className="theme-toggle theme-toggle--inline" />
       </header>
 
       <div className="mx-auto grid max-w-[1560px] grid-cols-1 gap-[18px] px-[22px] pb-10 pt-[18px] lg:grid-cols-[minmax(560px,1.45fr)_minmax(360px,1fr)]">

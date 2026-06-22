@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import ThemeToggle from "@/components/ThemeToggle";
 import { ORIENTATION_LABEL } from "@/lib/grading";
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ export default function MethodologyPage() {
           aria-label="Section"
           className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
         >
+          <ThemeToggle className="theme-toggle theme-toggle--inline" />
           <Link href="/" className="hover:text-[var(--accent)] hover:underline">
             ← Map
           </Link>

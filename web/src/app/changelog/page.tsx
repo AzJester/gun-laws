@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import ThemeToggle from "@/components/ThemeToggle";
 import { getPublishedChanges } from "@/lib/data";
 
 // Public changelog. Renders statically: on the server build it reads the DB
@@ -25,9 +26,12 @@ export default async function ChangelogPage() {
     <main id="main" className="mx-auto max-w-[860px] px-6 py-8 text-[var(--text)]">
       <div className="flex items-center justify-between">
         <h1 className="m-0 text-2xl font-bold">Changelog</h1>
-        <Link href="/" className="text-sm text-[var(--accent)] hover:underline">
-          ← Map
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-sm text-[var(--accent)] hover:underline">
+            ← Map
+          </Link>
+          <ThemeToggle className="theme-toggle theme-toggle--inline" />
+        </div>
       </div>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Published firearm-law changes, newest first. Each entry was reviewed and

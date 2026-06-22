@@ -22,7 +22,14 @@ import {
   type Theme,
 } from "@/lib/theme";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({
+  className = "theme-toggle",
+}: {
+  /** Override the wrapper class. Pass "theme-toggle theme-toggle--inline" to
+   *  render it in the normal document flow (e.g. inside a header nav) instead of
+   *  as a floating fixed control. */
+  className?: string;
+} = {}) {
   const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
 
   // After hydration, adopt whatever the boot script actually applied to <html>.
@@ -51,7 +58,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="theme-toggle"
+      className={className}
       aria-label={label}
       aria-pressed={!isDark}
       title={label}

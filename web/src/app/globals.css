@@ -241,9 +241,10 @@ a {
 }
 
 /* ---- theme toggle ---- */
-/* Small fixed control rendered globally in the root layout (top-right). It sits
-   above page content but below the skip-link. Colors are all theme vars so it
-   inverts cleanly. */
+/* A small control rendered in each page's header (in the normal document flow)
+   so it never overlaps page content. Colors are all theme vars so it inverts
+   cleanly. The base `.theme-toggle` keeps a floating fallback for any standalone
+   use; pages add `.theme-toggle--inline` to drop it into the header row. */
 .theme-toggle {
   position: fixed;
   top: 12px;
@@ -267,6 +268,21 @@ a {
 .theme-toggle:hover {
   border-color: var(--accent);
   transform: translateY(-1px);
+}
+
+/* In-flow variant: lives inside a header/nav row, so it must NOT be fixed or it
+   would float over content (the overlap bug this fixes). Slightly smaller to sit
+   neatly beside nav links. */
+.theme-toggle--inline {
+  position: static;
+  top: auto;
+  right: auto;
+  z-index: auto;
+  width: 32px;
+  height: 32px;
+  font-size: 15px;
+  box-shadow: none;
+  flex: 0 0 auto;
 }
 
 /* Header status dot: a gentle pulse to signal "live" data. */

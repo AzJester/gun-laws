@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import SubscribeForm from "@/components/SubscribeForm";
+import ThemeToggle from "@/components/ThemeToggle";
 import { getStates } from "@/lib/data";
 import { POLICY_KEYS, POLICY_LABELS } from "@/lib/types";
 
@@ -35,6 +36,7 @@ export default async function AlertsPage() {
           aria-label="Section"
           className="flex items-center gap-4 text-[12.5px] text-[var(--muted)]"
         >
+          <ThemeToggle className="theme-toggle theme-toggle--inline" />
           <Link href="/compare" className="hover:text-[var(--accent)] hover:underline">
             Compare
           </Link>
