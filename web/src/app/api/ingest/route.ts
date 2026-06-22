@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { runIngestion } from "@/lib/ingest";
-import type { SourceKind } from "@/lib/ingest";
 import { reportError } from "@/lib/observability";
 import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 
@@ -9,12 +9,23 @@ import { intFromEnv, rateLimitOrResponse } from "@/lib/rate-limit";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-interface IngestBody {
-  states?: string[];
-  source?: SourceKind;
-  dryRun?: boolean;
-  query?: string;
-}
+// Validate the request body before it reaches the ingestion engine. Without
+// this, arbitrary `states` / `source` / `query` values would flow straight into
+// the provider calls. `.strict()` rejects unknown keys; states must be 2-letter
+// codes; source must be a known provider; query is length-capped.
+const IngestBodySchema = z
+  .object({
+    states: z
+      .array(z.string().trim().regex(/^[A-Za-z]{2}$/))
+      .max(51)
+      .optional(),
+    source: z.enum(["legiscan", "openstates", "courtlistener"]).optional(),
+    dryRun: z.boolean().optional(),
+    query: z.string().trim().max(200).optional(),
+  })
+  .strict();
+
+type IngestBody = z.infer<typeof IngestBodySchema>;
 
 /**
  * POST /api/ingest — run firearm-legislation ingestion on demand.
@@ -38,7 +49,16 @@ export async function POST(req: Request) {
   let body: IngestBody = {};
   try {
     const text = await req.text();
-    if (text) body = JSON.parse(text) as IngestBody;
+    if (text) {
+      const parsed = IngestBodySchema.safeParse(JSON.parse(text));
+      if (!parsed.success) {
+        return NextResponse.json(
+          { error: "Invalid request body", detail: parsed.error.issues },
+          { status: 400 },
+        );
+      }
+      body = parsed.data;
+    }
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }

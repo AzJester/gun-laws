@@ -102,6 +102,9 @@ const isExport = process.env.PAGES_EXPORT === "1";
 const nextConfig = isExport
   ? {
       reactStrictMode: true,
+      // Lint runs as a dedicated CI step (`npm run lint`), never during the
+      // build — so a lint issue can't block a deploy. See .eslintrc.json.
+      eslint: { ignoreDuringBuilds: true },
       output: "export",
       basePath: "/gun-laws",
       images: { unoptimized: true },
@@ -110,6 +113,9 @@ const nextConfig = isExport
     }
   : {
       reactStrictMode: true,
+      // Lint runs as a dedicated CI step (`npm run lint`), never during the
+      // build — so a lint issue can't block a deploy. See .eslintrc.json.
+      eslint: { ignoreDuringBuilds: true },
       // Enable src/instrumentation.ts (register() boot log + onRequestError
       // forwarding). Server mode only — the export config above deliberately
       // omits it so `output: "export"` never evaluates server-only code.

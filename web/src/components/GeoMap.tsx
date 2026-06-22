@@ -79,72 +79,34 @@ export default function GeoMap({
       .filter((s): s is StateSummary => Boolean(s));
     return mapSummary(summaryStates, orient);
   }, [codes, states, orient]);
-  const showGrade = orient !== "count";
-
   return (
     <div className="w-full">
-      {/* Accessible text alternative for the choropleth. Visually hidden, fully
-          available to screen readers and keyboard users. */}
+      {/* Accessible text alternative for the choropleth: a caption + keyboard
+          instructions. The state shapes themselves are focusable, labeled
+          buttons (below), so screen-reader and keyboard users operate the map
+          directly rather than via a separate hidden table. */}
       <div id={describedById} className="sr-only">
         <p>{summary.caption}</p>
-        <table>
-          <caption>
-            US states with their{" "}
-            {showGrade ? "firearm-law grade and " : ""}count of tracked firearm
-            laws. Activate a row to show that state&apos;s detail.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">State</th>
-              {showGrade ? <th scope="col">Grade</th> : null}
-              <th scope="col">Tracked laws</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {summary.rows.map((row) => {
-              const s = states[row.code];
-              const isSelected = row.code === selected;
-              return (
-                <tr key={row.code}>
-                  <th scope="row">{row.name}</th>
-                  {showGrade ? <td>{row.grade}</td> : null}
-                  <td>{row.lawCountLabel}</td>
-                  <td>
-                    <button
-                      type="button"
-                      aria-pressed={isSelected}
-                      aria-label={
-                        s
-                          ? stateAriaLabel(s, { selected: isSelected, orient })
-                          : row.name
-                      }
-                      onClick={() => onSelect(row.code)}
-                    >
-                      Show {row.name}
-                      {isSelected ? " (currently showing)" : ""}
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <p>
+          Use Tab to move between states and press Enter or Space to select one.
+          You can also use the search box above to jump to a state by name.
+        </p>
       </div>
 
       <svg
         ref={svgRef}
         viewBox="-60 0 1180 610"
         className="block h-auto w-full"
-        role="img"
+        role="group"
         aria-labelledby="map-title"
         aria-describedby={describedById}
       >
         <title id="map-title">Interactive choropleth map of US firearm laws</title>
         <desc>{summary.caption}</desc>
-        <g aria-hidden="true">
+        <g>
           {codes.map((code) => {
             const c = colorFor(code);
+            const s = states[code];
             const cls = [
               "state",
               code === selected ? "selected" : "",
@@ -160,7 +122,21 @@ export default function GeoMap({
                 data-code={code}
                 className={cls}
                 style={{ fill: c.bg }}
+                role="button"
+                tabIndex={0}
+                aria-pressed={code === selected}
+                aria-label={
+                  s
+                    ? stateAriaLabel(s, { selected: code === selected, orient })
+                    : code
+                }
                 onClick={() => onSelect(code)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(code);
+                  }
+                }}
               />
             );
           })}
