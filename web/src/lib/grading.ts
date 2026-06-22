@@ -35,15 +35,18 @@ export const TEXT = [
   "#ffffff",
 ];
 
-// Single-policy ("yes/no") color modes. "Yes" reads green (the policy is in
-// effect) — except red-flag laws, which read red so those states stand out, as
-// requested — while "No" is a shared neutral. The green (#15803d) clears WCAG AA
-// (~5:1) against the white glyph text on filled states + legend chips.
+// Single-policy ("yes/no") color modes, themed per policy in the gun-rights
+// orientation (green = the pro-rights / fewer-restrictions outcome):
+//   - permitless_carry "Yes"  → green  (#15803d): fewer restrictions.
+//   - universal_bg_check "Yes" → blue  (#3a86c8): a restriction, so neutral, not green.
+//   - red_flag "Yes"          → red   (#d73027): those states stand out, as requested.
+// "No" is a shared neutral. Each fill clears WCAG AA against the white glyph
+// text on filled states + legend chips.
 export const POLICY_NO = { bg: "#e6edf3", fg: "#3a4a58" };
-export const POLICY_YES = { bg: "#15803d", fg: "#ffffff" }; // default "yes" (green)
+export const POLICY_YES = { bg: "#3a86c8", fg: "#ffffff" }; // default "yes" (neutral blue)
 export const POLICY_YES_BY_MODE: Record<string, { bg: string; fg: string }> = {
   permitless_carry: { bg: "#15803d", fg: "#ffffff" },
-  universal_bg_check: { bg: "#15803d", fg: "#ffffff" },
+  universal_bg_check: { bg: "#3a86c8", fg: "#ffffff" },
   red_flag: { bg: "#d73027", fg: "#ffffff" },
 };
 export function policyYes(mode: string): { bg: string; fg: string } {
