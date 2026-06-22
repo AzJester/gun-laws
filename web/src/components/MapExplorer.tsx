@@ -128,6 +128,9 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
 
   const [detail, setDetail] = useState<StateDetailType | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState(false);
+  // Inline "no match" message for the header search (cleared as the user types).
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   // Historical time series (1991–2025), fetched once on mount as a static asset.
   // `year` is the snapshot the map + detail reflect; it defaults to the latest
@@ -135,6 +138,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
   const [timeSeries, setTimeSeries] = useState<TimeSeries | null>(null);
   const [year, setYear] = useState<number>(LATEST_YEAR);
   const [playing, setPlaying] = useState(false);
+  const [tsError, setTsError] = useState(false);
 
   const years = useMemo(
     () => (timeSeries ? yearsRange(timeSeries) : null),
@@ -153,10 +157,16 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
         if (isTimeSeries(data)) {
           setTimeSeries(data);
           setYear(data._meta.lastYear); // pin to "current" once we know the real bound
+          setTsError(false);
+        } else {
+          setTsError(true);
         }
       })
       .catch(() => {
-        if (!cancelled) setTimeSeries(null);
+        if (!cancelled) {
+          setTimeSeries(null);
+          setTsError(true);
+        }
       });
     return () => {
       cancelled = true;
@@ -234,13 +244,19 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
     if (!selected) return;
     let cancelled = false;
     setDetailLoading(true);
+    setDetailError(false);
     fetch(`${BASE}/data/states/${selected.toLowerCase()}.json`)
       .then((r) => (r.ok ? (r.json() as Promise<StateDetailType>) : null))
       .then((data) => {
-        if (!cancelled) setDetail(data);
+        if (cancelled) return;
+        setDetail(data);
+        setDetailError(data === null);
       })
       .catch(() => {
-        if (!cancelled) setDetail(null);
+        if (!cancelled) {
+          setDetail(null);
+          setDetailError(true);
+        }
       })
       .finally(() => {
         if (!cancelled) setDetailLoading(false);
@@ -301,6 +317,9 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
       if (found) {
         setSelected(found.code);
         setSearch("");
+        setSearchError(null);
+      } else if (q) {
+        setSearchError(`No state matches “${search.trim()}”.`);
       }
     },
     [search, states],
@@ -375,7 +394,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             Changelog
           </Link>
         </nav>
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <label htmlFor="state-search" className="sr-only">
             Search for a state by name or postal code
           </label>
@@ -386,13 +405,24 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
             autoComplete="off"
             aria-describedby="state-search-hint"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (searchError) setSearchError(null);
+            }}
             onKeyDown={onSearch}
-            className="w-[230px] rounded-lg border border-[var(--border)] bg-[var(--panel-2)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--panel-2)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] sm:w-[230px]"
           />
           <span id="state-search-hint" className="sr-only">
             Type a state name or two-letter code and press Enter to select it.
           </span>
+          {searchError ? (
+            <p
+              role="status"
+              className="mt-1 text-[11px] text-[var(--danger-fg)] sm:absolute sm:left-0 sm:top-full sm:mt-0.5"
+            >
+              {searchError}
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-2 rounded-[20px] border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)]">
           <span
@@ -575,6 +605,11 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
               )}
               <span aria-hidden="true">{maxYear}</span>
             </div>
+            <p className="mt-1.5 text-[10.5px] leading-snug text-[var(--muted)]">
+              {tsError
+                ? "Historical snapshots couldn’t be loaded — showing the current year only."
+                : `Years 1991–2020 are from the State Firearm Laws Database; 2021–${maxYear} are curated estimates of the major changes, not every amendment.`}
+            </p>
           </div>
 
           <GeoMap
@@ -710,6 +745,7 @@ export default function MapExplorer({ geo, states, changes }: MapExplorerProps) 
               year={year}
               isHistorical={isHistorical}
               entry={selectedEntry}
+              error={detailError}
             />
           </section>
           <section className="rounded-[14px] border border-[var(--border)] bg-[var(--panel)] p-[18px]">

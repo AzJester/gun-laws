@@ -21,6 +21,8 @@ interface StateDetailProps {
   year?: number | null;
   isHistorical?: boolean;
   entry?: TimeSeriesEntry | null;
+  /** True when the detail fetch failed (so we can show an error, not the empty state). */
+  error?: boolean;
 }
 
 // The six headline policy flags, in the same order/labels as StateDetailView,
@@ -42,9 +44,18 @@ export default function StateDetail({
   year = null,
   isHistorical = false,
   entry = null,
+  error = false,
 }: StateDetailProps) {
   if (loading && !detail) {
     return <p className="text-sm text-[var(--muted)]">Loading…</p>;
+  }
+  if (error && !detail) {
+    return (
+      <p className="rounded-[8px] border border-[var(--danger-border)] bg-[var(--danger-bg)] px-3 py-2 text-sm text-[var(--danger-fg)]">
+        Couldn’t load this state’s details. Check your connection and select the
+        state again.
+      </p>
+    );
   }
   if (!detail) {
     return (

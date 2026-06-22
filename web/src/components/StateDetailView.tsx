@@ -87,6 +87,31 @@ export default function StateDetailView({
         </div>
       </div>
 
+      <p className="mb-3 rounded-[8px] border border-[var(--warn-border)] bg-[var(--warn-bg)] px-3 py-2 text-[11.5px] leading-snug text-[var(--warn-fg)]">
+        <b className="text-[var(--warn-strong)]">
+          Reflects law as of {detail.verifiedThrough ?? 2020}.
+        </b>{" "}
+        Changes since then may not be shown
+        {detail.sources?.[0] ? (
+          <>
+            {" "}
+            — confirm with the official source (
+            <a
+              href={detail.sources[0].url}
+              target="_blank"
+              rel="noopener"
+              className="text-[var(--accent)] underline"
+            >
+              {detail.sources[0].label}
+            </a>
+            )
+          </>
+        ) : (
+          " — confirm with the official state statute"
+        )}{" "}
+        before relying on it. Informational only, not legal advice.
+      </p>
+
       <div className="my-1 mb-4 grid grid-cols-2 gap-2">
         {FLAG_ROWS.map((row) => {
           const present = row.on(detail.policies);

@@ -42,6 +42,10 @@ jobs:
         working-directory: web
         run: npx tsc --noEmit
 
+      - name: Lint
+        working-directory: web
+        run: npm run lint
+
       - name: Unit + integration tests
         working-directory: web
         run: npm test
