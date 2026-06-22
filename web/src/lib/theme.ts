@@ -19,18 +19,13 @@ export function parseTheme(value: unknown): Theme | null {
 /**
  * Resolve the theme to apply on first paint.
  *   - A persisted manual override (localStorage) always wins.
- *   - Otherwise follow the OS: prefers-color-scheme: light → "light", else dark.
+ *   - Otherwise default to dark (DEFAULT_THEME) — the OS preference is
+ *     deliberately NOT followed, so every first-time visitor gets dark mode.
  *
- * @param stored      the raw localStorage value (string | null | undefined).
- * @param prefersLight whether `matchMedia('(prefers-color-scheme: light)')` matches.
+ * @param stored the raw localStorage value (string | null | undefined).
  */
-export function resolveInitialTheme(
-  stored: string | null | undefined,
-  prefersLight: boolean,
-): Theme {
-  const override = parseTheme(stored);
-  if (override) return override;
-  return prefersLight ? "light" : "dark";
+export function resolveInitialTheme(stored: string | null | undefined): Theme {
+  return parseTheme(stored) ?? DEFAULT_THEME;
 }
 
 /** The theme you get by flipping the current one. */

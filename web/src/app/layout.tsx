@@ -10,12 +10,16 @@ import "./globals.css";
 // correct theme is applied with no flash of the wrong colors. Mirrors
 // resolveInitialTheme() from lib/theme (kept in sync; inlined here because it
 // must run before any module loads). A persisted manual override wins; otherwise
-// we follow the OS via prefers-color-scheme. Wrapped in try/catch so a blocked
-// localStorage never breaks rendering. The server-rendered default is
-// DEFAULT_THEME (on <html>) so SSR is stable; this corrects it pre-hydration.
+// it defaults to dark (DEFAULT_THEME) — the OS preference is intentionally NOT
+// consulted, so dark mode is always the default. Wrapped in try/catch so a
+// blocked localStorage never breaks rendering. The server-rendered default is
+// DEFAULT_THEME (on <html>) so SSR is stable; this only re-applies a saved
+// override pre-hydration.
 const THEME_BOOT_SCRIPT = `(function(){try{var k=${JSON.stringify(
   THEME_STORAGE_KEY,
-)};var s=localStorage.getItem(k);var t=s==="light"||s==="dark"?s:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`;
+)};var s=localStorage.getItem(k);var t=s==="light"||s==="dark"?s:${JSON.stringify(
+  DEFAULT_THEME,
+)};document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gunlawmap.example";
 

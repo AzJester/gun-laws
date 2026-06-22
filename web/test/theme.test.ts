@@ -25,26 +25,20 @@ describe("theme: parseTheme", () => {
 });
 
 describe("theme: resolveInitialTheme", () => {
-  it("honors a persisted manual override over the OS preference", () => {
-    // Override wins even when the OS asks for the opposite.
-    expect(resolveInitialTheme("light", false)).toBe("light");
-    expect(resolveInitialTheme("dark", true)).toBe("dark");
+  it("honors a persisted manual override", () => {
+    expect(resolveInitialTheme("light")).toBe("light");
+    expect(resolveInitialTheme("dark")).toBe("dark");
   });
 
-  it("falls back to the OS preference when there is no valid override", () => {
-    expect(resolveInitialTheme(null, true)).toBe("light");
-    expect(resolveInitialTheme(null, false)).toBe("dark");
-    expect(resolveInitialTheme(undefined, true)).toBe("light");
-    expect(resolveInitialTheme(undefined, false)).toBe("dark");
+  it("defaults to dark when there is no valid override (OS is NOT consulted)", () => {
+    expect(resolveInitialTheme(null)).toBe("dark");
+    expect(resolveInitialTheme(undefined)).toBe("dark");
+    expect(resolveInitialTheme(null)).toBe(DEFAULT_THEME);
   });
 
-  it("treats a junk stored value as no override (follows the OS)", () => {
-    expect(resolveInitialTheme("banana", true)).toBe("light");
-    expect(resolveInitialTheme("banana", false)).toBe("dark");
-  });
-
-  it("defaults to dark when nothing is known (no override, OS not light)", () => {
-    expect(resolveInitialTheme(null, false)).toBe(DEFAULT_THEME);
+  it("treats a junk stored value as no override and defaults to dark", () => {
+    expect(resolveInitialTheme("banana")).toBe("dark");
+    expect(resolveInitialTheme("LIGHT")).toBe("dark");
   });
 });
 

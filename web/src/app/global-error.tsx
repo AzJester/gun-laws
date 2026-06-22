@@ -13,12 +13,12 @@ import { useEffect } from "react";
 
 import { reportError } from "@/lib/observability";
 
-// Minimal theme vars for the standalone error document. Dark is the default;
-// prefers-color-scheme: light flips them, and a manual data-theme override (set
-// by the boot script from the same localStorage key) wins.
+// Minimal theme vars for the standalone error document. Dark is always the
+// default (the OS preference is intentionally NOT consulted); only an explicit
+// manual data-theme="light" override (set by the boot script from the same
+// localStorage key) switches it to light.
 const ERROR_THEME_CSS = `
 :root,:root[data-theme="dark"]{color-scheme:dark;--bg:#0d1117;--panel:#161b22;--border:#2a3340;--text:#e6edf3;--muted:#9aa7b4;--accent:#58a6ff;--on-accent:#06121f;}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){color-scheme:light;--bg:#f7f9fc;--panel:#ffffff;--border:#d6dee8;--text:#10202e;--muted:#52647a;--accent:#1f6fb2;--on-accent:#ffffff;}}
 :root[data-theme="light"]{color-scheme:light;--bg:#f7f9fc;--panel:#ffffff;--border:#d6dee8;--text:#10202e;--muted:#52647a;--accent:#1f6fb2;--on-accent:#ffffff;}
 `;
 
